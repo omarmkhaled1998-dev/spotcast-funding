@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
     "pg-native",
     // Anthropic SDK uses Node.js streams
     "@anthropic-ai/sdk",
+    // officeparser reads files from disk — must not be bundled
+    "officeparser",
   ],
 };
 
