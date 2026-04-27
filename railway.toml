@@ -6,10 +6,7 @@ buildCommand = "npm ci && npx prisma generate && npm run build"
 startCommand = "npm start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 120
-restartPolicyType = "on-failure"
-restartPolicyMaxRetries = 3
 
 [environments.production.variables]
 NODE_ENV = "production"
 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
-# NEXTAUTH_URL = "https://your-app.railway.app"  # Set this in Railway dashboard → Variables
