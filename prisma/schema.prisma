@@ -1,0 +1,895 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── WORKSPACES ───────────────────────────────────────────────────────────────
+
+model Workspace {
+  id        String        @id @default(cuid())
+  name      String
+  slug      String        @unique
+  type      WorkspaceType @default(ORG)
+  logoUrl   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  members       WorkspaceMember[]
+  subscription  Subscription?
+  orgProfile    OrgProfile?
+  sources       OpportunitySource[]
+  opportunities Opportunity[]
+  applications  Application[]
+  donors        Donor[]
+  tags          Tag[]
+  ingestLogs    IngestLog[]
+  activityLogs  ActivityLog[]
+  emailAlerts   EmailAlert[]
+  aiOutputs     AiOutput[]
+  analyses      OpportunityAnalysis[]
+}
+
+enum WorkspaceType {
+  ORG
+  INDIVIDUAL
+}
+
+model WorkspaceMember {
+  id          String        @id @default(cuid())
+  workspaceId String
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        WorkspaceRole @default(MEMBER)
+  invitedAt   DateTime      @default(now())
+  acceptedAt  DateTime?
+
+  @@unique([workspaceId, userId])
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+// ─── SUBSCRIPTIONS ────────────────────────────────────────────────────────────
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  workspaceId          String             @unique
+  workspace            Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  stripeCustomerId     String             @unique
+  stripeSubscriptionId String?            @unique
+  stripePriceId        String?
+  status               SubscriptionStatus @default(TRIALING)
+  planType             PlanType           @default(BASE)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean            @default(false)
+  canceledAt           DateTime?
+  trialEndsAt          DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+  PAUSED
+}
+
+enum PlanType {
+  BASE
+  BASE_PLUS_ALERTS
+}
+
+// ─── PROFILES ─────────────────────────────────────────────────────────────────
+
+model UserProfile {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspaceId         String?
+  name                String
+  location            String?
+  region              String?
+  languages           String   @default("[]")
+  strategicPriorities String   @default("[]")
+  thematicInterests   String   @default("[]")
+  keywords            String   @default("[]")
+  existingFunders     String   @default("[]")
+  preferredTypes      String   @default("{}")
+  geography           String   @default("[]")
+  grantEligibility    String   @default("{}")
+  bio                 String?
+  cvSummary           String?
+  linkedinUrl         String?
+  portfolioUrl        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model OrgProfile {
+  id                  String    @id @default(cuid())
+  workspaceId         String    @unique
+  workspace           Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  orgName             String
+  orgType             String?
+  foundedYear         Int?
+  registrationCountry String?
+  registrationStatus  String?
+  mission             String?
+  vision              String?
+  previousWork        String?
+  contextDocuments    String?
+  docExtracts         String    @default("[]")
+  thematicAreas       String    @default("[]")
+  geography           String    @default("[]")
+  fundingRangeMin     Int?
+  fundingRangeMax     Int?
+  preferredLanguages  String    @default("[]")
+  staffCount          Int?
+  annualBudget        Int?
+  existingFunders     String    @default("[]")
+  website             String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+// ─── OPPORTUNITY SOURCES ──────────────────────────────────────────────────────
+
+model OpportunitySource {
+  id                   String         @id @default(cuid())
+  workspaceId          String
+  workspace            Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name                 String
+  url                  String
+  strategy             ScrapeStrategy @default(AUTO)
+  isActive             Boolean        @default(true)
+  lastScrapedAt        DateTime?
+  lastSuccessAt        DateTime?
+  lastErrorAt          DateTime?
+  lastError            String?
+  checkFrequencyHours  Int            @default(24)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+}
+
+enum ScrapeStrategy {
+  AUTO
+  HTTP
+  PLAYWRIGHT
+  APPLESCRIPT
+}
+
+// ─── AI OUTPUTS ───────────────────────────────────────────────────────────────
+
+model AiOutput {
+  id            String       @id @default(cuid())
+  workspaceId   String
+  workspace     Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id])
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id])
+  type          AiOutputType
+  prompt        String
+  content       String
+  model         String
+  inputTokens   Int          @default(0)
+  outputTokens  Int          @default(0)
+  costUsdCents  Int          @default(0)
+  createdById   String?
+  createdBy     User?        @relation(fields: [createdById], references: [id])
+  createdAt     DateTime     @default(now())
+}
+
+enum AiOutputType {
+  OPPORTUNITY_SUMMARY
+  OPPORTUNITY_ANALYSIS
+  CONCEPT_NOTE_DRAFT
+  PROPOSAL_DRAFT
+  BUDGET_NARRATIVE
+  COVER_LETTER
+  BIO
+  REPORT_DRAFT
+  ELIGIBILITY_CHECK
+}
+
+// ─── OPPORTUNITY ANALYSIS ─────────────────────────────────────────────────────
+
+model OpportunityAnalysis {
+  id            String      @id @default(cuid())
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  workspaceId   String
+  workspace     Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  profileType   ProfileType @default(ORG)
+  aiScore       Int?
+  fitLabel      FitLabel?
+  summary       String?
+  whyMatch      String?
+  strengths     String      @default("[]")
+  risks         String      @default("[]")
+  recommendation String?
+  model         String?
+  inputTokens   Int         @default(0)
+  outputTokens  Int         @default(0)
+  createdAt     DateTime    @default(now())
+}
+
+enum ProfileType {
+  ORG
+  PERSONAL
+}
+
+// ─── EMAIL ALERTS ─────────────────────────────────────────────────────────────
+
+model EmailAlert {
+  id                String         @id @default(cuid())
+  workspaceId       String
+  workspace         Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isActive          Boolean        @default(true)
+  frequency         AlertFrequency @default(DAILY_DIGEST)
+  minScore          Int            @default(60)
+  deadlineAlertDays Int            @default(14)
+  emailAddress      String
+  lastSentAt        DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  logs EmailAlertLog[]
+}
+
+enum AlertFrequency {
+  IMMEDIATE
+  DAILY_DIGEST
+  WEEKLY_DIGEST
+}
+
+model EmailAlertLog {
+  id             String       @id @default(cuid())
+  alertId        String
+  alert          EmailAlert   @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  type           AlertLogType
+  subject        String
+  sentAt         DateTime     @default(now())
+  recipientEmail String
+  opportunityCount Int        @default(0)
+}
+
+enum AlertLogType {
+  NEW_OPPORTUNITIES
+  DEADLINE_REMINDER
+  HIGH_MATCH
+}
+
+// ─── ADMIN LOG ────────────────────────────────────────────────────────────────
+
+model AdminLog {
+  id          String   @id @default(cuid())
+  adminUserId String
+  adminUser   User     @relation(fields: [adminUserId], references: [id])
+  action      String
+  targetType  String?
+  targetId    String?
+  metadata    String?
+  createdAt   DateTime @default(now())
+}
+
+// ─── USERS ────────────────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(EDITOR)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+  profile   UserProfile?
+  workspaceMemberships WorkspaceMember[]
+  emailAlerts  EmailAlert[]
+  aiOutputs    AiOutput[]
+  adminLogs    AdminLog[]
+
+  opportunitiesFound   Opportunity[]    @relation("FoundBy")
+  opportunitiesCreated Opportunity[]    @relation("OpportunityCreatedBy")
+  ownedApplications    Application[]    @relation("ApplicationOwner")
+  createdApplications  Application[]    @relation("ApplicationCreatedBy")
+  collaborations       AppCollaborator[]
+  assignedTasks        Task[]           @relation("TaskAssignee")
+  createdTasks         Task[]           @relation("TaskCreatedBy")
+  notes                Note[]
+  attachments          Attachment[]
+  decisions            Decision[]
+  relationshipLogs     RelationshipLog[]
+  reminders            Reminder[]
+  resolvedGaps         ReadinessGap[]   @relation("ResolvedBy")
+  activityLogs         ActivityLog[]
+  stageHistory         ApplicationStage[]
+  donorsCreated        Donor[]          @relation("DonorCreatedBy")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── DONORS ───────────────────────────────────────────────────────────────────
+
+model Donor {
+  id                         String               @id @default(cuid())
+  workspaceId                String
+  workspace                  Workspace            @relation(fields: [workspaceId], references: [id])
+  name                       String
+  type                       DonorType            @default(OTHER)
+  website                    String?
+  countryOfOrigin            String?
+  focusAreas                 String               @default("[]")
+  geographicFocus            String               @default("[]")
+  fundingRangeMin            Int?
+  fundingRangeMax            Int?
+  typicalGrantDurationMonths Int?
+  relationshipStrength       RelationshipStrength @default(NONE)
+  lastInteractionDate        DateTime?
+  preferredFraming           String?
+  notes                      String?
+  createdById                String?
+  createdBy                  User?                @relation("DonorCreatedBy", fields: [createdById], references: [id])
+  createdAt                  DateTime             @default(now())
+  updatedAt                  DateTime             @updatedAt
+
+  contacts         DonorContact[]
+  opportunities    Opportunity[]
+  applications     Application[]
+  relationshipLogs RelationshipLog[]
+  donorNotes       Note[]
+  donorAttachments Attachment[]
+}
+
+enum DonorType {
+  BILATERAL
+  MULTILATERAL
+  PRIVATE
+  FOUNDATION
+  NGO
+  GOVERNMENT
+  OTHER
+}
+
+enum RelationshipStrength {
+  NONE
+  AWARE
+  CONTACTED
+  ACTIVE
+  STRONG
+}
+
+model DonorContact {
+  id          String   @id @default(cuid())
+  donorId     String
+  donor       Donor    @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  workspaceId String?
+  name        String
+  title       String?
+  email       String?
+  phone       String?
+  notes       String?
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── OPPORTUNITIES ────────────────────────────────────────────────────────────
+
+model Opportunity {
+  id                      String            @id @default(cuid())
+  workspaceId             String
+  workspace               Workspace         @relation(fields: [workspaceId], references: [id])
+  title                   String
+  donorId                 String?
+  donor                   Donor?            @relation(fields: [donorId], references: [id])
+  sourceUrl               String?
+  sourceType              SourceType        @default(MANUAL)
+  deadlineDate            DateTime?
+  deadlineNotes           String?
+  geography               String            @default("[]")
+  fundingAmountMin        Int?
+  fundingAmountMax        Int?
+  currency                String            @default("USD")
+  thematicAreas           String            @default("[]")
+  eligibilitySummary      String?
+  eligibilityFullText     String?
+  applicationType         ApplicationType?
+  languageRequirement     String?
+  partnerRequired         Boolean           @default(false)
+  partnerNotes            String?
+  registrationRequirement String?
+  summary                 String?
+  fullDescription         String?
+  status                  OppStatus         @default(NEEDS_REVIEW)
+  urgencyLevel            UrgencyLevel      @default(MEDIUM)
+  suitabilityScore        Int?
+  fitLabel                FitLabel?
+  scoreBreakdown          String?
+  externalId              String?
+  foundById               String?
+  foundBy                 User?             @relation("FoundBy", fields: [foundById], references: [id])
+  foundAt                 DateTime?
+  dataConfidence          DataConfidence    @default(UNVERIFIED)
+  createdById             String?
+  createdBy               User?             @relation("OpportunityCreatedBy", fields: [createdById], references: [id])
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+
+  tags           OpportunityTag[]
+  application    Application?
+  decision       Decision?
+  scoringResults ScoringResult[]
+  oppNotes       Note[]
+  oppAttachments Attachment[]
+  reminders      Reminder[]
+  activityLogs   ActivityLog[]
+  analyses       OpportunityAnalysis[]
+  aiOutputs      AiOutput[]
+}
+
+enum SourceType {
+  MANUAL
+  CSV_IMPORT
+  SCRAPE
+  EMAIL
+  PARTNER
+}
+
+enum ApplicationType {
+  OPEN
+  INVITED
+  EOI
+  CONCEPT_NOTE
+  RFA
+  RFP
+  OTHER
+}
+
+enum OppStatus {
+  NEEDS_REVIEW
+  UNDER_EVALUATION
+  GO
+  NO_GO
+  HOLD
+  ARCHIVED
+}
+
+enum UrgencyLevel {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum FitLabel {
+  SUITABLE
+  MAYBE
+  NOT_SUITABLE
+}
+
+enum DataConfidence {
+  VERIFIED
+  UNVERIFIED
+  IMPORTED
+}
+
+// ─── TAGS ─────────────────────────────────────────────────────────────────────
+
+model Tag {
+  id          String           @id @default(cuid())
+  workspaceId String
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id])
+  name        String
+  color       String           @default("#6366f1")
+  opportunities OpportunityTag[]
+
+  @@unique([workspaceId, name])
+}
+
+model OpportunityTag {
+  opportunityId String
+  tagId         String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  tag           Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([opportunityId, tagId])
+}
+
+// ─── DECISIONS ────────────────────────────────────────────────────────────────
+
+model Decision {
+  id            String       @id @default(cuid())
+  opportunityId String       @unique
+  opportunity   Opportunity  @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  workspaceId   String?
+  decision      DecisionType
+  reason        String?
+  decidedById   String?
+  decidedBy     User?        @relation(fields: [decidedById], references: [id])
+  decidedAt     DateTime     @default(now())
+}
+
+enum DecisionType {
+  PURSUE
+  HOLD
+  DECLINE
+}
+
+// ─── APPLICATIONS ─────────────────────────────────────────────────────────────
+
+model Application {
+  id                String       @id @default(cuid())
+  workspaceId       String
+  workspace         Workspace    @relation(fields: [workspaceId], references: [id])
+  opportunityId     String       @unique
+  opportunity       Opportunity  @relation(fields: [opportunityId], references: [id])
+  donorId           String?
+  donor             Donor?       @relation(fields: [donorId], references: [id])
+  ownerId           String?
+  owner             User?        @relation("ApplicationOwner", fields: [ownerId], references: [id])
+  stage             AppStage     @default(PREPARATION)
+  internalDeadline  DateTime?
+  donorDeadline     DateTime?
+  decisionDate      DateTime?
+  submissionDate    DateTime?
+  resultDate        DateTime?
+  result            AppResult?
+  amountRequested   Int?
+  amountAwarded     Int?
+  confidenceLevel   Confidence   @default(MEDIUM)
+  blockers          String?
+  nextAction        String?
+  nextActionDueDate DateTime?
+  createdById       String?
+  createdBy         User?        @relation("ApplicationCreatedBy", fields: [createdById], references: [id])
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  collaborators  AppCollaborator[]
+  stageHistory   ApplicationStage[]
+  tasks          Task[]
+  readinessGaps  ReadinessGap[]
+  appNotes       Note[]
+  appAttachments Attachment[]
+  reminders      Reminder[]
+  activityLogs   ActivityLog[]
+  aiOutputs      AiOutput[]
+}
+
+enum AppStage {
+  PREPARATION
+  CONCEPT_NOTE
+  PROPOSAL
+  INTERNAL_REVIEW
+  SUBMITTED
+  AWARDED
+  REJECTED
+  NO_RESPONSE
+  WITHDRAWN
+}
+
+enum AppResult {
+  AWARDED
+  REJECTED
+  NO_RESPONSE
+  WITHDRAWN
+}
+
+enum Confidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model AppCollaborator {
+  applicationId String
+  userId        String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([applicationId, userId])
+}
+
+model ApplicationStage {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  stage         AppStage
+  enteredAt     DateTime    @default(now())
+  enteredById   String?
+  enteredBy     User?       @relation(fields: [enteredById], references: [id])
+  notes         String?
+}
+
+// ─── TASKS ────────────────────────────────────────────────────────────────────
+
+model Task {
+  id              String      @id @default(cuid())
+  applicationId   String
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  workspaceId     String?
+  title           String
+  assigneeId      String?
+  assignee        User?       @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  dueDate         DateTime?
+  priority        Priority    @default(MEDIUM)
+  dependsOnTaskId String?
+  dependsOn       Task?       @relation("TaskDeps", fields: [dependsOnTaskId], references: [id])
+  dependents      Task[]      @relation("TaskDeps")
+  status          TaskStatus  @default(TODO)
+  notes           String?
+  completedAt     DateTime?
+  createdById     String?
+  createdBy       User?       @relation("TaskCreatedBy", fields: [createdById], references: [id])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+enum Priority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  BLOCKED
+  CANCELLED
+}
+
+// ─── NOTES ────────────────────────────────────────────────────────────────────
+
+model Note {
+  id            String       @id @default(cuid())
+  workspaceId   String?
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  donorId       String?
+  donor         Donor?       @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  noteType      NoteType     @default(GENERAL)
+  body          String
+  authorId      String?
+  author        User?        @relation(fields: [authorId], references: [id])
+  isPinned      Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+enum NoteType {
+  STRATEGIC
+  RISK
+  LESSON_LEARNED
+  DONOR_INTELLIGENCE
+  DECISION_RATIONALE
+  GENERAL
+}
+
+// ─── ATTACHMENTS ──────────────────────────────────────────────────────────────
+
+model Attachment {
+  id            String       @id @default(cuid())
+  workspaceId   String?
+  title         String?
+  docType       DocType      @default(OTHER)
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  donorId       String?
+  donor         Donor?       @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  filePath      String
+  fileName      String
+  fileSize      Int?
+  mimeType      String?
+  version       String?
+  isTemplate    Boolean      @default(false)
+  uploadedById  String?
+  uploadedBy    User?        @relation(fields: [uploadedById], references: [id])
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+enum DocType {
+  CONCEPT_NOTE
+  PROPOSAL
+  BUDGET
+  INSTITUTIONAL
+  CORRESPONDENCE
+  REPORT
+  TEMPLATE
+  REGISTRATION
+  OTHER
+}
+
+// ─── READINESS GAPS ───────────────────────────────────────────────────────────
+
+model ReadinessGap {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  gapType       String
+  description   String?
+  severity      GapSeverity @default(MEDIUM)
+  isResolved    Boolean     @default(false)
+  resolvedAt    DateTime?
+  resolvedById  String?
+  resolvedBy    User?       @relation("ResolvedBy", fields: [resolvedById], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+enum GapSeverity {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+// ─── REMINDERS ────────────────────────────────────────────────────────────────
+
+model Reminder {
+  id            String       @id @default(cuid())
+  workspaceId   String?
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  userId        String?
+  user          User?        @relation(fields: [userId], references: [id])
+  message       String
+  remindAt      DateTime
+  isSent        Boolean      @default(false)
+  sentAt        DateTime?
+  createdAt     DateTime     @default(now())
+}
+
+// ─── RELATIONSHIP LOGS ────────────────────────────────────────────────────────
+
+model RelationshipLog {
+  id              String          @id @default(cuid())
+  workspaceId     String?
+  donorId         String
+  donor           Donor           @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  interactionType InteractionType
+  date            DateTime
+  summary         String?
+  loggedById      String?
+  loggedBy        User?           @relation(fields: [loggedById], references: [id])
+  createdAt       DateTime        @default(now())
+}
+
+enum InteractionType {
+  MEETING
+  EMAIL
+  CALL
+  EVENT
+  APPLICATION
+  REPORT
+  OTHER
+}
+
+// ─── SCORING RESULTS ──────────────────────────────────────────────────────────
+
+model ScoringResult {
+  id            String      @id @default(cuid())
+  workspaceId   String?
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  totalScore    Int
+  fitLabel      FitLabel
+  breakdown     String
+  explanation   String?
+  scoredAt      DateTime    @default(now())
+  scoredBy      ScoredBy    @default(AUTO)
+}
+
+enum ScoredBy {
+  AUTO
+  MANUAL
+}
+
+// ─── INGEST LOGS ──────────────────────────────────────────────────────────────
+
+model IngestLog {
+  id          String       @id @default(cuid())
+  workspaceId String
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id])
+  source      String       @default("DALEEL_MADANI")
+  startedAt   DateTime     @default(now())
+  completedAt DateTime?
+  status      IngestStatus @default(RUNNING)
+  pagesScraped Int         @default(0)
+  found       Int          @default(0)
+  imported    Int          @default(0)
+  skipped     Int          @default(0)
+  errors      String?
+}
+
+enum IngestStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+  PARTIAL
+}
+
+// ─── ACTIVITY LOG ─────────────────────────────────────────────────────────────
+
+model ActivityLog {
+  id            String       @id @default(cuid())
+  workspaceId   String
+  workspace     Workspace    @relation(fields: [workspaceId], references: [id])
+  userId        String?
+  user          User?        @relation(fields: [userId], references: [id])
+  action        String
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id])
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id])
+  oldValue      String?
+  newValue      String?
+  createdAt     DateTime     @default(now())
+}
