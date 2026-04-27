@@ -1,12 +1,7 @@
 [build]
-builder = "nixpacks"
 buildCommand = "npm ci && npx prisma generate && npm run build"
 
 [deploy]
 startCommand = "npm start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 120
-
-[environments.production.variables]
-NODE_ENV = "production"
-PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
