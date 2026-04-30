@@ -9,12 +9,16 @@ import authConfig from "@/auth.config";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
-    // ── Google OAuth ─────────────────────────────────────────────────────────
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-      allowDangerousEmailAccountLinking: true,
-    }),
+    // ── Google OAuth — only enabled when real credentials are configured ──────
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "replace-me"
+      ? [
+          Google({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+            allowDangerousEmailAccountLinking: true,
+          }),
+        ]
+      : []),
 
     // ── Email + Password ──────────────────────────────────────────────────────
     Credentials({
