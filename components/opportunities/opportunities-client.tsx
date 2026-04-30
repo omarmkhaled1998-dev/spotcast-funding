@@ -34,6 +34,44 @@ import type { Opportunity, Donor, Decision } from "@/app/generated/prisma/client
 
 type OppWithRelations = Opportunity & { donor: Donor | null; decision: Decision | null };
 
+/** Extract the top 1-2 reasons why an opportunity scored NOT_SUITABLE */
+function getNotSuitableReasons(opp: OppWithRelations): string[] {
+  const reasons: string[] = [];
+
+  // Parse breakdown if available
+  let bd: Record<string, { score: number; max: number }> & { _disqualified?: string } = {};
+  try {
+    if (opp.scoreBreakdown) bd = JSON.parse(opp.scoreBreakdown as string);
+  } catch { /* ignore */ }
+
+  // Hard disqualifiers first
+  if (bd._disqualified) {
+    const d = bd._disqualified.toLowerCase();
+    if (d.includes("passed") || d.includes("deadline")) return ["Deadline has passed"];
+    if (d.includes("geography") || d.includes("outside")) return ["Outside your geographic area"];
+  }
+
+  // Expired deadline (check date directly)
+  if (opp.deadlineDate && new Date(opp.deadlineDate) < new Date()) {
+    return ["Deadline has passed"];
+  }
+
+  // Score-based reasons — pick the worst dimensions
+  if (bd.geography?.score === 0) reasons.push("Geographic mismatch");
+  if (bd.thematicFit?.score === 0) reasons.push("No thematic match");
+  if (bd.timeline?.score === 0) reasons.push("Deadline too close");
+  if (bd.registration?.score === 0) reasons.push("Registration requirements not met");
+  if (bd.fundingSize?.score <= 2 && bd.fundingSize?.max > 0) reasons.push("Budget out of range");
+  if (bd.partnerReq?.score === 0) reasons.push("Partner required");
+
+  // If no specific reason found but it's low score
+  if (reasons.length === 0 && (opp.suitabilityScore ?? 100) < 50) {
+    reasons.push("Low overall fit");
+  }
+
+  return reasons.slice(0, 2);
+}
+
 const STATUS_OPTIONS = [
   { value: "", label: "All statuses" },
   { value: "NEEDS_REVIEW", label: "New" },
@@ -396,36 +434,25 @@ export function OpportunitiesClient({
                     </td>
                     <td className="py-3 pr-4">
                       {opp.fitLabel ? (
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-0.5">
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-slate-700">{opp.suitabilityScore}</span>
                             <Badge className={FIT_COLORS[opp.fitLabel]} variant="outline">
                               {FIT_LABELS[opp.fitLabel] ?? opp.fitLabel.replace("_", " ")}
                             </Badge>
                           </div>
-                          {(() => {
-                            // Show hard-disqualifier reason if present
-                            const breakdown = opp.scoreBreakdown
-                              ? (() => { try { return JSON.parse(opp.scoreBreakdown as string); } catch { return null; } })()
-                              : null;
-                            const reason = breakdown?._disqualified as string | undefined;
-                            // Also catch expired deadline even if not in breakdown
-                            const isExpired = opp.deadlineDate && new Date(opp.deadlineDate) < new Date();
-                            if (reason) {
-                              return (
-                                <span className="text-xs text-red-500 font-medium leading-tight">
-                                  ⛔ {reason}
-                                </span>
-                              );
-                            }
-                            if (isExpired && opp.fitLabel === "NOT_SUITABLE" && opp.suitabilityScore === 0) {
-                              return (
-                                <span className="text-xs text-red-500 font-medium leading-tight">
-                                  ⛔ Deadline passed
-                                </span>
-                              );
-                            }
-                            return null;
+                          {opp.fitLabel === "NOT_SUITABLE" && (() => {
+                            const reasons = getNotSuitableReasons(opp);
+                            if (!reasons.length) return null;
+                            return (
+                              <div className="flex flex-col gap-0.5 mt-0.5">
+                                {reasons.map((r) => (
+                                  <span key={r} className="text-xs text-red-500 leading-tight">
+                                    · {r}
+                                  </span>
+                                ))}
+                              </div>
+                            );
                           })()}
                         </div>
                       ) : (
