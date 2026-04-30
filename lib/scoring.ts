@@ -23,6 +23,8 @@ export interface ScoringOutput {
   strengths: string[];
   risks: string[];
   recommendation: string;
+  /** Hard disqualifier reason — if set, score is forced to 0 regardless of other factors */
+  disqualified?: string;
 }
 
 function daysUntilDeadline(deadline: Date | null | undefined): number {
@@ -59,6 +61,52 @@ export function scoreOpportunity(
   const days = daysUntilDeadline(opp.deadlineDate);
   const relationship = donorRelationship || "NONE";
 
+  // ── Hard disqualifiers — checked before scoring ─────────────────────────────
+
+  // 1. Deadline has passed
+  if (days < 0) {
+    const breakdown: ScoreBreakdown = {
+      geography: { score: 0, max: 20, reason: "N/A" },
+      thematicFit: { score: 0, max: 20, reason: "N/A" },
+      fundingSize: { score: 0, max: 10, reason: "N/A" },
+      timeline: { score: 0, max: 10, reason: `Deadline passed ${Math.abs(days)} days ago` },
+      complexity: { score: 0, max: 10, reason: "N/A" },
+      relationship: { score: 0, max: 10, reason: "N/A" },
+      partnerReq: { score: 0, max: 8, reason: "N/A" },
+      language: { score: 0, max: 5, reason: "N/A" },
+      registration: { score: 0, max: 4, reason: "N/A" },
+      strategic: { score: 0, max: 3, reason: "N/A" },
+    };
+    return {
+      score: 0,
+      fitLabel: "NOT_SUITABLE",
+      breakdown,
+      explanation: `Deadline passed ${Math.abs(days)} days ago — no longer open for applications.`,
+      strengths: [],
+      risks: [`Deadline passed ${Math.abs(days)} days ago`],
+      recommendation: "Archive this opportunity. The application window has closed.",
+      disqualified: `Deadline passed ${Math.abs(days)} days ago`,
+    };
+  }
+
+  // 2. Geographic exclusion — opportunity targets specific countries/regions
+  //    that are all outside the profile's geography (and not global/regional)
+  const profileGeoLower = (profile?.geography ?? []).map((g) => g.toLowerCase());
+  const geoDisqualified =
+    profileGeoLower.length > 0 &&
+    geo.length > 0 &&
+    !geo.some((g) =>
+      g.includes("global") ||
+      g.includes("worldwide") ||
+      g.includes("international") ||
+      g.includes("mena") ||
+      g.includes("arab") ||
+      g.includes("middle east") ||
+      g.includes("north africa") ||
+      g.includes("regional") ||
+      profileGeoLower.some((pg) => g.includes(pg) || pg.includes(g))
+    );
+
   const breakdown: ScoreBreakdown = {
     geography: scoreGeography(geo, profile?.geography ?? []),
     thematicFit: scoreThemes(themes, profile?.thematicAreas ?? []),
@@ -76,6 +124,21 @@ export function scoreOpportunity(
     registration: scoreRegistration(opp.registrationRequirement),
     strategic: { score: 2, max: 3, reason: "Default strategic value" },
   };
+
+  // If geo-excluded, force score to 0 regardless of thematic/other fit
+  if (geoDisqualified) {
+    const geoTargets = geo.join(", ");
+    return {
+      score: 0,
+      fitLabel: "NOT_SUITABLE",
+      breakdown: { ...breakdown, geography: { score: 0, max: 20, reason: `Targets ${geoTargets} — outside your operational geography` } },
+      explanation: `Geographic mismatch: this opportunity targets ${geoTargets}, which is outside your operational area. Not eligible to apply even with strong thematic fit.`,
+      strengths: [],
+      risks: [`Targets ${geoTargets} — outside your operational geography`],
+      recommendation: "Do not apply. Geographic eligibility criteria exclude your organization.",
+      disqualified: `Outside operational geography (targets ${geoTargets})`,
+    };
+  }
 
   const total = Object.values(breakdown).reduce((sum, d) => sum + d.score, 0);
 

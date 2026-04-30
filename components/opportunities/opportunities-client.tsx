@@ -396,11 +396,37 @@ export function OpportunitiesClient({
                     </td>
                     <td className="py-3 pr-4">
                       {opp.fitLabel ? (
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-700">{opp.suitabilityScore}</span>
-                          <Badge className={FIT_COLORS[opp.fitLabel]} variant="outline">
-                            {FIT_LABELS[opp.fitLabel] ?? opp.fitLabel.replace("_", " ")}
-                          </Badge>
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-slate-700">{opp.suitabilityScore}</span>
+                            <Badge className={FIT_COLORS[opp.fitLabel]} variant="outline">
+                              {FIT_LABELS[opp.fitLabel] ?? opp.fitLabel.replace("_", " ")}
+                            </Badge>
+                          </div>
+                          {(() => {
+                            // Show hard-disqualifier reason if present
+                            const breakdown = opp.scoreBreakdown
+                              ? (() => { try { return JSON.parse(opp.scoreBreakdown as string); } catch { return null; } })()
+                              : null;
+                            const reason = breakdown?._disqualified as string | undefined;
+                            // Also catch expired deadline even if not in breakdown
+                            const isExpired = opp.deadlineDate && new Date(opp.deadlineDate) < new Date();
+                            if (reason) {
+                              return (
+                                <span className="text-xs text-red-500 font-medium leading-tight">
+                                  ⛔ {reason}
+                                </span>
+                              );
+                            }
+                            if (isExpired && opp.fitLabel === "NOT_SUITABLE" && opp.suitabilityScore === 0) {
+                              return (
+                                <span className="text-xs text-red-500 font-medium leading-tight">
+                                  ⛔ Deadline passed
+                                </span>
+                              );
+                            }
+                            return null;
+                          })()}
                         </div>
                       ) : (
                         <span className="text-slate-400 text-xs">Not scored</span>

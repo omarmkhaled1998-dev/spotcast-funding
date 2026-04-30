@@ -263,7 +263,10 @@ export async function processAndSaveOpportunities(
           urgencyLevel: urgency,
           suitabilityScore: scoreResult.score,
           fitLabel: scoreResult.fitLabel,
-          scoreBreakdown: JSON.stringify(scoreResult.breakdown),
+          scoreBreakdown: JSON.stringify({
+            ...scoreResult.breakdown,
+            ...(scoreResult.disqualified ? { _disqualified: scoreResult.disqualified } : {}),
+          }),
           dataConfidence: "IMPORTED",
           foundById: systemUser?.id || null,
           foundAt: new Date(),
