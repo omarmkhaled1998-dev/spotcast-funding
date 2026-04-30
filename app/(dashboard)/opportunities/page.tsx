@@ -35,7 +35,12 @@ export default async function OpportunitiesPage({
     db.opportunity.findMany({
       where,
       include: { donor: true, decision: true },
-      orderBy: [{ urgencyLevel: "asc" }, { deadlineDate: "asc" }],
+      orderBy: [
+        // 1. Highest score first (disqualified score=0 sink to bottom naturally)
+        { suitabilityScore: { sort: "desc", nulls: "last" } },
+        // 2. Closest deadline next (within same score tier)
+        { deadlineDate: { sort: "asc", nulls: "last" } },
+      ],
       take: PAGE_SIZE,
       skip,
     }),
