@@ -89,7 +89,27 @@ const FIT_OPTIONS = [
   { value: "NOT_SUITABLE", label: "Not a fit" },
 ];
 
-interface Filters { status: string; fit: string; q: string }
+const SOURCE_OPTIONS = [
+  { value: "", label: "All sources" },
+  { value: "daleel", label: "الدليل المدني" },
+  { value: "ejn", label: "Earth Journalism Network" },
+  { value: "for9a", label: "فرصة (For9a)" },
+  { value: "manual", label: "Manual / يدوي" },
+];
+
+/** Derive a short source label from externalId / sourceUrl / sourceType */
+function getSourceLabel(opp: OppWithRelations): string {
+  const eid = opp.externalId ?? "";
+  const url = opp.sourceUrl ?? "";
+  if (eid.startsWith("for9a-")) return "فرصة";
+  if (eid.startsWith("ejn-")) return "EJN";
+  if (eid.startsWith("demo:")) return "Demo";
+  if (url.toLowerCase().includes("daleelmadani")) return "الدليل المدني";
+  if (opp.sourceType === "MANUAL") return "Manual";
+  return "";
+}
+
+interface Filters { status: string; fit: string; q: string; source: string }
 
 export function OpportunitiesClient({
   opportunities,
@@ -180,6 +200,7 @@ export function OpportunitiesClient({
       if (merged.q) p.set("q", merged.q);
       if (merged.status) p.set("status", merged.status);
       if (merged.fit) p.set("fit", merged.fit);
+      if (merged.source) p.set("source", merged.source);
       if (merged.page > 1) p.set("page", String(merged.page));
       const qs = p.toString();
       return qs ? `${pathname}?${qs}` : pathname;
@@ -326,7 +347,16 @@ export function OpportunitiesClient({
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
-        {(filters.q || filters.status || filters.fit) && (
+        <select
+          value={filters.source}
+          onChange={(e) => handleFilterChange("source", e.target.value)}
+          className="rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:outline-none"
+        >
+          {SOURCE_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+        {(filters.q || filters.status || filters.fit || filters.source) && (
           <button
             onClick={() => router.push(pathname)}
             className="text-xs text-slate-500 hover:text-red-500 transition-colors"
@@ -361,6 +391,7 @@ export function OpportunitiesClient({
               <tr className="border-b border-slate-200">
                 <th className="text-left py-2 pr-4 font-medium text-slate-500 text-xs uppercase tracking-wider">Title</th>
                 <th className="text-left py-2 pr-4 font-medium text-slate-500 text-xs uppercase tracking-wider">Donor</th>
+                <th className="text-left py-2 pr-4 font-medium text-slate-500 text-xs uppercase tracking-wider">Source</th>
                 <th className="text-left py-2 pr-4 font-medium text-slate-500 text-xs uppercase tracking-wider">Deadline</th>
                 <th className="text-left py-2 pr-4 font-medium text-slate-500 text-xs uppercase tracking-wider">Score</th>
                 <th className="text-left py-2 pr-4 font-medium text-slate-500 text-xs uppercase tracking-wider">Status</th>
@@ -401,6 +432,17 @@ export function OpportunitiesClient({
                       ) : (
                         <span className="text-slate-400">—</span>
                       )}
+                    </td>
+                    <td className="py-3 pr-4">
+                      {(() => {
+                        const label = getSourceLabel(opp);
+                        if (!label) return <span className="text-slate-400">—</span>;
+                        return (
+                          <span className="text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
+                            {label}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="py-3 pr-4">
                       {opp.deadlineDate ? (
