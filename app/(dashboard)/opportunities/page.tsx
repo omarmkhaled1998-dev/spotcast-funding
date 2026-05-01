@@ -31,20 +31,11 @@ export default async function OpportunitiesPage({
   if (fit) where.fitLabel = fit;
   if (q) where.title = { contains: q, mode: "insensitive" };
 
-  const [opportunities, total, donors, realOppCount] = await Promise.all([
+  const [allOpportunities, donors, realOppCount] = await Promise.all([
     db.opportunity.findMany({
       where,
       include: { donor: true, decision: true },
-      orderBy: [
-        // 1. Highest score first (disqualified score=0 sink to bottom naturally)
-        { suitabilityScore: { sort: "desc", nulls: "last" } },
-        // 2. Closest deadline next (within same score tier)
-        { deadlineDate: { sort: "asc", nulls: "last" } },
-      ],
-      take: PAGE_SIZE,
-      skip,
     }),
-    db.opportunity.count({ where }),
     db.donor.findMany({
       where: { workspaceId },
       select: { id: true, name: true },
@@ -55,6 +46,27 @@ export default async function OpportunitiesPage({
       where: { workspaceId, NOT: { externalId: { startsWith: "demo:" } } },
     }),
   ]);
+
+  // In-memory sort: stale no-deadline opps (published >30 days ago) sink to bottom
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const sorted = [...allOpportunities].sort((a, b) => {
+    const aStale = !a.deadlineDate && !!a.foundAt && a.foundAt < thirtyDaysAgo;
+    const bStale = !b.deadlineDate && !!b.foundAt && b.foundAt < thirtyDaysAgo;
+    // Stale opps always go after non-stale
+    if (aStale && !bStale) return 1;
+    if (!aStale && bStale) return -1;
+    // Within same group: highest score first
+    const scoreA = a.suitabilityScore ?? -1;
+    const scoreB = b.suitabilityScore ?? -1;
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    // Tie-break: closest deadline first (null deadline goes last)
+    const dateA = a.deadlineDate ? a.deadlineDate.getTime() : Infinity;
+    const dateB = b.deadlineDate ? b.deadlineDate.getTime() : Infinity;
+    return dateA - dateB;
+  });
+
+  const total = sorted.length;
+  const opportunities = sorted.slice(skip, skip + PAGE_SIZE);
 
   const showDemoBanner = realOppCount === 0 && total > 0;
 
