@@ -1,201 +1,49 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
+import { SpotCastLogo } from "@/components/hub/SpotCastLogo";
 
-/* ─── Data ─────────────────────────────────────────────────────── */
+const Building3D = dynamic(() => import("@/components/hub/Building3D"), { ssr: false });
+
+/* ─── Data ─────────────────────────────────────────────────── */
 
 const GALLERY = [
-  {
-    id: "exterior",
-    label: "Exterior Rendering",
-    caption:
-      "Full building facade with solar roof, perimeter wall, olive-tree plaza, and custom signage finish",
-    src: "/gallery/exterior.png",
-    fallbackGradient: "linear-gradient(135deg, #1a1208 0%, #0e0c0a 100%)",
-    fallbackAccent: "#d4832a",
-  },
-  {
-    id: "design-process",
-    label: "Design Process & Site Analysis",
-    caption:
-      "Berqayel site map, 3D massing iterations, material exploration, and facade detail development",
-    src: "/gallery/design-process.png",
-    fallbackGradient: "linear-gradient(135deg, #0f1a12 0%, #0e0c0a 100%)",
-    fallbackAccent: "#5a8a40",
-  },
-  {
-    id: "ground-floor",
-    label: "Ground Floor — Community",
-    caption:
-      "Café, multi-purpose event hall, reception, and direct access to outdoor garden plaza",
-    src: "/gallery/ground-floor.png",
-    fallbackGradient: "linear-gradient(135deg, #14100c 0%, #0e0c0a 100%)",
-    fallbackAccent: "#c07828",
-  },
-  {
-    id: "first-floor",
-    label: "1st Floor — Work",
-    caption:
-      "Co-working space, meeting room with large conference table, and 10 private offices in two corridors",
-    src: "/gallery/first-floor.png",
-    fallbackGradient: "linear-gradient(135deg, #0c1018 0%, #0e0c0a 100%)",
-    fallbackAccent: "#4060a0",
-  },
-  {
-    id: "second-floor",
-    label: "2nd Floor — Media",
-    caption:
-      "Black radio studio, podcast studios, control room, editing suites, and director's suite",
-    src: "/gallery/second-floor.png",
-    fallbackGradient: "linear-gradient(135deg, #100c18 0%, #0e0c0a 100%)",
-    fallbackAccent: "#6040a0",
-  },
-  {
-    id: "floor-plans",
-    label: "Floor Plans (2D)",
-    caption:
-      "Annotated ground, first, and second floor plans with room labels on A–D structural grid",
-    src: "/gallery/floor-plans.png",
-    fallbackGradient: "linear-gradient(135deg, #181410 0%, #0e0c0a 100%)",
-    fallbackAccent: "#8a8070",
-  },
+  { id: "exterior", label: "Exterior Rendering", caption: "Full building facade with solar roof, perimeter wall, olive-tree plaza & custom gold signage", src: "/gallery/exterior.png" },
+  { id: "design-process", label: "Design Process & Site Analysis", caption: "Berqayel site map, 3D massing iterations & material exploration", src: "/gallery/design-process.png" },
+  { id: "ground-floor", label: "Ground Floor — Community", caption: "Café, event hall, reception & direct garden access — 2D plan + 3D view", src: "/gallery/ground-floor.png" },
+  { id: "first-floor", label: "1st Floor — Work", caption: "Co-working space, meeting room & 10 private offices", src: "/gallery/first-floor.png" },
+  { id: "second-floor", label: "2nd Floor — Media", caption: "Broadcast radio studio, podcast studios, editing suites & director's suite", src: "/gallery/second-floor.png" },
+  { id: "floor-plans", label: "Floor Plans (2D)", caption: "Annotated ground, first & second floor plans on A–D structural grid", src: "/gallery/floor-plans.png" },
 ];
 
-const BUILDING_FLOORS = [
-  {
-    label: "Roof",
-    tag: "Solar & Broadcast",
-    color: "#d4832a",
-    items: [
-      "Solar PV panels + Battery ESS",
-      "Radio broadcast antenna",
-      "HVAC units",
-      "Technical access",
-    ],
-    height: 44,
-  },
-  {
-    label: "2nd Floor",
-    tag: "Media Production",
-    color: "#b87828",
-    items: [
-      "Radio studio (broadcast-quality)",
-      "Podcast & video studios",
-      "Editing suites & control room",
-      "Director's office with private facilities",
-    ],
-    height: 58,
-  },
-  {
-    label: "1st Floor",
-    tag: "Work & Co-Working",
-    color: "#a06820",
-    items: [
-      "10 private offices",
-      "Co-working space",
-      "Meeting room & Black Box room",
-      "Kitchen & WC",
-    ],
-    height: 58,
-  },
-  {
-    label: "Ground Floor",
-    tag: "Community",
-    color: "#885818",
-    items: [
-      "Multi-purpose event hall (~60 seats)",
-      "Café (vegan & GF options)",
-      "Reception & main entrance",
-      "Garden & outdoor access",
-    ],
-    height: 58,
-  },
-  {
-    label: "Basement B1",
-    tag: "Services & Parking",
-    color: "#704810",
-    items: [
-      "Parking: 20–30 cars (RFID gates)",
-      "Server & IT infrastructure",
-      "Electrical distribution & battery storage",
-      "Archives & maintenance",
-    ],
-    height: 52,
-  },
-  {
-    label: "Basement B2",
-    tag: "Safe & Confidential",
-    color: "#583808",
-    items: [
-      "Psychosocial support rooms",
-      "SRHR program delivery spaces",
-      "Case management offices",
-      "Fully confidential — no CCTV inside",
-    ],
-    height: 52,
-  },
+const PILLARS = [
+  { icon: "📡", title: "Media Production", desc: "Broadcast-quality studios for radio, podcast & video — serving independent journalists and community media across Akkar" },
+  { icon: "🌱", title: "Youth Empowerment", desc: "Trainings, workshops & mentorship programs tailored for young people in North Lebanon's most underserved region" },
+  { icon: "🤝", title: "NGO Field Presence", desc: "Secure, professional offices for UN agencies, INGOs & local civil society organizations" },
+  { icon: "🔐", title: "Safe & Confidential Services", desc: "SRHR, psychosocial support & private consultations — meeting international donor security standards" },
 ];
 
 const SUSTAINABILITY = [
-  {
-    icon: "☀️",
-    title: "Solar Energy",
-    desc: "Rooftop PV + Battery ESS + backup generator for 24/7 continuity — eliminating dependence on Lebanon's unreliable grid",
-  },
-  {
-    icon: "💡",
-    title: "Smart Lighting",
-    desc: "Full LED system with occupancy sensors and smart control — dramatically reducing energy consumption",
-  },
-  {
-    icon: "💧",
-    title: "Water Harvesting",
-    desc: "Rainwater collection system for irrigation and cleaning — addressing Akkar's seasonal water scarcity",
-  },
-  {
-    icon: "🌬️",
-    title: "Bioclimatic Design",
-    desc: "Natural shading, cross-ventilation, and low-carbon local materials woven into the architectural form",
-  },
-  {
-    icon: "🌡️",
-    title: "Reduced HVAC Load",
-    desc: "Recessed facades and high-performance Low-E glass cut direct glare and thermal gain significantly",
-  },
-  {
-    icon: "🎯",
-    title: "Net-Zero Target",
-    desc: "Operational carbon net-zero goal — designed as a replicable demonstration model for the region",
-  },
+  { icon: "☀️", title: "Solar Energy", desc: "Rooftop PV + Battery ESS + backup generator for 24/7 continuity — eliminating grid dependence" },
+  { icon: "💡", title: "Smart Lighting", desc: "Full LED with occupancy sensors & smart control — dramatically reducing energy consumption" },
+  { icon: "💧", title: "Water Harvesting", desc: "Rainwater collection for irrigation & cleaning — addressing Akkar's seasonal water scarcity" },
+  { icon: "🌬️", title: "Bioclimatic Design", desc: "Natural shading, cross-ventilation & low-carbon local materials woven into the architecture" },
+  { icon: "🌡️", title: "Reduced HVAC Load", desc: "Recessed facades & high-performance Low-E glass cut direct glare and thermal gain significantly" },
+  { icon: "🎯", title: "Net-Zero Target", desc: "Operational carbon net-zero goal — a replicable demonstration model for the region" },
 ];
 
 const SECURITY = [
-  {
-    icon: "🔒",
-    title: "Physical Security",
-    desc: "Full perimeter wall, controlled entry/exit gates, and security guard posts",
-  },
-  {
-    icon: "🪪",
-    title: "Access Control",
-    desc: "RFID/Smart Card system, tiered floor-by-zone access, visitor logging",
-  },
-  {
-    icon: "📷",
-    title: "CCTV Coverage",
-    desc: "Full public-area coverage (entrances, parking, corridors) — NO cameras inside confidential zones",
-  },
-  {
-    icon: "🖥️",
-    title: "Central Control Room",
-    desc: "Live monitoring, recorded storage, systems management, ACTS Codes compliance, and SOPs",
-  },
+  { icon: "🔒", title: "Physical Security", desc: "Full perimeter wall, controlled entry/exit gates & security guard posts" },
+  { icon: "🪪", title: "Access Control", desc: "RFID/Smart Card system with tiered floor-by-zone access & visitor logging" },
+  { icon: "📷", title: "CCTV Coverage", desc: "Full public-area coverage — NO cameras inside confidential zones" },
+  { icon: "🖥️", title: "Central Control Room", desc: "Live monitoring, recorded storage, systems management & ACTS Codes compliance" },
 ];
 
 const REVENUE = [
-  { n: "01", title: "Event Hall Rentals", desc: "NGO conferences, trainings, community events" },
+  { n: "01", title: "Event Hall Rentals", desc: "NGO conferences, trainings & community events" },
   { n: "02", title: "Co-Working & Office Leasing", desc: "Long & short-term desk and office leases" },
-  { n: "03", title: "Media Production Services", desc: "Studio, equipment, and production rental" },
+  { n: "03", title: "Media Production Services", desc: "Studio, equipment & production rental" },
   { n: "04", title: "Café Operations", desc: "Daily community revenue — vegan & GF options" },
   { n: "05", title: "Naming Rights & Partnerships", desc: "Rooms, studios, floors — CSR partnerships" },
   { n: "06", title: "Safe Room Hosting", desc: "INGO partnership revenue (UN, IRC, UNFPA)" },
@@ -211,264 +59,69 @@ const SDGS = [
   { n: "17", label: "Partnerships" },
 ];
 
-const PILLARS = [
-  {
-    icon: "📡",
-    title: "Media Production",
-    desc: "Broadcast-quality studios for radio, podcast, and video — serving independent journalists and community media across Akkar",
-  },
-  {
-    icon: "🌱",
-    title: "Youth Empowerment",
-    desc: "Trainings, workshops, and mentorship programs tailored for young people in North Lebanon's most underserved region",
-  },
-  {
-    icon: "🤝",
-    title: "NGO Field Presence",
-    desc: "Secure, professional offices and co-working for UN agencies, INGOs, and local civil society organizations",
-  },
-  {
-    icon: "🔐",
-    title: "Safe & Confidential Services",
-    desc: "SRHR, psychosocial support, and private consultations — meeting international donor security and data-protection standards",
-  },
-];
+/* ─── Shared styles ────────────────────────────────────────── */
+const NAVY = "#0e2334";
+const PINK = "#dd7c99";
+const GRAY = "#839ba3";
+const LIGHT = "#f5f3f0";
 
-/* ─── Components ─────────────────────────────────────────────── */
-
-function AmberDivider({ label }: { label?: string }) {
-  return (
-    <div className="flex items-center gap-4 py-2">
-      <div className="flex-1" style={{ height: "1px", background: "#2a2520" }} />
-      <span
-        className="flex items-center gap-2 text-xs tracking-widest"
-        style={{ fontFamily: "monospace", color: "#d4832a" }}
-      >
-        <span>◆</span>
-        {label && (
-          <span style={{ color: "#8a8070" }} className="tracking-widest">
-            {label}
-          </span>
-        )}
-        <span>◆</span>
-      </span>
-      <div className="flex-1" style={{ height: "1px", background: "#2a2520" }} />
-    </div>
-  );
-}
-
-function Building3D() {
-  const [activeFloor, setActiveFloor] = useState<number | null>(null);
-
-  return (
-    <div className="flex flex-col items-center">
-      <div style={{ perspective: "900px", perspectiveOrigin: "50% 45%" }} className="w-full">
-        <div
-          style={{
-            transformStyle: "preserve-3d",
-            transform: "rotateX(18deg) rotateY(-18deg)",
-            margin: "0 auto",
-            maxWidth: "340px",
-          }}
-        >
-          {BUILDING_FLOORS.map((floor, i) => {
-            const isActive = activeFloor === i;
-            return (
-              <div
-                key={floor.label}
-                onMouseEnter={() => setActiveFloor(i)}
-                onMouseLeave={() => setActiveFloor(null)}
-                style={{
-                  height: `${floor.height}px`,
-                  background: isActive
-                    ? `linear-gradient(90deg, ${floor.color}28 0%, ${floor.color}10 100%)`
-                    : i === 0
-                    ? "#1e1a12"
-                    : "#14100c",
-                  borderTop: `1px solid ${isActive ? floor.color : "#2a2520"}`,
-                  borderLeft: `3px solid ${floor.color}${isActive ? "ff" : "50"}`,
-                  borderRight: `1px solid ${isActive ? floor.color + "60" : "#1e1a16"}`,
-                  paddingLeft: "14px",
-                  paddingRight: "14px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  cursor: "pointer",
-                  transition: "background 0.18s ease, border-color 0.18s ease",
-                }}
-              >
-                <span
-                  style={{
-                    color: isActive ? floor.color : "#4a4540",
-                    fontSize: "10px",
-                    fontFamily: "monospace",
-                    letterSpacing: "0.08em",
-                    fontWeight: isActive ? "700" : "400",
-                    transition: "color 0.18s",
-                  }}
-                >
-                  {floor.label}
-                </span>
-                <span
-                  style={{
-                    color: isActive ? "#c8c0b0" : "#2e2a24",
-                    fontSize: "10px",
-                    fontFamily: "monospace",
-                    transition: "color 0.18s",
-                  }}
-                >
-                  {floor.tag}
-                </span>
-              </div>
-            );
-          })}
-          {/* Base */}
-          <div
-            style={{
-              height: "8px",
-              background: "#1e1a12",
-              borderBottom: "2px solid #3a3020",
-              borderLeft: "3px solid #3a3020",
-              borderRight: "1px solid #2a2520",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Active floor detail */}
-      <div
-        style={{
-          minHeight: "88px",
-          opacity: activeFloor !== null ? 1 : 0,
-          transition: "opacity 0.18s",
-          marginTop: "20px",
-          width: "100%",
-          maxWidth: "340px",
-        }}
-      >
-        {activeFloor !== null && (
-          <div
-            className="rounded p-4"
-            style={{ border: `1px solid ${BUILDING_FLOORS[activeFloor].color}40`, background: "#12100e" }}
-          >
-            <p
-              className="text-xs tracking-widest mb-2"
-              style={{ fontFamily: "monospace", color: BUILDING_FLOORS[activeFloor].color }}
-            >
-              ◆ {BUILDING_FLOORS[activeFloor].tag.toUpperCase()}
-            </p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-              {BUILDING_FLOORS[activeFloor].items.map((item) => (
-                <p key={item} className="text-xs" style={{ color: "#8a8070" }}>
-                  — {item}
-                </p>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
+/* ─── Gallery ──────────────────────────────────────────────── */
 function Gallery() {
   const [active, setActive] = useState(0);
-  const [imgError, setImgError] = useState<Record<number, boolean>>({});
-
-  const current = GALLERY[active];
-  const hasImage = !imgError[active];
+  const [errored, setErrored] = useState<Record<number, boolean>>({});
+  const cur = GALLERY[active];
 
   return (
-    <div className="space-y-4">
-      {/* Main display */}
+    <div className="space-y-3">
       <div
-        className="relative w-full rounded-lg overflow-hidden"
-        style={{
-          aspectRatio: "16/9",
-          border: "1px solid #2a2520",
-          background: current.fallbackGradient,
-        }}
+        className="relative w-full rounded-xl overflow-hidden"
+        style={{ aspectRatio: "16/9", background: NAVY }}
       >
-        {hasImage && (
+        {!errored[active] && (
           <img
             key={active}
-            src={current.src}
-            alt={current.label}
-            onError={() => setImgError((prev) => ({ ...prev, [active]: true }))}
+            src={cur.src}
+            alt={cur.label}
+            onError={() => setErrored((p) => ({ ...p, [active]: true }))}
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}
-
-        {/* Label overlay — always visible */}
         <div
-          className="absolute bottom-0 left-0 right-0 p-5"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(14,12,10,0.92) 0%, rgba(14,12,10,0.4) 70%, transparent 100%)",
-          }}
+          className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-10"
+          style={{ background: "linear-gradient(to top, rgba(14,35,52,0.95) 0%, transparent 100%)" }}
         >
-          <p
-            className="text-xs tracking-widest uppercase mb-1"
-            style={{ fontFamily: "monospace", color: current.fallbackAccent }}
-          >
-            ◆ {String(active + 1).padStart(2, "0")} / {GALLERY.length} — {current.label}
+          <p className="text-xs mb-1" style={{ color: PINK, fontFamily: "monospace" }}>
+            {String(active + 1).padStart(2, "0")} / {GALLERY.length} — {cur.label}
           </p>
-          <p className="text-sm" style={{ color: "#c8c0b0" }}>
-            {current.caption}
-          </p>
+          <p className="text-sm text-white">{cur.caption}</p>
         </div>
-
-        {/* Fallback illustration when no image */}
-        {!hasImage && (
+        {errored[active] && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center px-8">
-              <p
-                className="text-4xl font-bold mb-2"
-                style={{ fontFamily: "monospace", color: current.fallbackAccent + "30" }}
-              >
-                {String(active + 1).padStart(2, "0")}
-              </p>
-              <p
-                className="text-xs tracking-widest"
-                style={{ fontFamily: "monospace", color: "#2e2a24" }}
-              >
-                [ architectural drawing ]
-              </p>
-            </div>
+            <p className="text-4xl font-bold" style={{ color: "rgba(221,124,153,0.15)", fontFamily: "monospace" }}>
+              {String(active + 1).padStart(2, "0")}
+            </p>
           </div>
         )}
       </div>
 
-      {/* Thumbnail strip */}
       <div className="grid grid-cols-6 gap-2">
         {GALLERY.map((item, i) => (
           <button
             key={item.id}
             onClick={() => setActive(i)}
-            className="relative rounded overflow-hidden"
-            style={{
-              aspectRatio: "4/3",
-              border: `1px solid ${active === i ? "#d4832a" : "#2a2520"}`,
-              background: item.fallbackGradient,
-              transition: "border-color 0.15s",
-            }}
+            className="relative rounded-lg overflow-hidden transition-all"
+            style={{ aspectRatio: "4/3", border: `2px solid ${active === i ? PINK : "transparent"}`, background: NAVY }}
           >
-            {!imgError[i] && (
+            {!errored[i] && (
               <img
                 src={item.src}
                 alt={item.label}
-                onError={() => setImgError((prev) => ({ ...prev, [i]: true }))}
-                className="absolute inset-0 w-full h-full object-cover"
+                onError={() => setErrored((p) => ({ ...p, [i]: true }))}
+                className="absolute inset-0 w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity"
               />
             )}
-            <div
-              className="absolute inset-0 flex items-center justify-center"
-              style={{ background: active === i ? "transparent" : "rgba(14,12,10,0.4)" }}
-            >
-              <span
-                className="text-xs font-bold"
-                style={{ fontFamily: "monospace", color: active === i ? "#d4832a" : "#4a4540" }}
-              >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-xs font-bold" style={{ fontFamily: "monospace", color: active === i ? PINK : GRAY }}>
                 {String(i + 1).padStart(2, "0")}
               </span>
             </div>
@@ -479,571 +132,270 @@ function Gallery() {
   );
 }
 
-/* ─── Page ──────────────────────────────────────────────────────── */
+/* ─── Pink divider ─────────────────────────────────────────── */
+function Divider({ label }: { label?: string }) {
+  return (
+    <div className="flex items-center gap-3 my-2">
+      <div className="flex-1 h-px" style={{ background: `${PINK}30` }} />
+      {label && (
+        <span className="text-xs tracking-widest uppercase" style={{ color: PINK, fontFamily: "monospace" }}>
+          {label}
+        </span>
+      )}
+      <div className="flex-1 h-px" style={{ background: `${PINK}30` }} />
+    </div>
+  );
+}
 
+/* ─── Page ─────────────────────────────────────────────────── */
 export default function SpotCastHubPage() {
   return (
-    <div style={{ background: "#0e0c0a", color: "#e8e0d0", minHeight: "100vh" }}>
-      {/* ── Nav ─────────────────────────────────────────────────── */}
+    <div className="min-h-screen" style={{ background: "#fff", color: NAVY }}>
+
+      {/* ── Nav ────────────────────────────────────────────── */}
       <header
         className="sticky top-0 z-50 backdrop-blur-sm"
-        style={{ borderBottom: "1px solid #1e1a16", background: "rgba(14,12,10,0.92)" }}
+        style={{ background: "rgba(255,255,255,0.95)", borderBottom: `1px solid ${PINK}22` }}
       >
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
-            <div
-              className="flex items-center justify-center rounded"
-              style={{ width: 32, height: 32, background: "#d4832a" }}
-            >
-              <span
-                className="text-xs font-bold"
-                style={{ fontFamily: "monospace", color: "#0e0c0a" }}
-              >
-                SC
-              </span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span
-                className="text-sm font-bold"
-                style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-              >
-                SpotCast
-              </span>
-              <span
-                className="hidden text-xs md:inline"
-                style={{ fontFamily: "monospace", color: "#4a4540" }}
-              >
-                Community &amp; Media Hub
-              </span>
+            <SpotCastLogo size={38} variant="color" />
+            <div>
+              <p className="text-sm font-bold leading-tight" style={{ color: NAVY }}>Spot Cast Platform</p>
+              <p className="text-xs leading-tight" style={{ color: GRAY, fontFamily: "monospace" }}>Community & Media Hub</p>
             </div>
           </div>
 
-          <nav
-            className="hidden items-center gap-6 md:flex"
-            style={{ fontFamily: "monospace", fontSize: "11px", color: "#6a6060" }}
-          >
-            {[
-              ["#vision", "Vision"],
-              ["#gallery", "Drawings"],
-              ["#building", "Building"],
-              ["#sustainability", "Sustainability"],
-              ["#location", "Location"],
-              ["#support", "Support"],
-            ].map(([href, label]) => (
-              <a
-                key={href}
-                href={href}
-                className="transition-colors"
-                style={{ color: "#6a6060" }}
-                onMouseOver={(e) => (e.currentTarget.style.color = "#d4832a")}
-                onMouseOut={(e) => (e.currentTarget.style.color = "#6a6060")}
-              >
-                {label}
-              </a>
+          <nav className="hidden items-center gap-6 md:flex" style={{ fontFamily: "monospace", fontSize: "12px", color: GRAY }}>
+            {[["#vision","Vision"],["#gallery","Drawings"],["#sustainability","Sustainability"],["#location","Location"],["#support","Support"]].map(([h,l]) => (
+              <a key={h} href={h} className="transition-colors hover:text-[#dd7c99]" style={{ color: GRAY }}>{l}</a>
             ))}
           </nav>
 
           <a
             href="#support"
-            className="rounded px-4 py-2 text-xs font-bold transition-opacity hover:opacity-90"
-            style={{ fontFamily: "monospace", background: "#d4832a", color: "#0e0c0a" }}
+            className="rounded-full px-5 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            style={{ background: PINK }}
           >
             Support the Project
           </a>
         </div>
       </header>
 
-      {/* ── Hero ────────────────────────────────────────────────── */}
-      <section className="px-6 py-20 md:py-28">
-        <div className="mx-auto grid max-w-6xl items-center gap-16 md:grid-cols-2">
-          {/* Text */}
-          <div>
-            <p
-              className="mb-6 text-xs uppercase tracking-widest"
-              style={{ fontFamily: "monospace", color: "#d4832a" }}
-            >
-              ◆ Berqayel, Akkar · North Lebanon · Est. 2022
-            </p>
+      {/* ── Hero ───────────────────────────────────────────── */}
+      <section style={{ background: NAVY, minHeight: "92vh" }} className="flex items-center px-6 py-16">
+        <div className="mx-auto w-full max-w-6xl grid gap-8 md:grid-cols-2 items-center">
 
-            <h1
-              className="mb-6 text-5xl font-bold leading-tight md:text-6xl"
-              style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-            >
-              A Hub for
-              <br />
-              <span style={{ color: "#d4832a" }}>Community,</span>
-              <br />
+          {/* Text */}
+          <div className="text-white">
+            <p className="mb-4 text-xs tracking-widest uppercase" style={{ color: PINK, fontFamily: "monospace" }}>
+              Berqayel, Akkar · North Lebanon · Est. 2022
+            </p>
+            <h1 className="text-5xl font-bold leading-tight mb-2 md:text-6xl" style={{ fontFamily: "Georgia, serif" }}>
+              Building a Hub
+            </h1>
+            <h1 className="text-5xl font-bold leading-tight mb-6 md:text-6xl" style={{ fontFamily: "Georgia, serif" }}>
+              for <span style={{ color: PINK }}>Community,</span><br />
               Media &amp; Impact.
             </h1>
-
-            <p className="mb-8 max-w-md text-sm leading-relaxed" style={{ color: "#8a8070" }}>
+            <p className="mb-8 text-base leading-relaxed max-w-md" style={{ color: GRAY }}>
               SpotCast is building a 6-level integrated community and media center in Akkar —
-              designed to international donor standards, with broadcast studios, co-working space,
-              confidential support services, and net-zero energy systems.
+              designed to international donor standards with broadcast studios, co-working,
+              confidential support services &amp; net-zero energy systems.
             </p>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap gap-3 mb-10">
               <a
                 href="#support"
-                className="rounded px-6 py-3 text-sm font-bold transition-opacity hover:opacity-90"
-                style={{ fontFamily: "monospace", background: "#d4832a", color: "#0e0c0a" }}
+                className="rounded-full px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                style={{ background: PINK }}
               >
-                Support the Project ◆
+                Support the Project
               </a>
               <a
                 href="#gallery"
-                className="rounded border px-6 py-3 text-sm transition-colors"
-                style={{
-                  fontFamily: "monospace",
-                  borderColor: "#2a2520",
-                  color: "#8a8070",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = "#d4832a";
-                  e.currentTarget.style.color = "#d4832a";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = "#2a2520";
-                  e.currentTarget.style.color = "#8a8070";
-                }}
+                className="rounded-full px-6 py-3 text-sm font-semibold transition-colors"
+                style={{ border: `1px solid ${GRAY}`, color: GRAY }}
+                onMouseOver={(e) => { e.currentTarget.style.borderColor = PINK; e.currentTarget.style.color = PINK; }}
+                onMouseOut={(e) => { e.currentTarget.style.borderColor = GRAY; e.currentTarget.style.color = GRAY; }}
               >
                 View Drawings
               </a>
             </div>
 
-            <div className="mt-10 grid grid-cols-3 gap-4">
-              {[
-                { n: "6", label: "Floors" },
-                { n: "1,000m²", label: "Site Area" },
-                { n: "4", label: "Strategic Pillars" },
-              ].map(({ n, label }) => (
-                <div key={label}>
-                  <p
-                    className="text-2xl font-bold"
-                    style={{ fontFamily: "Georgia, serif", color: "#d4832a" }}
-                  >
-                    {n}
-                  </p>
-                  <p
-                    className="text-xs tracking-wider"
-                    style={{ fontFamily: "monospace", color: "#6a6060" }}
-                  >
-                    {label}
-                  </p>
+            <div className="grid grid-cols-3 gap-4">
+              {[{ n: "6", l: "Floors" }, { n: "1,000m²", l: "Site Area" }, { n: "4", l: "Pillars" }].map(({ n, l }) => (
+                <div key={l}>
+                  <p className="text-2xl font-bold" style={{ color: PINK, fontFamily: "Georgia, serif" }}>{n}</p>
+                  <p className="text-xs tracking-wider" style={{ color: GRAY, fontFamily: "monospace" }}>{l}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* 3D Building */}
-          <Building3D />
+          <div className="rounded-2xl overflow-hidden" style={{ background: "#0a1825", height: 520 }}>
+            <Building3D />
+          </div>
         </div>
       </section>
 
-      {/* ── Vision ──────────────────────────────────────────────── */}
-      <section id="vision" className="px-6 py-20" style={{ background: "#0a0906" }}>
+      {/* ── Vision ─────────────────────────────────────────── */}
+      <section id="vision" className="py-20 px-6" style={{ background: LIGHT }}>
         <div className="mx-auto max-w-6xl">
-          <AmberDivider label="VISION" />
-
-          <div className="mx-auto max-w-3xl py-14 text-center">
-            <p
-              className="mb-4 text-xs uppercase tracking-widest"
-              style={{ fontFamily: "monospace", color: "#6a6060" }}
-            >
-              Positioning Statement
-            </p>
-            <blockquote
-              className="text-xl leading-relaxed md:text-2xl"
-              style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-            >
+          <Divider label="Vision" />
+          <div className="mx-auto max-w-3xl py-12 text-center">
+            <blockquote className="text-xl md:text-2xl font-medium leading-relaxed" style={{ fontFamily: "Georgia, serif", color: NAVY }}>
               &ldquo;The SpotCast Hub is designed not only as a media production space, but as a
               secure, sustainable, and fully equipped community infrastructure that can host programs
-              related to media, civic engagement, and sensitive social support services in
-              Akkar.&rdquo;
+              related to media, civic engagement, and sensitive social support services in Akkar.&rdquo;
             </blockquote>
           </div>
-
           <div className="grid gap-5 md:grid-cols-4">
             {PILLARS.map(({ icon, title, desc }) => (
-              <div
-                key={title}
-                className="rounded-lg p-6"
-                style={{ border: "1px solid #2a2520", background: "#0e0c0a" }}
-              >
-                <p className="mb-3 text-2xl">{icon}</p>
-                <h3
-                  className="mb-2 text-sm font-bold"
-                  style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-                >
-                  {title}
-                </h3>
-                <p className="text-xs leading-relaxed" style={{ color: "#6a6060" }}>
-                  {desc}
-                </p>
+              <div key={title} className="rounded-xl p-6 bg-white" style={{ boxShadow: `0 2px 16px ${NAVY}10`, border: `1px solid ${PINK}22` }}>
+                <p className="text-3xl mb-3">{icon}</p>
+                <h3 className="text-sm font-bold mb-2" style={{ color: NAVY }}>{title}</h3>
+                <p className="text-xs leading-relaxed" style={{ color: GRAY }}>{desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Gallery ─────────────────────────────────────────────── */}
-      <section id="gallery" className="px-6 py-20">
+      {/* ── Gallery ────────────────────────────────────────── */}
+      <section id="gallery" className="py-20 px-6">
         <div className="mx-auto max-w-5xl">
-          <AmberDivider label="ARCHITECTURAL DRAWINGS" />
-
-          <div className="my-12 text-center">
-            <h2
-              className="mb-4 text-3xl font-bold md:text-4xl"
-              style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-            >
-              Designed for Purpose
-            </h2>
-            <p className="mx-auto max-w-xl text-sm" style={{ color: "#6a6060" }}>
-              Six levels of thoughtfully designed space — from broadcast studios to confidential
-              support rooms, community café to rooftop solar array.
-            </p>
+          <Divider label="Architectural Drawings" />
+          <div className="text-center my-10">
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Designed for Purpose</h2>
+            <p className="text-sm max-w-xl mx-auto" style={{ color: GRAY }}>Six levels of thoughtfully designed space — from broadcast studios to confidential support rooms.</p>
           </div>
-
           <Gallery />
         </div>
       </section>
 
-      {/* ── Floor by Floor ──────────────────────────────────────── */}
-      <section id="building" className="px-6 py-20" style={{ background: "#0a0906" }}>
+      {/* ── Sustainability ─────────────────────────────────── */}
+      <section id="sustainability" className="py-20 px-6" style={{ background: NAVY }}>
         <div className="mx-auto max-w-6xl">
-          <AmberDivider label="FLOOR BY FLOOR" />
-
-          <div className="my-12 text-center">
-            <h2
-              className="mb-4 text-3xl font-bold md:text-4xl"
-              style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-            >
-              Six Levels of Impact
-            </h2>
+          <Divider label="Sustainability" />
+          <div className="text-center my-10">
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl text-white" style={{ fontFamily: "Georgia, serif" }}>Net-Zero by Design</h2>
+            <p className="text-sm max-w-xl mx-auto" style={{ color: GRAY }}>A demonstration model for sustainable community infrastructure — built for Lebanon&apos;s energy reality and designed to outlast it.</p>
           </div>
-
-          <div className="space-y-2">
-            {BUILDING_FLOORS.map((floor) => (
-              <div
-                key={floor.label}
-                className="group flex items-start gap-6 rounded-lg p-5 transition-all"
-                style={{ border: "1px solid #2a2520", background: "#0e0c0a" }}
-                onMouseOver={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.borderColor = floor.color + "60";
-                }}
-                onMouseOut={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.borderColor = "#2a2520";
-                }}
-              >
-                <div
-                  className="w-3 shrink-0 rounded-full"
-                  style={{ background: floor.color, minHeight: "16px", marginTop: "2px" }}
-                />
-                <div className="flex-1">
-                  <div className="mb-1 flex items-baseline gap-3">
-                    <h3
-                      className="text-sm font-bold"
-                      style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-                    >
-                      {floor.label}
-                    </h3>
-                    <span
-                      className="text-xs tracking-wider"
-                      style={{ fontFamily: "monospace", color: floor.color }}
-                    >
-                      {floor.tag}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-x-5 gap-y-0.5">
-                    {floor.items.map((item) => (
-                      <p key={item} className="text-xs" style={{ color: "#6a6060" }}>
-                        — {item}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Sustainability ───────────────────────────────────────── */}
-      <section id="sustainability" className="px-6 py-20">
-        <div className="mx-auto max-w-6xl">
-          <AmberDivider label="SUSTAINABILITY" />
-
-          <div className="my-12 text-center">
-            <h2
-              className="mb-4 text-3xl font-bold md:text-4xl"
-              style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-            >
-              Net-Zero by Design
-            </h2>
-            <p className="mx-auto max-w-xl text-sm" style={{ color: "#6a6060" }}>
-              A demonstration model for sustainable community infrastructure — built for Lebanon&apos;s
-              energy reality and designed to outlast it.
-            </p>
-          </div>
-
           <div className="grid gap-5 md:grid-cols-3">
             {SUSTAINABILITY.map(({ icon, title, desc }) => (
-              <div
-                key={title}
-                className="rounded-lg p-6"
-                style={{ border: "1px solid #2a2520", background: "#0a0906" }}
-              >
-                <p className="mb-4 text-3xl">{icon}</p>
-                <h3
-                  className="mb-2 text-sm font-bold"
-                  style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-                >
-                  {title}
-                </h3>
-                <p className="text-xs leading-relaxed" style={{ color: "#6a6060" }}>
-                  {desc}
-                </p>
+              <div key={title} className="rounded-xl p-6" style={{ background: "#122033", border: `1px solid ${PINK}22` }}>
+                <p className="text-3xl mb-3">{icon}</p>
+                <h3 className="text-sm font-bold mb-2 text-white">{title}</h3>
+                <p className="text-xs leading-relaxed" style={{ color: GRAY }}>{desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Underground ─────────────────────────────────────────── */}
-      <section className="px-6 py-20" style={{ background: "#0a0906" }}>
+      {/* ── Underground ────────────────────────────────────── */}
+      <section className="py-20 px-6" style={{ background: LIGHT }}>
         <div className="mx-auto max-w-6xl">
-          <AmberDivider label="UNDERGROUND INFRASTRUCTURE" />
-
-          <div className="my-12 grid gap-6 md:grid-cols-2">
-            {/* B1 */}
-            <div
-              className="rounded-lg p-8"
-              style={{ border: "1px solid #2a2520", background: "#0e0c0a" }}
-            >
-              <p
-                className="mb-4 text-xs tracking-widest"
-                style={{ fontFamily: "monospace", color: "#d4832a" }}
-              >
-                ◆ BASEMENT B1
-              </p>
-              <h3
-                className="mb-5 text-xl font-bold"
-                style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-              >
-                Services &amp; Parking
-              </h3>
+          <Divider label="Underground Infrastructure" />
+          <div className="my-10 grid gap-6 md:grid-cols-2">
+            <div className="rounded-xl p-8 bg-white" style={{ border: `1px solid ${PINK}22`, boxShadow: `0 2px 16px ${NAVY}08` }}>
+              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: PINK, fontFamily: "monospace" }}>Basement B1</p>
+              <h3 className="text-xl font-bold mb-4" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Services &amp; Parking</h3>
               <ul className="space-y-2">
-                {[
-                  "Parking for 20–30 cars with RFID-controlled entry/exit",
-                  "Server & IT infrastructure rooms",
-                  "Electrical distribution & battery storage systems",
-                  "Building archives & maintenance rooms",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-xs" style={{ color: "#6a6060" }}>
-                    <span style={{ color: "#d4832a" }}>◆</span>
-                    {item}
+                {["Parking for 20–30 cars with RFID-controlled gates","Server & IT infrastructure rooms","Electrical distribution & battery storage systems","Building archives & maintenance rooms"].map(i => (
+                  <li key={i} className="flex gap-2 text-xs" style={{ color: GRAY }}>
+                    <span style={{ color: PINK }}>●</span>{i}
                   </li>
                 ))}
               </ul>
             </div>
-
-            {/* B2 */}
-            <div
-              className="rounded-lg p-8"
-              style={{ border: "1px solid #d4832a30", background: "#0e0c0a" }}
-            >
-              <p
-                className="mb-4 text-xs tracking-widest"
-                style={{ fontFamily: "monospace", color: "#d4832a" }}
-              >
-                ◆ BASEMENT B2 — KEY DONOR ELIGIBILITY
-              </p>
-              <h3
-                className="mb-5 text-xl font-bold"
-                style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-              >
-                Safe &amp; Confidential Rooms
-              </h3>
+            <div className="rounded-xl p-8 bg-white" style={{ border: `2px solid ${PINK}55`, boxShadow: `0 2px 24px ${PINK}12` }}>
+              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: PINK, fontFamily: "monospace" }}>Basement B2 — Key Donor Eligibility</p>
+              <h3 className="text-xl font-bold mb-4" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Safe &amp; Confidential Rooms</h3>
               <ul className="space-y-2">
-                {[
-                  "Psychosocial support session rooms",
-                  "SRHR program delivery spaces",
-                  "Private consultation & case management offices",
-                  "Beneficiary intake rooms — fully confidential access",
-                  "No CCTV inside — SOPs & data protection policies enforced",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-xs" style={{ color: "#6a6060" }}>
-                    <span style={{ color: "#d4832a" }}>◆</span>
-                    {item}
+                {["Psychosocial support session rooms","SRHR program delivery spaces","Private consultation & case management offices","Beneficiary intake rooms — fully confidential access","No CCTV inside — SOPs & data protection enforced"].map(i => (
+                  <li key={i} className="flex gap-2 text-xs" style={{ color: GRAY }}>
+                    <span style={{ color: PINK }}>●</span>{i}
                   </li>
                 ))}
               </ul>
-              <div
-                className="mt-5 pt-5"
-                style={{ borderTop: "1px solid #2a2520" }}
-              >
-                <p className="text-xs" style={{ fontFamily: "monospace", color: "#6a6060" }}>
-                  Target donors: UN agencies · GIZ · IRC · UNFPA
-                </p>
+              <div className="mt-4 pt-4" style={{ borderTop: `1px solid ${PINK}22` }}>
+                <p className="text-xs" style={{ fontFamily: "monospace", color: GRAY }}>Target: UN agencies · GIZ · IRC · UNFPA</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Security ────────────────────────────────────────────── */}
-      <section className="px-6 py-20">
+      {/* ── Security ───────────────────────────────────────── */}
+      <section className="py-20 px-6">
         <div className="mx-auto max-w-6xl">
-          <AmberDivider label="SECURITY & ACCESS CONTROL" />
-
-          <div className="my-12 text-center">
-            <h2
-              className="mb-4 text-3xl font-bold md:text-4xl"
-              style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-            >
-              Donor-Standard Security
-            </h2>
-            <p className="mx-auto max-w-xl text-sm" style={{ color: "#6a6060" }}>
-              Built to meet the security protocols required by UN agencies, INGOs, and international
-              donors operating in sensitive contexts.
-            </p>
+          <Divider label="Security & Access Control" />
+          <div className="text-center my-10">
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Donor-Standard Security</h2>
+            <p className="text-sm max-w-xl mx-auto" style={{ color: GRAY }}>Built to meet the protocols required by UN agencies, INGOs & international donors operating in sensitive contexts.</p>
           </div>
-
           <div className="grid gap-5 md:grid-cols-4">
             {SECURITY.map(({ icon, title, desc }) => (
-              <div
-                key={title}
-                className="rounded-lg p-6 text-center"
-                style={{ border: "1px solid #2a2520", background: "#0a0906" }}
-              >
-                <p className="mb-3 text-3xl">{icon}</p>
-                <h3
-                  className="mb-2 text-sm font-bold"
-                  style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-                >
-                  {title}
-                </h3>
-                <p className="text-xs leading-relaxed" style={{ color: "#6a6060" }}>
-                  {desc}
-                </p>
+              <div key={title} className="rounded-xl p-6 text-center" style={{ background: LIGHT, border: `1px solid ${PINK}22` }}>
+                <p className="text-3xl mb-3">{icon}</p>
+                <h3 className="text-sm font-bold mb-2" style={{ color: NAVY }}>{title}</h3>
+                <p className="text-xs leading-relaxed" style={{ color: GRAY }}>{desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Location ────────────────────────────────────────────── */}
-      <section id="location" className="px-6 py-20" style={{ background: "#0a0906" }}>
+      {/* ── Location ───────────────────────────────────────── */}
+      <section id="location" className="py-20 px-6" style={{ background: LIGHT }}>
         <div className="mx-auto max-w-6xl">
-          <AmberDivider label="LOCATION" />
-
-          <div className="my-12 grid items-center gap-12 md:grid-cols-2">
+          <Divider label="Location" />
+          <div className="my-10 grid items-center gap-12 md:grid-cols-2">
             <div>
-              <h2
-                className="mb-5 text-3xl font-bold md:text-4xl"
-                style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-              >
-                Berqayel, Akkar
-                <br />
-                <span style={{ color: "#d4832a" }}>North Lebanon</span>
+              <h2 className="text-3xl font-bold mb-4 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>
+                Berqayel, Akkar<br /><span style={{ color: PINK }}>North Lebanon</span>
               </h2>
-              <p className="mb-6 text-sm leading-relaxed" style={{ color: "#6a6060" }}>
-                Located in Berqayel (Barkaïl), one of Lebanon&apos;s most underserved districts. Akkar
-                has among the highest poverty rates in the country with limited access to media
-                resources, civic infrastructure, and social services — making this hub a
-                transformative intervention.
+              <p className="text-sm leading-relaxed mb-6" style={{ color: GRAY }}>
+                Located in Berqayel (Barkaïl), one of Lebanon&apos;s most underserved districts — among the highest poverty rates in the country with limited access to media, civic infrastructure & social services.
               </p>
               <div className="space-y-3">
-                {[
-                  { label: "Site Area", value: "1,000 m² — fully enclosed" },
-                  { label: "Frontage", value: "20 m on main road" },
-                  { label: "Parking", value: "20–30 cars, B1 basement" },
-                  { label: "Status", value: "Site already secured" },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex items-baseline gap-4">
-                    <span
-                      className="w-24 shrink-0 text-xs"
-                      style={{ fontFamily: "monospace", color: "#d4832a" }}
-                    >
-                      {label}
-                    </span>
-                    <span className="text-sm" style={{ color: "#c8c0b0" }}>
-                      {value}
-                    </span>
+                {[["Site Area","1,000 m² — fully enclosed"],["Frontage","20 m on main road"],["Parking","20–30 cars, B1 basement"],["Status","Site already secured"]].map(([l, v]) => (
+                  <div key={l} className="flex items-baseline gap-4">
+                    <span className="w-24 shrink-0 text-xs" style={{ fontFamily: "monospace", color: PINK }}>{l}</span>
+                    <span className="text-sm font-medium" style={{ color: NAVY }}>{v}</span>
                   </div>
                 ))}
               </div>
             </div>
-
-            <div
-              className="flex items-center justify-center rounded-lg"
-              style={{ height: 300, border: "1px solid #2a2520", background: "#0e0c0a" }}
-            >
+            <div className="rounded-xl flex items-center justify-center" style={{ height: 280, background: NAVY }}>
               <div className="text-center">
-                <p
-                  className="mb-2 text-xs tracking-widest"
-                  style={{ fontFamily: "monospace", color: "#d4832a" }}
-                >
-                  ◆ MAP
-                </p>
-                <p
-                  className="text-xs"
-                  style={{ fontFamily: "monospace", color: "#3a3530" }}
-                >
-                  Berqayel · Akkar · Lebanon
-                </p>
-                <p
-                  className="mt-1 text-xs"
-                  style={{ fontFamily: "monospace", color: "#2a2520" }}
-                >
-                  34.5497° N, 36.2756° E
-                </p>
+                <SpotCastLogo size={60} variant="white" />
+                <p className="mt-3 text-xs" style={{ fontFamily: "monospace", color: GRAY }}>Berqayel · Akkar · Lebanon</p>
+                <p className="text-xs mt-1" style={{ fontFamily: "monospace", color: `${GRAY}60` }}>34.5497° N, 36.2756° E</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Revenue ─────────────────────────────────────────────── */}
-      <section className="px-6 py-20">
+      {/* ── Revenue ────────────────────────────────────────── */}
+      <section className="py-20 px-6" style={{ background: NAVY }}>
         <div className="mx-auto max-w-6xl">
-          <AmberDivider label="REVENUE MODEL" />
-
-          <div className="my-12 text-center">
-            <h2
-              className="mb-4 text-3xl font-bold md:text-4xl"
-              style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-            >
-              Six Revenue Streams
-            </h2>
-            <p className="text-sm" style={{ color: "#6a6060" }}>
-              Designed for long-term financial sustainability beyond initial grant funding.
-            </p>
+          <Divider label="Revenue Model" />
+          <div className="text-center my-10">
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl text-white" style={{ fontFamily: "Georgia, serif" }}>Six Revenue Streams</h2>
+            <p className="text-sm" style={{ color: GRAY }}>Designed for long-term financial sustainability beyond grant funding.</p>
           </div>
-
           <div className="grid gap-4 md:grid-cols-3">
             {REVENUE.map(({ n, title, desc }) => (
-              <div
-                key={n}
-                className="flex items-start gap-4 rounded-lg p-6"
-                style={{ border: "1px solid #2a2520", background: "#0a0906" }}
-              >
-                <span
-                  className="shrink-0 text-xl font-bold"
-                  style={{ fontFamily: "monospace", color: "#d4832a" }}
-                >
-                  {n}
-                </span>
+              <div key={n} className="flex items-start gap-4 rounded-xl p-5" style={{ background: "#122033", border: `1px solid ${PINK}22` }}>
+                <span className="shrink-0 text-xl font-bold" style={{ fontFamily: "monospace", color: PINK }}>{n}</span>
                 <div>
-                  <h3
-                    className="mb-1 text-sm font-bold"
-                    style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-                  >
-                    {title}
-                  </h3>
-                  <p className="text-xs" style={{ color: "#6a6060" }}>
-                    {desc}
-                  </p>
+                  <h3 className="text-sm font-bold mb-1 text-white">{title}</h3>
+                  <p className="text-xs" style={{ color: GRAY }}>{desc}</p>
                 </div>
               </div>
             ))}
@@ -1051,182 +403,75 @@ export default function SpotCastHubPage() {
         </div>
       </section>
 
-      {/* ── SDGs ────────────────────────────────────────────────── */}
-      <section className="px-6 py-20" style={{ background: "#0a0906" }}>
+      {/* ── SDGs ───────────────────────────────────────────── */}
+      <section className="py-20 px-6">
         <div className="mx-auto max-w-6xl">
-          <AmberDivider label="UN SUSTAINABLE DEVELOPMENT GOALS" />
-
-          <div className="my-12 text-center">
-            <h2
-              className="mb-4 text-3xl font-bold md:text-4xl"
-              style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-            >
-              Aligned with 7 SDGs
-            </h2>
+          <Divider label="UN Sustainable Development Goals" />
+          <div className="text-center my-10">
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Aligned with 7 SDGs</h2>
           </div>
-
           <div className="flex flex-wrap justify-center gap-4">
             {SDGS.map(({ n, label }) => (
-              <div
-                key={n}
-                className="flex min-w-24 flex-col items-center gap-1 rounded-lg p-4 text-center"
-                style={{ border: "1px solid #2a2520", background: "#0e0c0a" }}
-              >
-                <span
-                  className="text-xs font-bold"
-                  style={{ fontFamily: "monospace", color: "#d4832a" }}
-                >
-                  SDG
-                </span>
-                <span
-                  className="text-3xl font-bold"
-                  style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-                >
-                  {n}
-                </span>
-                <span
-                  className="text-xs leading-tight"
-                  style={{ fontFamily: "monospace", color: "#6a6060" }}
-                >
-                  {label}
-                </span>
+              <div key={n} className="flex flex-col items-center gap-1 rounded-xl p-4 min-w-24 text-center" style={{ background: LIGHT, border: `1px solid ${PINK}33` }}>
+                <span className="text-xs font-bold" style={{ fontFamily: "monospace", color: PINK }}>SDG</span>
+                <span className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: NAVY }}>{n}</span>
+                <span className="text-xs leading-tight" style={{ fontFamily: "monospace", color: GRAY }}>{label}</span>
               </div>
             ))}
           </div>
-
-          <p
-            className="mt-8 text-center text-xs"
-            style={{ fontFamily: "monospace", color: "#3a3530" }}
-          >
+          <p className="mt-8 text-center text-xs" style={{ fontFamily: "monospace", color: GRAY }}>
             Target donors: EED · GIZ · DW Akademie · UN agencies · IRC · Maharat · Rosa Luxemburg
           </p>
         </div>
       </section>
 
-      {/* ── CTA ─────────────────────────────────────────────────── */}
-      <section id="support" className="px-6 py-24">
-        <div className="mx-auto max-w-4xl">
-          <AmberDivider />
-
-          <div className="py-16 text-center">
-            <p
-              className="mb-6 text-xs uppercase tracking-widest"
-              style={{ fontFamily: "monospace", color: "#d4832a" }}
-            >
-              ◆ Support the SpotCast Hub
-            </p>
-            <h2
-              className="mb-6 text-4xl font-bold md:text-5xl"
-              style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-            >
-              Help Build Lebanon&apos;s
-              <br />
-              Most Ambitious
-              <br />
-              <span style={{ color: "#d4832a" }}>Community Hub.</span>
-            </h2>
-            <p
-              className="mx-auto mb-10 max-w-xl text-sm leading-relaxed"
-              style={{ color: "#6a6060" }}
-            >
-              We are seeking direct contributions, in-kind support, naming rights partnerships, and
-              long-term lease agreements. Every partnership brings this vision closer to the
-              communities of Akkar and beyond.
-            </p>
-
-            <div className="mx-auto mb-10 grid max-w-2xl gap-4 md:grid-cols-3">
-              {[
-                {
-                  title: "Direct Funding",
-                  desc: "Financial contributions to construction and fit-out",
-                },
-                {
-                  title: "In-Kind Support",
-                  desc: "Equipment, furniture, and technical resources",
-                },
-                {
-                  title: "Naming Rights",
-                  desc: "Studios, offices, floors — put your name on the map",
-                },
-              ].map(({ title, desc }) => (
-                <div
-                  key={title}
-                  className="rounded-lg p-4 text-left"
-                  style={{ border: "1px solid #2a2520", background: "#0a0906" }}
-                >
-                  <p className="mb-1 text-xs" style={{ color: "#d4832a" }}>
-                    ◆
-                  </p>
-                  <h4
-                    className="mb-1 text-sm font-bold"
-                    style={{ fontFamily: "Georgia, serif", color: "#e8e0d0" }}
-                  >
-                    {title}
-                  </h4>
-                  <p className="text-xs" style={{ color: "#6a6060" }}>
-                    {desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <a
-              href="mailto:info@spotcast.media"
-              className="inline-block rounded px-8 py-4 text-sm font-bold transition-opacity hover:opacity-90"
-              style={{ fontFamily: "monospace", background: "#d4832a", color: "#0e0c0a" }}
-            >
-              Contact Us to Partner ◆
-            </a>
-
-            <p className="mt-4 text-xs" style={{ fontFamily: "monospace", color: "#3a3530" }}>
-              info@spotcast.media · spotcast.media
-            </p>
+      {/* ── CTA ────────────────────────────────────────────── */}
+      <section id="support" className="py-24 px-6" style={{ background: PINK }}>
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="mb-4 text-xs tracking-widest uppercase text-white/80" style={{ fontFamily: "monospace" }}>Support the SpotCast Hub</p>
+          <h2 className="text-4xl font-bold text-white mb-6 md:text-5xl" style={{ fontFamily: "Georgia, serif" }}>
+            Help Build Lebanon&apos;s<br />Most Ambitious<br />Community Hub.
+          </h2>
+          <p className="text-base mb-10 max-w-xl mx-auto text-white/80 leading-relaxed">
+            We are seeking direct contributions, in-kind support, naming rights &amp; long-term lease agreements. Every partnership brings this vision closer to the communities of Akkar.
+          </p>
+          <div className="grid gap-4 max-w-2xl mx-auto mb-10 md:grid-cols-3">
+            {[["Direct Funding","Financial contributions to construction & fit-out"],["In-Kind Support","Equipment, furniture & technical resources"],["Naming Rights","Studios, offices, floors — put your name on the map"]].map(([t, d]) => (
+              <div key={t} className="rounded-xl p-4 text-left" style={{ background: "rgba(255,255,255,0.2)" }}>
+                <h4 className="text-sm font-bold text-white mb-1">{t}</h4>
+                <p className="text-xs text-white/75">{d}</p>
+              </div>
+            ))}
           </div>
-
-          <AmberDivider />
+          <a
+            href="mailto:info@spotcast.media"
+            className="inline-block rounded-full px-8 py-4 text-sm font-bold transition-opacity hover:opacity-90"
+            style={{ background: NAVY, color: "#fff" }}
+          >
+            Contact Us to Partner →
+          </a>
+          <p className="mt-4 text-xs text-white/60" style={{ fontFamily: "monospace" }}>info@spotcast.media · spotcast.media</p>
         </div>
       </section>
 
-      {/* ── Footer ──────────────────────────────────────────────── */}
-      <footer
-        className="px-6 py-10"
-        style={{ borderTop: "1px solid #1e1a16" }}
-      >
+      {/* ── Footer ─────────────────────────────────────────── */}
+      <footer className="px-6 py-10" style={{ background: NAVY, borderTop: `1px solid ${PINK}22` }}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex items-center gap-3">
-            <div
-              className="flex items-center justify-center rounded"
-              style={{ width: 24, height: 24, background: "#d4832a" }}
-            >
-              <span
-                className="text-xs font-bold"
-                style={{ fontFamily: "monospace", color: "#0e0c0a" }}
-              >
-                SC
-              </span>
-            </div>
-            <span className="text-xs" style={{ fontFamily: "monospace", color: "#4a4540" }}>
-              SpotCast Community &amp; Media Hub · سبوت كاست
+            <SpotCastLogo size={32} variant="white" />
+            <span className="text-xs" style={{ fontFamily: "monospace", color: GRAY }}>
+              Spot Cast Platform · منصة سبوت كاست
             </span>
           </div>
-          <p className="text-xs" style={{ fontFamily: "monospace", color: "#2e2a24" }}>
+          <p className="text-xs" style={{ fontFamily: "monospace", color: `${GRAY}80` }}>
             Berqayel, Akkar, North Lebanon · Est. 2022
           </p>
-          <div className="flex gap-4">
-            {[
-              ["mailto:info@spotcast.media", "info@spotcast.media"],
-              ["https://spotcast.media", "spotcast.media"],
-            ].map(([href, label]) => (
-              <a
-                key={href}
-                href={href}
-                className="text-xs transition-colors"
-                style={{ fontFamily: "monospace", color: "#4a4540" }}
-                onMouseOver={(e) => (e.currentTarget.style.color = "#d4832a")}
-                onMouseOut={(e) => (e.currentTarget.style.color = "#4a4540")}
-              >
-                {label}
-              </a>
+          <div className="flex gap-5">
+            {[["mailto:info@spotcast.media","info@spotcast.media"],["https://spotcast.media","spotcast.media"]].map(([h, l]) => (
+              <a key={h} href={h} className="text-xs transition-colors" style={{ fontFamily: "monospace", color: GRAY }}
+                onMouseOver={(e) => (e.currentTarget.style.color = PINK)}
+                onMouseOut={(e) => (e.currentTarget.style.color = GRAY)}
+              >{l}</a>
             ))}
           </div>
         </div>
