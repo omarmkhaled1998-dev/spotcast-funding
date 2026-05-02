@@ -1,5 +1,5 @@
 [build]
-buildCommand = "npm ci && npx prisma generate && npm run build"
+buildCommand = "npm ci && npx playwright install chromium --with-deps && npx prisma generate && npm run build"
 
 [build.nixpacksPlan.variables]
 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
