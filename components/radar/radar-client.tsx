@@ -186,7 +186,7 @@ function StatusMenu({ id, current, onChange }: { id: string; current: StatusValu
         <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-slate-200 rounded-xl shadow-lg py-1 min-w-[140px]">
           {(Object.keys(STATUS_CONFIG) as Array<keyof typeof STATUS_CONFIG>).map((key) => {
             const cfg = STATUS_CONFIG[key];
-            const Icon = cfg.icon;
+            const Icon = cfg.icon as React.ComponentType<{ size?: number }>;
             return (
               <button key={key} onClick={() => { onChange(key as StatusValue); setOpen(false); }}
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-slate-50 text-slate-700"
@@ -215,7 +215,7 @@ function OpportunityCard({ opp, status, onStatusChange }: {
 }) {
   const fit = FIT_CONFIG[opp.fitLabel];
   const typeConf = getTypeConfig(opp.typeOfCall);
-  const TypeIcon = typeConf.icon;
+  const TypeIcon = typeConf.icon as React.ComponentType<{ size?: number }>;
   const geo = parseJsonArray(opp.geography);
   const themes = parseJsonArray(opp.thematicAreas);
   const hasFunding = opp.fundingAmountMin || opp.fundingAmountMax;
