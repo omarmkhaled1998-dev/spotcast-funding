@@ -6,46 +6,138 @@ import { SpotCastLogo } from "@/components/hub/SpotCastLogo";
 
 const Building3D = dynamic(() => import("@/components/hub/Building3D"), { ssr: false });
 
+/* ─── Brand ─────────────────────────────────────────────────── */
+const NAVY = "#0e2334";
+const PINK = "#dd7c99";
+const GRAY = "#839ba3";
+const LIGHT = "#f5f3f0";
+
 /* ─── Data ─────────────────────────────────────────────────── */
 
 const GALLERY = [
-  { id: "exterior", label: "Exterior Rendering", caption: "Full building facade with solar roof, perimeter wall, olive-tree plaza & custom gold signage", src: "/gallery/exterior.svg" },
-  { id: "design-process", label: "Design Process & Site Analysis", caption: "Berqayel site map, 3D massing iterations & material exploration", src: "/gallery/design-process.svg" },
-  { id: "ground-floor", label: "Ground Floor — Community", caption: "Café, event hall, reception & direct garden access — 2D plan + 3D view", src: "/gallery/ground-floor.svg" },
-  { id: "first-floor", label: "1st Floor — Work", caption: "Co-working space, meeting room & 10 private offices", src: "/gallery/first-floor.svg" },
-  { id: "second-floor", label: "2nd Floor — Media", caption: "Broadcast radio studio, podcast studios, editing suites & director's suite", src: "/gallery/second-floor.svg" },
-  { id: "floor-plans", label: "Floor Plans (2D)", caption: "Annotated ground, first & second floor plans on A–D structural grid", src: "/gallery/floor-plans.svg" },
+  {
+    id: "exterior",
+    label: "Exterior Rendering",
+    caption: "Full building facade — solar roof, perimeter wall, olive-tree plaza & signage",
+    src: "/gallery/exterior.svg",
+  },
+  {
+    id: "design-process",
+    label: "Design Process & Site Analysis",
+    caption: "Berqayel site map, 3D massing iterations & material exploration",
+    src: "/gallery/design-process.svg",
+  },
+  {
+    id: "ground-floor",
+    label: "Ground Floor — Community",
+    caption: "Café, event hall, reception & direct garden access — 2D plan + 3D view",
+    src: "/gallery/ground-floor.svg",
+  },
+  {
+    id: "first-floor",
+    label: "1st Floor — Work & Collaboration",
+    caption: "Co-working space, meeting room & 10 private offices",
+    src: "/gallery/first-floor.svg",
+  },
+  {
+    id: "second-floor",
+    label: "2nd Floor — Media Production",
+    caption: "Broadcast radio studio, podcast studios, editing suites & director's suite",
+    src: "/gallery/second-floor.svg",
+  },
+  {
+    id: "floor-plans",
+    label: "Complete Floor Plans",
+    caption: "Annotated plans for all 6 levels on A–D structural grid",
+    src: "/gallery/floor-plans.svg",
+  },
 ];
 
 const PILLARS = [
-  { icon: "📡", title: "Media Production", desc: "Broadcast-quality studios for radio, podcast & video — serving independent journalists and community media across Akkar" },
-  { icon: "🌱", title: "Youth Empowerment", desc: "Trainings, workshops & mentorship programs tailored for young people in North Lebanon's most underserved region" },
-  { icon: "🤝", title: "NGO Field Presence", desc: "Secure, professional offices for UN agencies, INGOs & local civil society organizations" },
-  { icon: "🔐", title: "Safe & Confidential Services", desc: "SRHR, psychosocial support & private consultations — meeting international donor security standards" },
+  {
+    icon: "📡",
+    title: "Media Production",
+    desc: "Broadcast-quality studios for radio, podcast & video — serving independent journalists and community media across Akkar.",
+  },
+  {
+    icon: "🌱",
+    title: "Youth Empowerment",
+    desc: "Trainings, workshops & mentorship programs tailored for young people in North Lebanon's most underserved region.",
+  },
+  {
+    icon: "🤝",
+    title: "NGO Field Presence",
+    desc: "Secure, professional offices for UN agencies, INGOs & local civil society organizations working in the field.",
+  },
+  {
+    icon: "🔐",
+    title: "Safe & Confidential Services",
+    desc: "SRHR, psychosocial support & private consultations — meeting international donor security and confidentiality standards.",
+  },
 ];
 
 const SUSTAINABILITY = [
-  { icon: "☀️", title: "Solar Energy", desc: "Rooftop PV + Battery ESS + backup generator for 24/7 continuity — eliminating grid dependence" },
-  { icon: "💡", title: "Smart Lighting", desc: "Full LED with occupancy sensors & smart control — dramatically reducing energy consumption" },
-  { icon: "💧", title: "Water Harvesting", desc: "Rainwater collection for irrigation & cleaning — addressing Akkar's seasonal water scarcity" },
-  { icon: "🌬️", title: "Bioclimatic Design", desc: "Natural shading, cross-ventilation & low-carbon local materials woven into the architecture" },
-  { icon: "🌡️", title: "Reduced HVAC Load", desc: "Recessed facades & high-performance Low-E glass cut direct glare and thermal gain significantly" },
-  { icon: "🎯", title: "Net-Zero Target", desc: "Operational carbon net-zero goal — a replicable demonstration model for the region" },
+  {
+    icon: "☀️",
+    title: "Solar Energy",
+    desc: "Rooftop PV + Battery ESS + backup generator for 24/7 continuity — eliminating grid dependence entirely.",
+  },
+  {
+    icon: "💡",
+    title: "Smart Lighting",
+    desc: "Full LED with occupancy sensors & smart controls — dramatically reducing energy consumption.",
+  },
+  {
+    icon: "💧",
+    title: "Water Harvesting",
+    desc: "Rainwater collection for irrigation & cleaning — addressing Akkar's seasonal water scarcity.",
+  },
+  {
+    icon: "🌬️",
+    title: "Bioclimatic Design",
+    desc: "Natural shading, cross-ventilation & low-carbon local materials woven into the architecture.",
+  },
+  {
+    icon: "🌡️",
+    title: "Reduced HVAC Load",
+    desc: "Recessed facades & high-performance Low-E glass cut direct glare and thermal gain significantly.",
+  },
+  {
+    icon: "🎯",
+    title: "Net-Zero Target",
+    desc: "Operational carbon net-zero goal — a replicable demonstration model for the region.",
+  },
 ];
 
 const SECURITY = [
-  { icon: "🔒", title: "Physical Security", desc: "Full perimeter wall, controlled entry/exit gates & security guard posts" },
-  { icon: "🪪", title: "Access Control", desc: "RFID/Smart Card system with tiered floor-by-zone access & visitor logging" },
-  { icon: "📷", title: "CCTV Coverage", desc: "Full public-area coverage — NO cameras inside confidential zones" },
-  { icon: "🖥️", title: "Central Control Room", desc: "Live monitoring, recorded storage, systems management & ACTS Codes compliance" },
+  {
+    icon: "🔒",
+    title: "Physical Security",
+    desc: "Full perimeter wall, controlled entry/exit gates & security guard posts.",
+  },
+  {
+    icon: "🪪",
+    title: "Access Control",
+    desc: "RFID/Smart Card system with tiered floor-by-zone access & visitor logging.",
+  },
+  {
+    icon: "📷",
+    title: "CCTV Coverage",
+    desc: "Full public-area coverage — NO cameras inside confidential zones.",
+  },
+  {
+    icon: "🖥️",
+    title: "Central Control Room",
+    desc: "Live monitoring, recorded storage, systems management & ACTS Codes compliance.",
+  },
 ];
 
 const REVENUE = [
-  { n: "01", title: "Event Hall Rentals", desc: "NGO conferences, trainings & community events" },
+  { n: "01", title: "Event Hall Rentals", desc: "NGO conferences, community trainings & cultural events" },
   { n: "02", title: "Co-Working & Office Leasing", desc: "Long & short-term desk and office leases" },
   { n: "03", title: "Media Production Services", desc: "Studio, equipment & production rental" },
-  { n: "04", title: "Café Operations", desc: "Daily community revenue — vegan & GF options" },
-  { n: "05", title: "Naming Rights & Partnerships", desc: "Rooms, studios, floors — CSR partnerships" },
+  { n: "04", title: "Café Operations", desc: "Daily community revenue — inclusive menu options" },
+  { n: "05", title: "Naming Rights & Partnerships", desc: "Rooms, studios, floors — CSR & institutional partnerships" },
   { n: "06", title: "Safe Room Hosting", desc: "INGO partnership revenue (UN, IRC, UNFPA)" },
 ];
 
@@ -59,13 +151,7 @@ const SDGS = [
   { n: "17", label: "Partnerships" },
 ];
 
-/* ─── Shared styles ────────────────────────────────────────── */
-const NAVY = "#0e2334";
-const PINK = "#dd7c99";
-const GRAY = "#839ba3";
-const LIGHT = "#f5f3f0";
-
-/* ─── Gallery ──────────────────────────────────────────────── */
+/* ─── Gallery Component ────────────────────────────────────── */
 function Gallery() {
   const [active, setActive] = useState(0);
   const [errored, setErrored] = useState<Record<number, boolean>>({});
@@ -73,6 +159,7 @@ function Gallery() {
 
   return (
     <div className="space-y-3">
+      {/* Main image */}
       <div
         className="relative w-full rounded-xl overflow-hidden"
         style={{ aspectRatio: "16/9", background: NAVY }}
@@ -86,6 +173,8 @@ function Gallery() {
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}
+
+        {/* Caption overlay */}
         <div
           className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-10"
           style={{ background: "linear-gradient(to top, rgba(14,35,52,0.95) 0%, transparent 100%)" }}
@@ -95,22 +184,30 @@ function Gallery() {
           </p>
           <p className="text-sm text-white">{cur.caption}</p>
         </div>
+
+        {/* Fallback when image errors */}
         {errored[active] && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-4xl font-bold" style={{ color: "rgba(221,124,153,0.15)", fontFamily: "monospace" }}>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+            <p className="text-5xl font-bold" style={{ color: "rgba(221,124,153,0.15)", fontFamily: "monospace" }}>
               {String(active + 1).padStart(2, "0")}
             </p>
+            <p className="text-xs" style={{ color: GRAY, fontFamily: "monospace" }}>{cur.label}</p>
           </div>
         )}
       </div>
 
+      {/* Thumbnails */}
       <div className="grid grid-cols-6 gap-2">
         {GALLERY.map((item, i) => (
           <button
             key={item.id}
             onClick={() => setActive(i)}
             className="relative rounded-lg overflow-hidden transition-all"
-            style={{ aspectRatio: "4/3", border: `2px solid ${active === i ? PINK : "transparent"}`, background: NAVY }}
+            style={{
+              aspectRatio: "4/3",
+              border: `2px solid ${active === i ? PINK : "transparent"}`,
+              background: NAVY,
+            }}
           >
             {!errored[i] && (
               <img
@@ -132,7 +229,7 @@ function Gallery() {
   );
 }
 
-/* ─── Pink divider ─────────────────────────────────────────── */
+/* ─── Divider ──────────────────────────────────────────────── */
 function Divider({ label }: { label?: string }) {
   return (
     <div className="flex items-center gap-3 my-2">
@@ -148,7 +245,7 @@ function Divider({ label }: { label?: string }) {
 }
 
 /* ─── Page ─────────────────────────────────────────────────── */
-export default function SpotCastHubPage() {
+export default function ShumulHubPage() {
   return (
     <div className="min-h-screen" style={{ background: "#fff", color: NAVY }}>
 
@@ -161,14 +258,27 @@ export default function SpotCastHubPage() {
           <div className="flex items-center gap-3">
             <SpotCastLogo size={38} variant="color" />
             <div>
-              <p className="text-sm font-bold leading-tight" style={{ color: NAVY }}>Spot Cast Platform</p>
-              <p className="text-xs leading-tight" style={{ color: GRAY, fontFamily: "monospace" }}>Community & Media Hub</p>
+              <p className="text-sm font-bold leading-tight" style={{ color: NAVY }}>Shumul شمول</p>
+              <p className="text-xs leading-tight" style={{ color: GRAY, fontFamily: "monospace" }}>Community & Media Hub · Akkar</p>
             </div>
           </div>
 
-          <nav className="hidden items-center gap-6 md:flex" style={{ fontFamily: "monospace", fontSize: "12px", color: GRAY }}>
-            {[["#vision","Vision"],["#gallery","Drawings"],["#sustainability","Sustainability"],["#location","Location"],["#support","Support"]].map(([h,l]) => (
-              <a key={h} href={h} className="transition-colors hover:text-[#dd7c99]" style={{ color: GRAY }}>{l}</a>
+          <nav className="hidden items-center gap-6 md:flex" style={{ fontFamily: "monospace", fontSize: "12px" }}>
+            {[
+              ["#vision", "Vision"],
+              ["#gallery", "Drawings"],
+              ["#sustainability", "Sustainability"],
+              ["#location", "Location"],
+              ["#support", "Support"],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="transition-colors hover:text-[#dd7c99]"
+                style={{ color: GRAY }}
+              >
+                {label}
+              </a>
             ))}
           </nav>
 
@@ -177,7 +287,7 @@ export default function SpotCastHubPage() {
             className="rounded-full px-5 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             style={{ background: PINK }}
           >
-            Support the Project
+            Support the Hub
           </a>
         </div>
       </header>
@@ -192,16 +302,16 @@ export default function SpotCastHubPage() {
               Berqayel, Akkar · North Lebanon · Est. 2022
             </p>
             <h1 className="text-5xl font-bold leading-tight mb-2 md:text-6xl" style={{ fontFamily: "Georgia, serif" }}>
-              Building a Hub
+              Shumul
             </h1>
-            <h1 className="text-5xl font-bold leading-tight mb-6 md:text-6xl" style={{ fontFamily: "Georgia, serif" }}>
-              for <span style={{ color: PINK }}>Community,</span><br />
+            <h2 className="text-3xl font-bold leading-tight mb-6 md:text-4xl" style={{ fontFamily: "Georgia, serif" }}>
+              A Hub for <span style={{ color: PINK }}>Community,</span><br />
               Media &amp; Impact.
-            </h1>
+            </h2>
             <p className="mb-8 text-base leading-relaxed max-w-md" style={{ color: GRAY }}>
-              SpotCast is building a 6-level integrated community and media center in Akkar —
-              designed to international donor standards with broadcast studios, co-working,
-              confidential support services &amp; net-zero energy systems.
+              Shumul is building a 6-level integrated community and media center in Akkar —
+              designed to international donor standards with broadcast studios, co-working spaces,
+              youth programs, confidential support services &amp; net-zero energy systems.
             </p>
 
             <div className="flex flex-wrap gap-3 mb-10">
@@ -224,7 +334,11 @@ export default function SpotCastHubPage() {
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              {[{ n: "6", l: "Floors" }, { n: "1,000m²", l: "Site Area" }, { n: "4", l: "Pillars" }].map(({ n, l }) => (
+              {[
+                { n: "6", l: "Floors" },
+                { n: "1,000m²", l: "Site Area" },
+                { n: "4", l: "Pillars" },
+              ].map(({ n, l }) => (
                 <div key={l}>
                   <p className="text-2xl font-bold" style={{ color: PINK, fontFamily: "Georgia, serif" }}>{n}</p>
                   <p className="text-xs tracking-wider" style={{ color: GRAY, fontFamily: "monospace" }}>{l}</p>
@@ -243,17 +357,25 @@ export default function SpotCastHubPage() {
       {/* ── Vision ─────────────────────────────────────────── */}
       <section id="vision" className="py-20 px-6" style={{ background: LIGHT }}>
         <div className="mx-auto max-w-6xl">
-          <Divider label="Vision" />
+          <Divider label="Our Vision" />
           <div className="mx-auto max-w-3xl py-12 text-center">
-            <blockquote className="text-xl md:text-2xl font-medium leading-relaxed" style={{ fontFamily: "Georgia, serif", color: NAVY }}>
-              &ldquo;The SpotCast Hub is designed not only as a media production space, but as a
+            <blockquote
+              className="text-xl md:text-2xl font-medium leading-relaxed"
+              style={{ fontFamily: "Georgia, serif", color: NAVY }}
+            >
+              &ldquo;The Shumul Hub is designed not only as a media production space, but as a
               secure, sustainable, and fully equipped community infrastructure that can host programs
-              related to media, civic engagement, and sensitive social support services in Akkar.&rdquo;
+              related to media, civic engagement, storytelling, and sensitive social support
+              services — built for and by the people of Akkar.&rdquo;
             </blockquote>
           </div>
           <div className="grid gap-5 md:grid-cols-4">
             {PILLARS.map(({ icon, title, desc }) => (
-              <div key={title} className="rounded-xl p-6 bg-white" style={{ boxShadow: `0 2px 16px ${NAVY}10`, border: `1px solid ${PINK}22` }}>
+              <div
+                key={title}
+                className="rounded-xl p-6 bg-white"
+                style={{ boxShadow: `0 2px 16px ${NAVY}10`, border: `1px solid ${PINK}22` }}
+              >
                 <p className="text-3xl mb-3">{icon}</p>
                 <h3 className="text-sm font-bold mb-2" style={{ color: NAVY }}>{title}</h3>
                 <p className="text-xs leading-relaxed" style={{ color: GRAY }}>{desc}</p>
@@ -268,8 +390,12 @@ export default function SpotCastHubPage() {
         <div className="mx-auto max-w-5xl">
           <Divider label="Architectural Drawings" />
           <div className="text-center my-10">
-            <h2 className="text-3xl font-bold mb-3 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Designed for Purpose</h2>
-            <p className="text-sm max-w-xl mx-auto" style={{ color: GRAY }}>Six levels of thoughtfully designed space — from broadcast studios to confidential support rooms.</p>
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>
+              Designed for Purpose
+            </h2>
+            <p className="text-sm max-w-xl mx-auto" style={{ color: GRAY }}>
+              Six levels of thoughtfully designed space — from broadcast studios to confidential support rooms.
+            </p>
           </div>
           <Gallery />
         </div>
@@ -280,12 +406,21 @@ export default function SpotCastHubPage() {
         <div className="mx-auto max-w-6xl">
           <Divider label="Sustainability" />
           <div className="text-center my-10">
-            <h2 className="text-3xl font-bold mb-3 md:text-4xl text-white" style={{ fontFamily: "Georgia, serif" }}>Net-Zero by Design</h2>
-            <p className="text-sm max-w-xl mx-auto" style={{ color: GRAY }}>A demonstration model for sustainable community infrastructure — built for Lebanon&apos;s energy reality and designed to outlast it.</p>
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl text-white" style={{ fontFamily: "Georgia, serif" }}>
+              Net-Zero by Design
+            </h2>
+            <p className="text-sm max-w-xl mx-auto" style={{ color: GRAY }}>
+              A demonstration model for sustainable community infrastructure — built for Lebanon&apos;s
+              energy reality and designed to outlast it.
+            </p>
           </div>
           <div className="grid gap-5 md:grid-cols-3">
             {SUSTAINABILITY.map(({ icon, title, desc }) => (
-              <div key={title} className="rounded-xl p-6" style={{ background: "#122033", border: `1px solid ${PINK}22` }}>
+              <div
+                key={title}
+                className="rounded-xl p-6"
+                style={{ background: "#122033", border: `1px solid ${PINK}22` }}
+              >
                 <p className="text-3xl mb-3">{icon}</p>
                 <h3 className="text-sm font-bold mb-2 text-white">{title}</h3>
                 <p className="text-xs leading-relaxed" style={{ color: GRAY }}>{desc}</p>
@@ -300,29 +435,59 @@ export default function SpotCastHubPage() {
         <div className="mx-auto max-w-6xl">
           <Divider label="Underground Infrastructure" />
           <div className="my-10 grid gap-6 md:grid-cols-2">
-            <div className="rounded-xl p-8 bg-white" style={{ border: `1px solid ${PINK}22`, boxShadow: `0 2px 16px ${NAVY}08` }}>
-              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: PINK, fontFamily: "monospace" }}>Basement B1</p>
-              <h3 className="text-xl font-bold mb-4" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Services &amp; Parking</h3>
+            {/* B1 */}
+            <div
+              className="rounded-xl p-8 bg-white"
+              style={{ border: `1px solid ${PINK}22`, boxShadow: `0 2px 16px ${NAVY}08` }}
+            >
+              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: PINK, fontFamily: "monospace" }}>
+                Basement B1
+              </p>
+              <h3 className="text-xl font-bold mb-4" style={{ fontFamily: "Georgia, serif", color: NAVY }}>
+                Services &amp; Parking
+              </h3>
               <ul className="space-y-2">
-                {["Parking for 20–30 cars with RFID-controlled gates","Server & IT infrastructure rooms","Electrical distribution & battery storage systems","Building archives & maintenance rooms"].map(i => (
-                  <li key={i} className="flex gap-2 text-xs" style={{ color: GRAY }}>
-                    <span style={{ color: PINK }}>●</span>{i}
+                {[
+                  "Parking for 20–30 cars with RFID-controlled gates",
+                  "Server & IT infrastructure rooms",
+                  "Electrical distribution & battery storage systems",
+                  "Building archives & maintenance rooms",
+                ].map((item) => (
+                  <li key={item} className="flex gap-2 text-xs" style={{ color: GRAY }}>
+                    <span style={{ color: PINK }}>●</span>{item}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="rounded-xl p-8 bg-white" style={{ border: `2px solid ${PINK}55`, boxShadow: `0 2px 24px ${PINK}12` }}>
-              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: PINK, fontFamily: "monospace" }}>Basement B2 — Key Donor Eligibility</p>
-              <h3 className="text-xl font-bold mb-4" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Safe &amp; Confidential Rooms</h3>
+
+            {/* B2 */}
+            <div
+              className="rounded-xl p-8 bg-white"
+              style={{ border: `2px solid ${PINK}55`, boxShadow: `0 2px 24px ${PINK}12` }}
+            >
+              <p className="text-xs tracking-widest uppercase mb-3" style={{ color: PINK, fontFamily: "monospace" }}>
+                Basement B2 — Key Donor Eligibility
+              </p>
+              <h3 className="text-xl font-bold mb-4" style={{ fontFamily: "Georgia, serif", color: NAVY }}>
+                Safe &amp; Confidential Rooms
+              </h3>
               <ul className="space-y-2">
-                {["Psychosocial support session rooms","SRHR program delivery spaces","Private consultation & case management offices","Beneficiary intake rooms — fully confidential access","No CCTV inside — SOPs & data protection enforced"].map(i => (
-                  <li key={i} className="flex gap-2 text-xs" style={{ color: GRAY }}>
-                    <span style={{ color: PINK }}>●</span>{i}
+                {[
+                  "Psychosocial support session rooms",
+                  "SRHR program delivery spaces",
+                  "Private consultation & case management offices",
+                  "Beneficiary intake rooms — fully confidential access",
+                  "No CCTV inside — SOPs & data protection enforced",
+                ].map((item) => (
+                  <li key={item} className="flex gap-2 text-xs" style={{ color: GRAY }}>
+                    <span style={{ color: PINK }}>●</span>{item}
                   </li>
                 ))}
               </ul>
               <div className="mt-4 pt-4" style={{ borderTop: `1px solid ${PINK}22` }}>
-                <p className="text-xs" style={{ fontFamily: "monospace", color: GRAY }}>Target: UN agencies · GIZ · IRC · UNFPA</p>
+                <p className="text-xs" style={{ fontFamily: "monospace", color: GRAY }}>
+                  Target: UN agencies · GIZ · IRC · UNFPA
+                </p>
               </div>
             </div>
           </div>
@@ -334,12 +499,21 @@ export default function SpotCastHubPage() {
         <div className="mx-auto max-w-6xl">
           <Divider label="Security & Access Control" />
           <div className="text-center my-10">
-            <h2 className="text-3xl font-bold mb-3 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Donor-Standard Security</h2>
-            <p className="text-sm max-w-xl mx-auto" style={{ color: GRAY }}>Built to meet the protocols required by UN agencies, INGOs & international donors operating in sensitive contexts.</p>
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>
+              Donor-Standard Security
+            </h2>
+            <p className="text-sm max-w-xl mx-auto" style={{ color: GRAY }}>
+              Built to meet the protocols required by UN agencies, INGOs & international donors
+              operating in sensitive contexts.
+            </p>
           </div>
           <div className="grid gap-5 md:grid-cols-4">
             {SECURITY.map(({ icon, title, desc }) => (
-              <div key={title} className="rounded-xl p-6 text-center" style={{ background: LIGHT, border: `1px solid ${PINK}22` }}>
+              <div
+                key={title}
+                className="rounded-xl p-6 text-center"
+                style={{ background: LIGHT, border: `1px solid ${PINK}22` }}
+              >
                 <p className="text-3xl mb-3">{icon}</p>
                 <h3 className="text-sm font-bold mb-2" style={{ color: NAVY }}>{title}</h3>
                 <p className="text-xs leading-relaxed" style={{ color: GRAY }}>{desc}</p>
@@ -359,22 +533,38 @@ export default function SpotCastHubPage() {
                 Berqayel, Akkar<br /><span style={{ color: PINK }}>North Lebanon</span>
               </h2>
               <p className="text-sm leading-relaxed mb-6" style={{ color: GRAY }}>
-                Located in Berqayel (Barkaïl), one of Lebanon&apos;s most underserved districts — among the highest poverty rates in the country with limited access to media, civic infrastructure & social services.
+                Located in Berqayel (Barkaïl), one of Lebanon&apos;s most underserved districts —
+                among the highest poverty rates in the country with limited access to media,
+                civic infrastructure & social services. Shumul is built here intentionally.
               </p>
               <div className="space-y-3">
-                {[["Site Area","1,000 m² — fully enclosed"],["Frontage","20 m on main road"],["Parking","20–30 cars, B1 basement"],["Status","Site already secured"]].map(([l, v]) => (
-                  <div key={l} className="flex items-baseline gap-4">
-                    <span className="w-24 shrink-0 text-xs" style={{ fontFamily: "monospace", color: PINK }}>{l}</span>
-                    <span className="text-sm font-medium" style={{ color: NAVY }}>{v}</span>
+                {[
+                  ["Site Area", "1,000 m² — fully enclosed"],
+                  ["Frontage", "20 m on main road"],
+                  ["Parking", "20–30 cars, B1 basement"],
+                  ["Status", "Site already secured"],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex items-baseline gap-4">
+                    <span className="w-24 shrink-0 text-xs" style={{ fontFamily: "monospace", color: PINK }}>
+                      {label}
+                    </span>
+                    <span className="text-sm font-medium" style={{ color: NAVY }}>{value}</span>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="rounded-xl flex items-center justify-center" style={{ height: 280, background: NAVY }}>
+            <div
+              className="rounded-xl flex items-center justify-center"
+              style={{ height: 280, background: NAVY }}
+            >
               <div className="text-center">
                 <SpotCastLogo size={60} variant="white" />
-                <p className="mt-3 text-xs" style={{ fontFamily: "monospace", color: GRAY }}>Berqayel · Akkar · Lebanon</p>
-                <p className="text-xs mt-1" style={{ fontFamily: "monospace", color: `${GRAY}60` }}>34.5497° N, 36.2756° E</p>
+                <p className="mt-3 text-xs" style={{ fontFamily: "monospace", color: GRAY }}>
+                  Berqayel · Akkar · Lebanon
+                </p>
+                <p className="text-xs mt-1" style={{ fontFamily: "monospace", color: `${GRAY}60` }}>
+                  34.5497° N, 36.2756° E
+                </p>
               </div>
             </div>
           </div>
@@ -386,13 +576,23 @@ export default function SpotCastHubPage() {
         <div className="mx-auto max-w-6xl">
           <Divider label="Revenue Model" />
           <div className="text-center my-10">
-            <h2 className="text-3xl font-bold mb-3 md:text-4xl text-white" style={{ fontFamily: "Georgia, serif" }}>Six Revenue Streams</h2>
-            <p className="text-sm" style={{ color: GRAY }}>Designed for long-term financial sustainability beyond grant funding.</p>
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl text-white" style={{ fontFamily: "Georgia, serif" }}>
+              Six Revenue Streams
+            </h2>
+            <p className="text-sm" style={{ color: GRAY }}>
+              Designed for long-term financial sustainability beyond grant funding.
+            </p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {REVENUE.map(({ n, title, desc }) => (
-              <div key={n} className="flex items-start gap-4 rounded-xl p-5" style={{ background: "#122033", border: `1px solid ${PINK}22` }}>
-                <span className="shrink-0 text-xl font-bold" style={{ fontFamily: "monospace", color: PINK }}>{n}</span>
+              <div
+                key={n}
+                className="flex items-start gap-4 rounded-xl p-5"
+                style={{ background: "#122033", border: `1px solid ${PINK}22` }}
+              >
+                <span className="shrink-0 text-xl font-bold" style={{ fontFamily: "monospace", color: PINK }}>
+                  {n}
+                </span>
                 <div>
                   <h3 className="text-sm font-bold mb-1 text-white">{title}</h3>
                   <p className="text-xs" style={{ color: GRAY }}>{desc}</p>
@@ -408,11 +608,17 @@ export default function SpotCastHubPage() {
         <div className="mx-auto max-w-6xl">
           <Divider label="UN Sustainable Development Goals" />
           <div className="text-center my-10">
-            <h2 className="text-3xl font-bold mb-3 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>Aligned with 7 SDGs</h2>
+            <h2 className="text-3xl font-bold mb-3 md:text-4xl" style={{ fontFamily: "Georgia, serif", color: NAVY }}>
+              Aligned with 7 SDGs
+            </h2>
           </div>
           <div className="flex flex-wrap justify-center gap-4">
             {SDGS.map(({ n, label }) => (
-              <div key={n} className="flex flex-col items-center gap-1 rounded-xl p-4 min-w-24 text-center" style={{ background: LIGHT, border: `1px solid ${PINK}33` }}>
+              <div
+                key={n}
+                className="flex flex-col items-center gap-1 rounded-xl p-4 min-w-24 text-center"
+                style={{ background: LIGHT, border: `1px solid ${PINK}33` }}
+              >
                 <span className="text-xs font-bold" style={{ fontFamily: "monospace", color: PINK }}>SDG</span>
                 <span className="text-3xl font-bold" style={{ fontFamily: "Georgia, serif", color: NAVY }}>{n}</span>
                 <span className="text-xs leading-tight" style={{ fontFamily: "monospace", color: GRAY }}>{label}</span>
@@ -428,18 +634,29 @@ export default function SpotCastHubPage() {
       {/* ── CTA ────────────────────────────────────────────── */}
       <section id="support" className="py-24 px-6" style={{ background: PINK }}>
         <div className="mx-auto max-w-4xl text-center">
-          <p className="mb-4 text-xs tracking-widest uppercase text-white/80" style={{ fontFamily: "monospace" }}>Support the SpotCast Hub</p>
+          <p className="mb-4 text-xs tracking-widest uppercase text-white/80" style={{ fontFamily: "monospace" }}>
+            Support the Shumul Hub
+          </p>
           <h2 className="text-4xl font-bold text-white mb-6 md:text-5xl" style={{ fontFamily: "Georgia, serif" }}>
             Help Build Lebanon&apos;s<br />Most Ambitious<br />Community Hub.
           </h2>
           <p className="text-base mb-10 max-w-xl mx-auto text-white/80 leading-relaxed">
-            We are seeking direct contributions, in-kind support, naming rights &amp; long-term lease agreements. Every partnership brings this vision closer to the communities of Akkar.
+            We are seeking direct contributions, in-kind support, naming rights &amp; long-term
+            lease agreements. Every partnership brings this vision closer to the communities of Akkar.
           </p>
           <div className="grid gap-4 max-w-2xl mx-auto mb-10 md:grid-cols-3">
-            {[["Direct Funding","Financial contributions to construction & fit-out"],["In-Kind Support","Equipment, furniture & technical resources"],["Naming Rights","Studios, offices, floors — put your name on the map"]].map(([t, d]) => (
-              <div key={t} className="rounded-xl p-4 text-left" style={{ background: "rgba(255,255,255,0.2)" }}>
-                <h4 className="text-sm font-bold text-white mb-1">{t}</h4>
-                <p className="text-xs text-white/75">{d}</p>
+            {[
+              ["Direct Funding", "Financial contributions to construction & fit-out"],
+              ["In-Kind Support", "Equipment, furniture & technical resources"],
+              ["Naming Rights", "Studios, offices, floors — put your name on the map"],
+            ].map(([title, desc]) => (
+              <div
+                key={title}
+                className="rounded-xl p-4 text-left"
+                style={{ background: "rgba(255,255,255,0.2)" }}
+              >
+                <h4 className="text-sm font-bold text-white mb-1">{title}</h4>
+                <p className="text-xs text-white/75">{desc}</p>
               </div>
             ))}
           </div>
@@ -450,7 +667,9 @@ export default function SpotCastHubPage() {
           >
             Contact Us to Partner →
           </a>
-          <p className="mt-4 text-xs text-white/60" style={{ fontFamily: "monospace" }}>info@spotcast.media · spotcast.media</p>
+          <p className="mt-4 text-xs text-white/60" style={{ fontFamily: "monospace" }}>
+            info@spotcast.media · spotcast.media
+          </p>
         </div>
       </section>
 
@@ -459,19 +678,31 @@ export default function SpotCastHubPage() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex items-center gap-3">
             <SpotCastLogo size={32} variant="white" />
-            <span className="text-xs" style={{ fontFamily: "monospace", color: GRAY }}>
-              Spot Cast Platform · منصة سبوت كاست
-            </span>
+            <div>
+              <p className="text-xs font-semibold text-white">Shumul شمول</p>
+              <p className="text-xs" style={{ fontFamily: "monospace", color: GRAY }}>
+                Community & Media Hub · Berqayel, Akkar
+              </p>
+            </div>
           </div>
           <p className="text-xs" style={{ fontFamily: "monospace", color: `${GRAY}80` }}>
-            Berqayel, Akkar, North Lebanon · Est. 2022
+            A SpotCast Initiative · Est. 2022 · North Lebanon
           </p>
           <div className="flex gap-5">
-            {[["mailto:info@spotcast.media","info@spotcast.media"],["https://spotcast.media","spotcast.media"]].map(([h, l]) => (
-              <a key={h} href={h} className="text-xs transition-colors" style={{ fontFamily: "monospace", color: GRAY }}
+            {[
+              ["mailto:info@spotcast.media", "info@spotcast.media"],
+              ["https://spotcast.media", "spotcast.media"],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="text-xs transition-colors"
+                style={{ fontFamily: "monospace", color: GRAY }}
                 onMouseOver={(e) => (e.currentTarget.style.color = PINK)}
                 onMouseOut={(e) => (e.currentTarget.style.color = GRAY)}
-              >{l}</a>
+              >
+                {label}
+              </a>
             ))}
           </div>
         </div>
