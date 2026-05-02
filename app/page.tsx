@@ -661,14 +661,14 @@ export default function ShumulHubPage() {
             ))}
           </div>
           <a
-            href="mailto:info@spotcast.media"
+            href="mailto:omar.khaled@spotcast.press"
             className="inline-block rounded-full px-8 py-4 text-sm font-bold transition-opacity hover:opacity-90"
             style={{ background: NAVY, color: "#fff" }}
           >
             Contact Us to Partner →
           </a>
           <p className="mt-4 text-xs text-white/60" style={{ fontFamily: "monospace" }}>
-            info@spotcast.media · spotcast.media
+            omar.khaled@spotcast.press
           </p>
         </div>
       </section>
@@ -690,8 +690,8 @@ export default function ShumulHubPage() {
           </p>
           <div className="flex gap-5">
             {[
-              ["mailto:info@spotcast.media", "info@spotcast.media"],
-              ["https://spotcast.media", "spotcast.media"],
+              ["mailto:omar.khaled@spotcast.press", "omar.khaled@spotcast.press"],
+              ["https://spotcast.press", "spotcast.press"],
             ].map(([href, label]) => (
               <a
                 key={href}
