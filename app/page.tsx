@@ -9,12 +9,12 @@ const Building3D = dynamic(() => import("@/components/hub/Building3D"), { ssr: f
 /* ─── Data ─────────────────────────────────────────────────── */
 
 const GALLERY = [
-  { id: "exterior", label: "Exterior Rendering", caption: "Full building facade with solar roof, perimeter wall, olive-tree plaza & custom gold signage", src: "/gallery/exterior.png" },
-  { id: "design-process", label: "Design Process & Site Analysis", caption: "Berqayel site map, 3D massing iterations & material exploration", src: "/gallery/design-process.png" },
-  { id: "ground-floor", label: "Ground Floor — Community", caption: "Café, event hall, reception & direct garden access — 2D plan + 3D view", src: "/gallery/ground-floor.png" },
-  { id: "first-floor", label: "1st Floor — Work", caption: "Co-working space, meeting room & 10 private offices", src: "/gallery/first-floor.png" },
-  { id: "second-floor", label: "2nd Floor — Media", caption: "Broadcast radio studio, podcast studios, editing suites & director's suite", src: "/gallery/second-floor.png" },
-  { id: "floor-plans", label: "Floor Plans (2D)", caption: "Annotated ground, first & second floor plans on A–D structural grid", src: "/gallery/floor-plans.png" },
+  { id: "exterior", label: "Exterior Rendering", caption: "Full building facade with solar roof, perimeter wall, olive-tree plaza & custom gold signage", src: "/gallery/exterior.svg" },
+  { id: "design-process", label: "Design Process & Site Analysis", caption: "Berqayel site map, 3D massing iterations & material exploration", src: "/gallery/design-process.svg" },
+  { id: "ground-floor", label: "Ground Floor — Community", caption: "Café, event hall, reception & direct garden access — 2D plan + 3D view", src: "/gallery/ground-floor.svg" },
+  { id: "first-floor", label: "1st Floor — Work", caption: "Co-working space, meeting room & 10 private offices", src: "/gallery/first-floor.svg" },
+  { id: "second-floor", label: "2nd Floor — Media", caption: "Broadcast radio studio, podcast studios, editing suites & director's suite", src: "/gallery/second-floor.svg" },
+  { id: "floor-plans", label: "Floor Plans (2D)", caption: "Annotated ground, first & second floor plans on A–D structural grid", src: "/gallery/floor-plans.svg" },
 ];
 
 const PILLARS = [

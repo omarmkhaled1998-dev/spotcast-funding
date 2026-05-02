@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <rect width="800" height="450" fill="#0e2334"/>
+  <defs>
+    <pattern id="grid4" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#839ba3" stroke-width="0.3" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="400" fill="url(#grid4)"/>
+  <text x="400" y="28" font-family="monospace" font-size="11" fill="#dd7c99" text-anchor="middle">SECOND FLOOR — 2F · MEDIA PRODUCTION</text>
+  <!-- Floor plan outline -->
+  <rect x="80" y="50" width="460" height="310" fill="#122033" stroke="#839ba3" stroke-width="1.5" rx="2"/>
+  <!-- Grid lines -->
+  <line x1="80" y1="155" x2="540" y2="155" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="80" y1="260" x2="540" y2="260" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="195" y1="50" x2="195" y2="360" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="310" y1="50" x2="310" y2="360" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="425" y1="50" x2="425" y2="360" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <!-- Broadcast Radio Studio -->
+  <rect x="88" y="58" width="160" height="120" fill="#2a1a3a" opacity="0.6" rx="1"/>
+  <text x="168" y="113" font-family="monospace" font-size="8" fill="#dd7c99" text-anchor="middle">BROADCAST</text>
+  <text x="168" y="125" font-family="monospace" font-size="8" fill="#dd7c99" text-anchor="middle">RADIO STUDIO</text>
+  <text x="168" y="137" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">~90 m²</text>
+  <!-- Soundproofing indicator -->
+  <rect x="96" y="66" width="144" height="104" fill="none" stroke="#dd7c99" stroke-width="1" stroke-dasharray="3,2" opacity="0.4"/>
+  <!-- Mic icons -->
+  <circle cx="148" cy="90" r="8" fill="none" stroke="#dd7c99" stroke-width="1.5" opacity="0.6"/>
+  <line x1="148" y1="98" x2="148" y2="106" stroke="#dd7c99" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="188" cy="90" r="8" fill="none" stroke="#dd7c99" stroke-width="1.5" opacity="0.6"/>
+  <line x1="188" y1="98" x2="188" y2="106" stroke="#dd7c99" stroke-width="1.5" opacity="0.6"/>
+  <!-- Podcast studios x2 -->
+  <rect x="255" y="58" width="80" height="90" fill="#1a1a3a" opacity="0.6" rx="1"/>
+  <text x="295" y="100" font-family="monospace" font-size="7" fill="#dd7c99" text-anchor="middle">PODCAST</text>
+  <text x="295" y="112" font-family="monospace" font-size="7" fill="#dd7c99" text-anchor="middle">STUDIO 1</text>
+  <rect x="340" y="58" width="80" height="90" fill="#1a1a3a" opacity="0.6" rx="1"/>
+  <text x="380" y="100" font-family="monospace" font-size="7" fill="#dd7c99" text-anchor="middle">PODCAST</text>
+  <text x="380" y="112" font-family="monospace" font-size="7" fill="#dd7c99" text-anchor="middle">STUDIO 2</text>
+  <!-- Editing suites -->
+  <rect x="88" y="185" width="75" height="60" fill="#1a2a3a" opacity="0.6" rx="1"/>
+  <text x="125" y="213" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">EDIT 1</text>
+  <rect x="168" y="185" width="75" height="60" fill="#1a2a3a" opacity="0.6" rx="1"/>
+  <text x="205" y="213" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">EDIT 2</text>
+  <rect x="248" y="185" width="75" height="60" fill="#1a2a3a" opacity="0.6" rx="1"/>
+  <text x="285" y="213" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">EDIT 3</text>
+  <!-- Director's suite -->
+  <rect x="330" y="155" width="100" height="100" fill="#2a1a4a" opacity="0.5" rx="1"/>
+  <text x="380" y="200" font-family="monospace" font-size="8" fill="#dd7c99" text-anchor="middle">DIRECTOR'S</text>
+  <text x="380" y="213" font-family="monospace" font-size="8" fill="#dd7c99" text-anchor="middle">SUITE</text>
+  <text x="380" y="226" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">~50 m²</text>
+  <!-- Equipment storage -->
+  <rect x="88" y="258" width="110" height="60" fill="#1a2035" opacity="0.6" rx="1"/>
+  <text x="143" y="291" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">EQUIPMENT</text>
+  <text x="143" y="303" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">STORAGE</text>
+  <!-- Control room -->
+  <rect x="205" y="258" width="110" height="60" fill="#1a2a4a" opacity="0.6" rx="1"/>
+  <text x="260" y="291" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">CONTROL</text>
+  <text x="260" y="303" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">ROOM</text>
+  <!-- Stairs core -->
+  <rect x="425" y="58" width="107" height="60" fill="#1a2a3a" opacity="0.6" rx="1"/>
+  <text x="478" y="85" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">STAIRS / LIFT</text>
+  <!-- WC -->
+  <rect x="425" y="125" width="50" height="40" fill="#1a2035" opacity="0.5" rx="1"/>
+  <text x="450" y="148" font-family="monospace" font-size="6" fill="#839ba3" text-anchor="middle">WC</text>
+  <!-- 3D sketch right -->
+  <rect x="560" y="50" width="215" height="310" fill="#0a1825" rx="4" stroke="#dd7c99" stroke-width="0.5" opacity="0.5"/>
+  <text x="667" y="70" font-family="monospace" font-size="9" fill="#dd7c99" text-anchor="middle">3D VIEW</text>
+  <polygon points="580,200 660,160 740,200 740,280 660,320 580,280" fill="#1a0a2a" stroke="#dd7c99" stroke-width="1" opacity="0.5"/>
+  <polygon points="580,200 660,160 660,240 580,280" fill="#200a30" stroke="#dd7c99" stroke-width="0.8" opacity="0.5"/>
+  <polygon points="660,160 740,200 740,280 660,240" fill="#2a0a3a" stroke="#dd7c99" stroke-width="0.8" opacity="0.5"/>
+  <!-- Mic icon in 3D -->
+  <circle cx="667" cy="230" r="15" fill="none" stroke="#dd7c99" stroke-width="1.5" opacity="0.7"/>
+  <line x1="667" y1="245" x2="667" y2="258" stroke="#dd7c99" stroke-width="1.5" opacity="0.7"/>
+  <text x="667" y="300" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">2nd Floor — Media Production</text>
+  <!-- Label -->
+  <rect x="0" y="400" width="800" height="50" fill="rgba(14,35,52,0.9)"/>
+  <text x="30" y="422" font-family="monospace" font-size="10" fill="#dd7c99">05 / 06</text>
+  <text x="30" y="438" font-family="monospace" font-size="11" fill="white">2nd Floor — Radio · Podcast Studios · Editing Suites · Director's Suite</text>
+</svg>
