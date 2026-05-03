@@ -4,31 +4,48 @@ on:
   push:
     branches: [main]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Trigger Vercel deployment via API
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Get Vercel org ID
+        id: org
         run: |
-          curl -X POST "https://api.vercel.com/v13/deployments" \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"name\": \"spotcast-funding\",
-              \"project\": \"prj_hWrQNVfeqHT8Pj8V8QK88LkOrjFC\",
-              \"target\": \"production\",
-              \"gitSource\": {
-                \"type\": \"github\",
-                \"repoId\": \"${{ github.repository_id }}\",
-                \"ref\": \"main\",
-                \"sha\": \"${{ github.sha }}\"
-              }
-            }" | tee /tmp/vercel_response.json
-          cat /tmp/vercel_response.json | python3 -c "
-          import sys, json
-          r = json.load(sys.stdin)
-          url = r.get('url') or r.get('inspectorUrl') or r.get('error', {}).get('message', 'check Vercel dashboard')
-          print('Deployment URL:', url)
-          "
+          ORG_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            "https://api.vercel.com/v2/user" | python3 -c "import sys,json; print(json.load(sys.stdin)['user']['id'])")
+          echo "org_id=$ORG_ID" >> $GITHUB_OUTPUT
+
+      - name: Pull Vercel project settings
+        run: |
+          VERCEL_ORG_ID=${{ steps.org.outputs.org_id }} \
+          VERCEL_PROJECT_ID=prj_hWrQNVfeqHT8Pj8V8QK88LkOrjFC \
+          npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build project
+        run: |
+          VERCEL_ORG_ID=${{ steps.org.outputs.org_id }} \
+          VERCEL_PROJECT_ID=prj_hWrQNVfeqHT8Pj8V8QK88LkOrjFC \
+          npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        run: |
+          VERCEL_ORG_ID=${{ steps.org.outputs.org_id }} \
+          VERCEL_PROJECT_ID=prj_hWrQNVfeqHT8Pj8V8QK88LkOrjFC \
+          npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} | tee /tmp/deploy_url.txt
+          echo "Deployed to: $(cat /tmp/deploy_url.txt)"
