@@ -6,8 +6,8 @@ import { SessionProvider } from "next-auth/react";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "SpotCast Funding Pipeline",
-  description: "Internal fundraising pipeline and decision-support platform",
+  title: "Shumul Community & Media Hub | شمول",
+  description: "Shumul is building a 6-level community and media center in Berqayel, Akkar — broadcast studios, co-working, youth programs, and confidential social services. Net-zero by design.",
 };
 
 export default function RootLayout({

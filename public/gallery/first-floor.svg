@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <rect width="800" height="450" fill="#0e2334"/>
+  <defs>
+    <pattern id="grid3" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#839ba3" stroke-width="0.3" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="400" fill="url(#grid3)"/>
+  <text x="400" y="28" font-family="monospace" font-size="11" fill="#dd7c99" text-anchor="middle">FIRST FLOOR — 1F · CO-WORKING &amp; OFFICES</text>
+  <!-- Floor plan outline -->
+  <rect x="80" y="50" width="460" height="310" fill="#122033" stroke="#839ba3" stroke-width="1.5" rx="2"/>
+  <!-- Grid lines -->
+  <line x1="80" y1="155" x2="540" y2="155" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="80" y1="260" x2="540" y2="260" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="195" y1="50" x2="195" y2="360" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="310" y1="50" x2="310" y2="360" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="425" y1="50" x2="425" y2="360" stroke="#839ba3" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.4"/>
+  <!-- Co-working open area -->
+  <rect x="88" y="58" width="222" height="192" fill="#1a2a5a" opacity="0.35" rx="1"/>
+  <text x="199" y="148" font-family="monospace" font-size="9" fill="#dd7c99" text-anchor="middle">OPEN CO-WORKING</text>
+  <text x="199" y="162" font-family="monospace" font-size="8" fill="#839ba3" text-anchor="middle">~200 m²</text>
+  <!-- Desks -->
+  <rect x="100" y="68" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="130" y="68" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="160" y="68" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="190" y="68" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="220" y="68" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="100" y="90" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="130" y="90" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="160" y="90" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="190" y="90" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="220" y="90" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="100" y="112" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="130" y="112" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="160" y="112" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="190" y="112" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <rect x="220" y="112" width="25" height="15" fill="#2a3a6a" opacity="0.7" rx="1"/>
+  <!-- Meeting room -->
+  <rect x="88" y="258" width="105" height="97" fill="#1a3a5a" opacity="0.5" rx="1"/>
+  <text x="140" y="302" font-family="monospace" font-size="8" fill="#dd7c99" text-anchor="middle">MEETING</text>
+  <text x="140" y="314" font-family="monospace" font-size="8" fill="#dd7c99" text-anchor="middle">ROOM</text>
+  <text x="140" y="326" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">~40 m²</text>
+  <!-- Meeting table -->
+  <ellipse cx="140" cy="295" rx="30" ry="18" fill="none" stroke="#839ba3" stroke-width="1"/>
+  <!-- 10 Private offices -->
+  <rect x="200" y="258" width="55" height="45" fill="#1e2a3a" opacity="0.7" rx="1" stroke="#839ba3" stroke-width="0.5"/>
+  <text x="227" y="284" font-family="monospace" font-size="6" fill="#839ba3" text-anchor="middle">OFFICE 1</text>
+  <rect x="260" y="258" width="55" height="45" fill="#1e2a3a" opacity="0.7" rx="1" stroke="#839ba3" stroke-width="0.5"/>
+  <text x="287" y="284" font-family="monospace" font-size="6" fill="#839ba3" text-anchor="middle">OFFICE 2</text>
+  <rect x="320" y="258" width="55" height="45" fill="#1e2a3a" opacity="0.7" rx="1" stroke="#839ba3" stroke-width="0.5"/>
+  <text x="347" y="284" font-family="monospace" font-size="6" fill="#839ba3" text-anchor="middle">OFFICE 3</text>
+  <rect x="200" y="310" width="55" height="45" fill="#1e2a3a" opacity="0.7" rx="1" stroke="#839ba3" stroke-width="0.5"/>
+  <text x="227" y="336" font-family="monospace" font-size="6" fill="#839ba3" text-anchor="middle">OFFICE 4</text>
+  <rect x="260" y="310" width="55" height="45" fill="#1e2a3a" opacity="0.7" rx="1" stroke="#839ba3" stroke-width="0.5"/>
+  <text x="287" y="336" font-family="monospace" font-size="6" fill="#839ba3" text-anchor="middle">OFFICE 5</text>
+  <rect x="320" y="310" width="55" height="45" fill="#1e2a3a" opacity="0.7" rx="1" stroke="#839ba3" stroke-width="0.5"/>
+  <text x="347" y="336" font-family="monospace" font-size="6" fill="#839ba3" text-anchor="middle">OFFICE 6</text>
+  <!-- Offices right column -->
+  <rect x="316" y="58" width="100" height="55" fill="#1e2a3a" opacity="0.7" rx="1" stroke="#839ba3" stroke-width="0.5"/>
+  <text x="366" y="89" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">OFFICES 7–10</text>
+  <!-- Stairs core -->
+  <rect x="425" y="58" width="107" height="60" fill="#1a2a3a" opacity="0.6" rx="1"/>
+  <text x="478" y="85" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">STAIRS / LIFT</text>
+  <!-- Kitchen/Pantry -->
+  <rect x="316" y="120" width="100" height="40" fill="#1a2535" opacity="0.6" rx="1"/>
+  <text x="366" y="143" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">PANTRY / WC</text>
+  <!-- 3D sketch right -->
+  <rect x="560" y="50" width="215" height="310" fill="#0a1825" rx="4" stroke="#dd7c99" stroke-width="0.5" opacity="0.5"/>
+  <text x="667" y="70" font-family="monospace" font-size="9" fill="#dd7c99" text-anchor="middle">3D VIEW</text>
+  <polygon points="580,200 660,160 740,200 740,280 660,320 580,280" fill="#122033" stroke="#6a90b0" stroke-width="1" opacity="0.7"/>
+  <polygon points="580,200 660,160 660,240 580,280" fill="#1a2a4a" stroke="#6a90b0" stroke-width="0.8" opacity="0.6"/>
+  <polygon points="660,160 740,200 740,280 660,240" fill="#2a3a5a" stroke="#6a90b0" stroke-width="0.8" opacity="0.6"/>
+  <text x="667" y="300" font-family="monospace" font-size="7" fill="#839ba3" text-anchor="middle">1st Floor — Co-working Level</text>
+  <!-- Label -->
+  <rect x="0" y="400" width="800" height="50" fill="rgba(14,35,52,0.9)"/>
+  <text x="30" y="422" font-family="monospace" font-size="10" fill="#dd7c99">04 / 06</text>
+  <text x="30" y="438" font-family="monospace" font-size="11" fill="white">1st Floor — Co-working · Meeting Room · 10 Private Offices</text>
+</svg>
