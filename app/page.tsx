@@ -460,11 +460,6 @@ export default function ShumulHubPage() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-4 pt-4" style={{ borderTop: `1px solid ${PINK}22` }}>
-                <p className="text-xs" style={{ fontFamily: "monospace", color: GRAY }}>
-                  Target: UN agencies · GIZ · IRC · UNFPA
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -601,9 +596,6 @@ export default function ShumulHubPage() {
               </div>
             ))}
           </div>
-          <p className="mt-8 text-center text-xs" style={{ fontFamily: "monospace", color: GRAY }}>
-            Target donors: EED · GIZ · DW Akademie · UN agencies · IRC · Maharat · Rosa Luxemburg
-          </p>
         </div>
       </section>
 
