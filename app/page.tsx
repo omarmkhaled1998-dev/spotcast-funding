@@ -636,16 +636,27 @@ export default function ShumulHubPage() {
               </div>
             ))}
           </div>
-          <a
-            href="mailto:omar.khaled@spotcast.press"
-            className="inline-block rounded-full px-8 py-4 text-sm font-bold transition-opacity hover:opacity-90"
-            style={{ background: NAVY, color: "#fff" }}
-          >
-            Contact Us to Partner →
-          </a>
-          <p className="mt-4 text-xs text-white/60" style={{ fontFamily: "monospace" }}>
-            omar.khaled@spotcast.press
+          <p className="mb-6 text-sm text-white/80">
+            Reach out directly — we respond within 24 hours.
           </p>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <a
+              href="mailto:omar.khaled@spotcast.press"
+              className="flex items-center gap-3 rounded-full px-7 py-4 text-sm font-bold transition-opacity hover:opacity-90"
+              style={{ background: NAVY, color: "#fff" }}
+            >
+              <span>✉</span>
+              <span>omar.khaled@spotcast.press</span>
+            </a>
+            <a
+              href="tel:+96176538270"
+              className="flex items-center gap-3 rounded-full px-7 py-4 text-sm font-bold transition-opacity hover:opacity-90"
+              style={{ background: "rgba(255,255,255,0.25)", color: "#fff" }}
+            >
+              <span>📞</span>
+              <span>+961 76 538 270</span>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -664,9 +675,10 @@ export default function ShumulHubPage() {
           <p className="text-xs" style={{ fontFamily: "monospace", color: `${GRAY}80` }}>
             A SpotCast Initiative · Est. 2022 · North Lebanon
           </p>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap gap-5">
             {[
               ["mailto:omar.khaled@spotcast.press", "omar.khaled@spotcast.press"],
+              ["tel:+96176538270", "+961 76 538 270"],
               ["https://spotcast.press", "spotcast.press"],
             ].map(([href, label]) => (
               <a
