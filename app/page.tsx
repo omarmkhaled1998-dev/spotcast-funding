@@ -18,38 +18,14 @@ const GALLERY = [
   {
     id: "exterior",
     label: "Exterior Rendering",
-    caption: "Full building facade — solar roof, perimeter wall, olive-tree plaza & signage",
-    src: "/gallery/exterior.svg",
+    caption: "Final form — dark metal facade cladding, high-performance Low-E glass, rooftop padel court, solar array & custom gold Shumul Center signage. Berqayel, Akkar.",
+    src: "/gallery/exterior.jpg",
   },
   {
     id: "design-process",
-    label: "Design Process & Site Analysis",
-    caption: "Berqayel site map, 3D massing iterations & material exploration",
-    src: "/gallery/design-process.svg",
-  },
-  {
-    id: "ground-floor",
-    label: "Ground Floor — Community",
-    caption: "Café, event hall, reception & direct garden access — 2D plan + 3D view",
-    src: "/gallery/ground-floor.svg",
-  },
-  {
-    id: "first-floor",
-    label: "1st Floor — Work & Collaboration",
-    caption: "Co-working space, meeting room & 10 private offices",
-    src: "/gallery/first-floor.svg",
-  },
-  {
-    id: "second-floor",
-    label: "2nd Floor — Media Production",
-    caption: "Broadcast radio studio, podcast studios, editing suites & director's suite",
-    src: "/gallery/second-floor.svg",
-  },
-  {
-    id: "floor-plans",
-    label: "Complete Floor Plans",
-    caption: "Annotated plans for all 6 levels on A–D structural grid",
-    src: "/gallery/floor-plans.svg",
+    label: "Design Process & Development",
+    caption: "Site analysis, 3D massing studies, spatial floor plan layouts & material exploration — from concept to final form. October 2024.",
+    src: "/gallery/design-process.jpg",
   },
 ];
 
@@ -197,7 +173,7 @@ function Gallery() {
       </div>
 
       {/* Thumbnails */}
-      <div className="grid grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {GALLERY.map((item, i) => (
           <button
             key={item.id}

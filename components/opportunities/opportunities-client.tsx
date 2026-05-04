@@ -29,6 +29,7 @@ import {
   CheckCircle2,
   X,
   RefreshCw,
+  Zap,
 } from "lucide-react";
 import type { Opportunity, Donor, Decision } from "@/app/generated/prisma/client";
 
@@ -136,6 +137,43 @@ export function OpportunitiesClient({
   const [, startTransition] = useTransition();
   const [searchDraft, setSearchDraft] = useState(filters.q);
 
+  // ── Re-score state ────────────────────────────────────────────────────────
+  const [rescoring, setRescoring] = useState(false);
+  const [rescoreMsg, setRescoreMsg] = useState<string | null>(null);
+
+  async function runRescore() {
+    setRescoring(true);
+    setRescoreMsg("Re-scoring...");
+    try {
+      const res = await fetch("/api/rescore", { method: "POST" });
+      if (!res.body) { setRescoring(false); return; }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        for (const line of decoder.decode(value).split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const { msg } = JSON.parse(line.slice(6));
+            if (!msg) continue;
+            if (msg.startsWith("__DONE__:")) {
+              const stats = JSON.parse(msg.slice(9));
+              setRescoreMsg(`✅ Updated ${stats.updated} of ${stats.total} opportunities`);
+              router.refresh();
+              setTimeout(() => { setRescoreMsg(null); setRescoring(false); }, 3000);
+            } else if (msg.startsWith("✅")) {
+              setRescoreMsg(msg);
+            }
+          } catch { /* ignore */ }
+        }
+      }
+    } catch {
+      setRescoreMsg("Error during re-score");
+      setRescoring(false);
+    }
+  }
+
   // ── Scanning banner state ──────────────────────────────────────────────────
   const [scanActive, setScanActive] = useState(initialScanning);
   const [scanLog, setScanLog] = useState<string[]>([]);
@@ -226,6 +264,14 @@ export function OpportunitiesClient({
 
   return (
     <div className="flex flex-col h-full">
+      {/* Re-score banner */}
+      {rescoreMsg && (
+        <div className="flex items-center gap-3 px-5 py-2.5 text-sm bg-violet-50 border-b border-violet-200 text-violet-800">
+          {rescoring ? <Loader2 size={14} className="animate-spin shrink-0" /> : <Zap size={14} className="shrink-0" />}
+          <span>{rescoreMsg}</span>
+        </div>
+      )}
+
       {/* Scanning banner */}
       {scanActive && (
         <div className={`flex items-start gap-3 px-5 py-3 text-sm border-b ${
@@ -296,6 +342,15 @@ export function OpportunitiesClient({
             <Download size={13} />
             Export
           </a>
+          <button
+            onClick={runRescore}
+            disabled={rescoring}
+            title="Re-score all opportunities against your current profile"
+            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-violet-300 hover:text-violet-600 hover:bg-violet-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {rescoring ? <Loader2 size={13} className="animate-spin" /> : <Zap size={13} />}
+            {rescoring ? "Re-scoring…" : "Re-score"}
+          </button>
           <button
             onClick={runScan}
             disabled={scanActive && !scanDone}
@@ -434,15 +489,36 @@ export function OpportunitiesClient({
                       )}
                     </td>
                     <td className="py-3 pr-4">
-                      {(() => {
-                        const label = getSourceLabel(opp);
-                        if (!label) return <span className="text-slate-400">—</span>;
-                        return (
-                          <span className="text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded font-medium whitespace-nowrap">
-                            {label}
-                          </span>
-                        );
-                      })()}
+                      <div className="flex flex-col gap-0.5">
+                        {(() => {
+                          const label = getSourceLabel(opp);
+                          if (!label) return null;
+                          return (
+                            <span className="text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded font-medium whitespace-nowrap w-fit">
+                              {label}
+                            </span>
+                          );
+                        })()}
+                        {(opp.foundAt || opp.createdAt) && (() => {
+                          const d = opp.foundAt ?? opp.createdAt;
+                          const days = Math.floor((Date.now() - new Date(d).getTime()) / 86400000);
+                          const label =
+                            days === 0 ? "Today" :
+                            days === 1 ? "Yesterday" :
+                            days < 7  ? `${days}d ago` :
+                            days < 30 ? `${Math.floor(days / 7)}w ago` :
+                            formatDate(d);
+                          return (
+                            <span
+                              className="text-xs text-slate-400 whitespace-nowrap"
+                              title={`Added: ${new Date(d).toLocaleDateString()}`}
+                              suppressHydrationWarning
+                            >
+                              {label}
+                            </span>
+                          );
+                        })()}
+                      </div>
                     </td>
                     <td className="py-3 pr-4">
                       {opp.deadlineDate ? (
