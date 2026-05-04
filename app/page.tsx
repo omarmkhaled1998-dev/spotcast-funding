@@ -628,9 +628,6 @@ export default function ShumulHubPage() {
               </div>
             ))}
           </div>
-          <p className="mb-6 text-sm text-white/80">
-            Reach out directly — we respond within 24 hours.
-          </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <a
               href="mailto:omar.khaled@spotcast.press"
