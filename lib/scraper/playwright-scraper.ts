@@ -6,6 +6,10 @@
  * and Windows.
  *
  * Max concurrent Playwright instances: 2 (Railway memory limits).
+ *
+ * IMPORTANT: chromium.launch() has a hard 15-second timeout via Promise.race
+ * so that a missing/broken Chromium binary fails fast instead of hanging the
+ * entire scrape process.
  */
 
 import { chromium } from "playwright-extra";
@@ -13,6 +17,9 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 // Register stealth plugin once
 chromium.use(StealthPlugin());
+
+// Hard cap on how long we'll wait for the browser to launch (ms)
+const LAUNCH_TIMEOUT_MS = 15_000;
 
 // Semaphore to cap concurrent browser instances
 let activeInstances = 0;
@@ -39,6 +46,37 @@ function releaseSlot() {
     const next = instanceQueue.shift()!;
     next();
   }
+}
+
+/**
+ * Launch a Playwright browser with a hard timeout so a missing/broken
+ * Chromium binary fails within LAUNCH_TIMEOUT_MS instead of hanging forever.
+ */
+async function launchBrowser() {
+  const launch = chromium.launch({
+    headless: true,
+    timeout: LAUNCH_TIMEOUT_MS,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-accelerated-2d-canvas",
+      "--no-first-run",
+      "--no-zygote",
+      "--single-process",
+      "--disable-gpu",
+    ],
+  });
+
+  // Race against a hard wall-clock timeout as a safety net
+  const timer = new Promise<never>((_, reject) =>
+    setTimeout(
+      () => reject(new Error(`Browser launch timed out after ${LAUNCH_TIMEOUT_MS / 1000}s — Chromium not available`)),
+      LAUNCH_TIMEOUT_MS + 2000
+    )
+  );
+
+  return Promise.race([launch, timer]);
 }
 
 export interface PlaywrightFetchOptions {
@@ -69,19 +107,7 @@ export async function fetchWithPlaywright(
 
   await acquireSlot();
 
-  const browser = await chromium.launch({
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-accelerated-2d-canvas",
-      "--no-first-run",
-      "--no-zygote",
-      "--single-process",
-      "--disable-gpu",
-    ],
-  });
+  const browser = await launchBrowser();
 
   try {
     const context = await browser.newContext({
@@ -158,19 +184,7 @@ export async function batchFetchWithPlaywright(
 
   await acquireSlot();
 
-  const browser = await chromium.launch({
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-accelerated-2d-canvas",
-      "--no-first-run",
-      "--no-zygote",
-      "--single-process",
-      "--disable-gpu",
-    ],
-  });
+  const browser = await launchBrowser();
 
   const results: string[] = [];
 
