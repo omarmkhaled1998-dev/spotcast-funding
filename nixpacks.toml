@@ -1,0 +1,31 @@
+# nixpacks.toml — Railway build config for Playwright/Chromium support
+#
+# Installs the system libraries Chromium requires on Ubuntu/Debian.
+# These are the same packages that 'playwright install --with-deps' would
+# install, but done here so 'playwright install chromium' (no --with-deps)
+# has all its dependencies available at build and runtime.
+
+[phases.setup]
+aptPkgs = [
+  "libnss3",
+  "libnspr4",
+  "libatk1.0-0",
+  "libatk-bridge2.0-0",
+  "libcups2",
+  "libdrm2",
+  "libgbm1",
+  "libxkbcommon0",
+  "libxcomposite1",
+  "libxdamage1",
+  "libxfixes3",
+  "libxrandr2",
+  "libasound2",
+  "libpango-1.0-0",
+  "libcairo2",
+  "libatspi2.0-0",
+  "libx11-6",
+  "libxcb1",
+  "libxext6",
+  "fonts-liberation",
+  "ca-certificates"
+]
