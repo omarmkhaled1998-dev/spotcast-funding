@@ -9,6 +9,7 @@ import {
   CreditCard,
   Globe,
   ArrowRight,
+  Activity,
 } from "lucide-react";
 
 const SETTINGS_SECTIONS = [
@@ -23,6 +24,12 @@ const SETTINGS_SECTIONS = [
     icon: Globe,
     label: "Opportunity Sources",
     description: "Add custom websites to scrape and configure scraping frequency.",
+  },
+  {
+    href: "/settings/health",
+    icon: Activity,
+    label: "Source Health Monitor",
+    description: "Daily automated checks: connectivity, Cloudflare blocks, site structure, stuck jobs.",
   },
   {
     href: "/settings/members",

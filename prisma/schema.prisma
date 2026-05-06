@@ -160,6 +160,11 @@ model OpportunitySource {
   lastErrorAt          DateTime?
   lastError            String?
   checkFrequencyHours  Int            @default(24)
+  // ── Health monitoring ─────────────────────────────────────────────────────
+  healthStatus         SourceHealth   @default(UNCHECKED)
+  healthCheckedAt      DateTime?
+  healthError          String?        // Last health check error message
+  consecutiveFailures  Int            @default(0)
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
 }
@@ -169,6 +174,13 @@ enum ScrapeStrategy {
   HTTP
   PLAYWRIGHT
   APPLESCRIPT
+}
+
+enum SourceHealth {
+  HEALTHY    // Last check passed, site reachable and returning content
+  DEGRADED   // Site reachable but fewer results than expected / partial issues
+  FAILING    // Last check failed (timeout, error, blocked)
+  UNCHECKED  // Never been health-checked
 }
 
 // ─── AI OUTPUTS ───────────────────────────────────────────────────────────────

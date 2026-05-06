@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // instrumentation.ts is enabled by default in Next.js 15
   serverExternalPackages: [
+    // node-cron must not be bundled
+    "node-cron",
     // Playwright and stealth plugin are Node.js-only and must not be bundled
     "playwright",
     "playwright-extra",
