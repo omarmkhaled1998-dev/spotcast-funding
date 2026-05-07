@@ -277,10 +277,13 @@ export async function checkSource(
     const pwAvail = isPlaywrightAvailable();
     const newStatus = pwAvail ? "DEGRADED" : "FAILING";
 
-    // For sources that USE Playwright strategy — even DEGRADED is acceptable
-    // because the actual scraper will handle CF via Playwright
-    const isPlaywrightSource = source.strategy === "PLAYWRIGHT";
-    const effectiveStatus = isPlaywrightSource && pwAvail ? "HEALTHY" : newStatus;
+    // If Playwright is available we CAN scrape Cloudflare-protected sites —
+    // regardless of the stored strategy (AUTO / PLAYWRIGHT / APPLESCRIPT all
+    // end up using the Playwright scraper for CF sites; only HTTP-only can't).
+    // APPLESCRIPT on non-macOS is automatically replaced by Playwright in the
+    // ingest dispatcher, so treat it the same as PLAYWRIGHT here.
+    const canUsePlaywright = source.strategy !== "HTTP" && pwAvail;
+    const effectiveStatus = canUsePlaywright ? "HEALTHY" : newStatus;
 
     await persistHealth(source.id, effectiveStatus, checks, checkedAt);
     return makeResult(source, effectiveStatus !== "FAILING", effectiveStatus, checks, checkedAt);

@@ -93,6 +93,10 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+# Tell Playwright exactly where to find the Chromium binary we installed as root.
+# Without this, when the app runs as the non-root "nextjs" user, Playwright resolves
+# the path relative to that user's home dir (~/.cache/ms-playwright) which doesn't exist.
+ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
 
 # Re-install Chromium system libraries in the runner stage
 RUN apt-get update && apt-get install -y --no-install-recommends \

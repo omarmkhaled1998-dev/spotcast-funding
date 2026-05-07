@@ -13,9 +13,33 @@ import { runWorkspaceHealthCheck, fixStuckJobs } from "./source-checker";
 
 let started = false;
 
+/**
+ * One-time startup migration: update any OpportunitySource rows that still
+ * have strategy=APPLESCRIPT to PLAYWRIGHT. AppleScript only works on macOS;
+ * on Railway (Linux) the ingest dispatcher already uses the Playwright scraper
+ * for earthjournalism.net regardless of the stored strategy, but the health
+ * checker and the UI should reflect the correct value.
+ */
+async function migrateApplescriptSources() {
+  try {
+    const result = await db.opportunitySource.updateMany({
+      where: { strategy: "APPLESCRIPT" },
+      data: { strategy: "PLAYWRIGHT" },
+    });
+    if (result.count > 0) {
+      console.log(`[health-worker] Migrated ${result.count} source(s) from APPLESCRIPT → PLAYWRIGHT`);
+    }
+  } catch (err) {
+    console.error("[health-worker] Failed to migrate APPLESCRIPT sources:", (err as Error).message);
+  }
+}
+
 export function startHealthWorker() {
   if (started) return; // guard against hot-reload double-start
   started = true;
+
+  // ── One-time startup migrations ──────────────────────────────────────────
+  migrateApplescriptSources().catch(() => {});
 
   // ── Daily health check — 06:00 UTC ──────────────────────────────────────
   cron.schedule("0 6 * * *", async () => {
