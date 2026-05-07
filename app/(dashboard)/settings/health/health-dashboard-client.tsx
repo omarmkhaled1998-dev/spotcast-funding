@@ -52,7 +52,7 @@ const STATUS_CONFIG: Record<HealthStatus, {
   },
   DEGRADED: {
     icon: <AlertTriangle size={14} />,
-    label: "Degraded",
+    label: "Needs browser",
     bg: "bg-amber-50",
     text: "text-amber-700",
     border: "border-amber-200",
@@ -296,12 +296,31 @@ export function HealthDashboardClient({
                       {/* Issues list */}
                       {issues.length > 0 && (
                         <div className="mt-2 space-y-1">
-                          {issues.map((issue, i) => (
-                            <div key={i} className="flex items-start gap-1.5 text-xs text-slate-600">
-                              <AlertTriangle size={11} className="mt-0.5 shrink-0 text-amber-500" />
-                              <span>{issue}</span>
-                            </div>
-                          ))}
+                          {issues.map((issue, i) => {
+                            const isCf = issue.toLowerCase().includes("cloudflare");
+                            const isOk = issue.includes("✓");
+                            return (
+                              <div key={i} className={`flex items-start gap-1.5 text-xs ${
+                                isOk ? "text-green-700" : isCf ? "text-amber-700" : "text-slate-600"
+                              }`}>
+                                {isOk
+                                  ? <CheckCircle2 size={11} className="mt-0.5 shrink-0 text-green-500" />
+                                  : isCf
+                                  ? <Shield size={11} className="mt-0.5 shrink-0 text-amber-500" />
+                                  : <AlertTriangle size={11} className="mt-0.5 shrink-0 text-amber-500" />}
+                                <span>{issue}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Cloudflare explanation tip */}
+                      {s.healthStatus === "FAILING" && s.healthError?.toLowerCase().includes("cloudflare") && !s.healthError?.includes("✓") && (
+                        <div className="mt-2 px-2 py-1.5 bg-slate-100 rounded text-xs text-slate-600 leading-relaxed">
+                          💡 <strong>This is expected.</strong> This site uses Cloudflare protection that blocks plain HTTP.
+                          The scraper uses a Playwright browser to bypass it — if scraping is failing, the browser may not be installed on the server.
+                          Check Railway build logs for <code className="bg-slate-200 px-0.5 rounded">playwright install chromium</code>.
                         </div>
                       )}
                     </div>
