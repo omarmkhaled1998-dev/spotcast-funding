@@ -1,8 +1,5 @@
 [build]
-buildCommand = "npm ci && npx playwright install chromium && npx prisma generate && npm run build"
-
-[build.nixpacksPlan.variables]
-PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
+dockerfilePath = "Dockerfile"
 
 [deploy]
 startCommand = "npm start"
