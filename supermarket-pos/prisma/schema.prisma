@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./pos.db"
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  nameAr    String
+  nameEn    String
+  color     String    @default("#6366f1")
+  icon      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products  Product[]
+}
+
+model Product {
+  id         String    @id @default(cuid())
+  barcode    String?   @unique
+  nameAr     String
+  nameEn     String
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  price      Float
+  cost       Float?
+  unit       String    @default("قطعة")
+  stock      Float     @default(0)
+  minStock   Float     @default(5)
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  saleItems  SaleItem[]
+}
+
+model Sale {
+  id            String        @id @default(cuid())
+  receiptNo     Int
+  subtotal      Float
+  discount      Float         @default(0)
+  tax           Float         @default(0)
+  total         Float
+  amountPaid    Float
+  change        Float         @default(0)
+  paymentMethod PaymentMethod @default(CASH)
+  notes         String?
+  createdAt     DateTime      @default(now())
+
+  items         SaleItem[]
+}
+
+model SaleItem {
+  id        String  @id @default(cuid())
+  saleId    String
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  nameAr    String
+  nameEn    String
+  price     Float
+  quantity  Float
+  discount  Float   @default(0)
+  total     Float
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  MOBILE
+}
