@@ -1,11 +1,10 @@
 /**
- * Playwright + stealth scraper — cross-platform replacement for AppleScript.
+ * Playwright + stealth scraper — cross-platform, works on Vercel serverless.
  *
- * Uses playwright-extra + puppeteer-extra-plugin-stealth to bypass Cloudflare
- * Managed Challenge and similar bot-detection. Works on macOS, Linux (Railway),
- * and Windows.
+ * On Vercel (VERCEL=1): uses @sparticuz/chromium to get a serverless-compatible
+ * Chromium binary, combined with playwright-extra + stealth.
  *
- * Max concurrent Playwright instances: 2 (Railway memory limits).
+ * Locally / Railway: uses the playwright-bundled Chromium as before.
  */
 
 import { chromium } from "playwright-extra";
@@ -13,6 +12,27 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 // Register stealth plugin once
 chromium.use(StealthPlugin());
+
+const IS_VERCEL = !!process.env.VERCEL;
+
+async function getExecutablePath(): Promise<string | undefined> {
+  if (!IS_VERCEL) return undefined; // use playwright's bundled Chromium
+  const sparticuz = (await import("@sparticuz/chromium")).default;
+  return sparticuz.executablePath();
+}
+
+function getChromiumArgs(): string[] {
+  return [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-accelerated-2d-canvas",
+    "--no-first-run",
+    "--no-zygote",
+    "--single-process",
+    "--disable-gpu",
+  ];
+}
 
 // Semaphore to cap concurrent browser instances
 let activeInstances = 0;
@@ -69,18 +89,11 @@ export async function fetchWithPlaywright(
 
   await acquireSlot();
 
+  const executablePath = await getExecutablePath();
   const browser = await chromium.launch({
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-accelerated-2d-canvas",
-      "--no-first-run",
-      "--no-zygote",
-      "--single-process",
-      "--disable-gpu",
-    ],
+    executablePath,
+    args: getChromiumArgs(),
   });
 
   try {
@@ -94,7 +107,6 @@ export async function fetchWithPlaywright(
 
     const page = await context.newPage();
 
-    // Block images and fonts to speed things up
     await page.route("**/*.{png,jpg,jpeg,gif,webp,svg,woff,woff2,ttf,otf}", (route) =>
       route.abort()
     );
@@ -158,18 +170,11 @@ export async function batchFetchWithPlaywright(
 
   await acquireSlot();
 
+  const executablePath = await getExecutablePath();
   const browser = await chromium.launch({
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-accelerated-2d-canvas",
-      "--no-first-run",
-      "--no-zygote",
-      "--single-process",
-      "--disable-gpu",
-    ],
+    executablePath,
+    args: getChromiumArgs(),
   });
 
   const results: string[] = [];
