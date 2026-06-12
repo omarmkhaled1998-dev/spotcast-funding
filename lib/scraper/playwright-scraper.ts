@@ -21,6 +21,14 @@ chromium.use(StealthPlugin());
 // Hard cap on how long we'll wait for the browser to launch (ms)
 const LAUNCH_TIMEOUT_MS = 15_000;
 
+const IS_VERCEL = !!process.env.VERCEL;
+
+async function getExecutablePath(): Promise<string | undefined> {
+  if (!IS_VERCEL) return undefined; // playwright bundles its own Chromium locally
+  const sparticuz = (await import("@sparticuz/chromium")).default;
+  return sparticuz.executablePath();
+}
+
 // Semaphore to cap concurrent browser instances
 let activeInstances = 0;
 const MAX_INSTANCES = 2;
@@ -53,8 +61,10 @@ function releaseSlot() {
  * Chromium binary fails within LAUNCH_TIMEOUT_MS instead of hanging forever.
  */
 async function launchBrowser() {
+  const executablePath = await getExecutablePath();
   const launch = chromium.launch({
     headless: true,
+    executablePath,
     timeout: LAUNCH_TIMEOUT_MS,
     args: [
       "--no-sandbox",
