@@ -163,7 +163,7 @@ function Input({ label, ...props }: { label: string } & React.InputHTMLAttribute
   return (
     <div>
       <label className="block text-xs font-semibold mb-1" style={{ color: NAVY }}>{label}</label>
-      <input {...props} className="w-full rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2" style={{ border: `1px solid ${BORDER}`, background: "#fafafa", color: NAVY, ringColor: R }} />
+      <input {...props} className="w-full rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2" style={{ border: `1px solid ${BORDER}`, background: "#fafafa", color: NAVY }} />
     </div>
   );
 }

@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     const transport = getTransport();
     const isInstitution = type === "institution";
 
-    const emailData = isInstitution ? {
+    const emailData: Record<string, string> = isInstitution ? {
       "Organization Name": fields.orgName,
       "Type": fields.orgType,
       "Location": fields.location,
