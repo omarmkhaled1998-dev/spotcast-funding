@@ -1,292 +1,530 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { SpotCastLogo } from "@/components/hub/SpotCastLogo";
 
-const ROSE = "#C4607A";
-const NAVY = "#0e2334";
-const GRAY = "#839ba3";
-const LIGHT = "#f5f3f0";
+/* ─── Design tokens ─────────────────────────────────────────── */
+const R = "#C4607A";
+const RD = "#9e3d55";
+const RL = "#fdf0f4";
+const NAVY = "#1a1a2e";
+const GRAY = "#6b7280";
+const BORDER = "#e5e7eb";
 const FONT = "var(--font-cairo), 'Cairo', 'Segoe UI', sans-serif";
 
-function Divider({ label }: { label?: string }) {
+/* ─── Content ───────────────────────────────────────────────── */
+const WINS = [
+  { icon: "🎓", title: "الطلاب", desc: "تدريب ميداني حقيقي وشهادة معتمدة ومهارات جاهزة لسوق العمل على مدى ٦ أشهر" },
+  { icon: "🏢", title: "المؤسسات", desc: "خدمات مالية وقانونية ورقمية — مجانية بالكامل وممولة من المانحين" },
+  { icon: "🌱", title: "SpotCast", desc: "أثر مجتمعي موثّق ونتائج قابلة للقياس وأهلية للحصول على المنح الدولية" },
+  { icon: "🤝", title: "INJAZ Lebanon", desc: "توسيع الانتشار في عكار وتوفير فرص حقيقية للطلاب وتعاون في قياس الأثر" },
+];
+
+const PILLARS = [
+  {
+    n: "01", tag: "مالية · أعمال",
+    title: "الأنظمة المالية والاستدامة",
+    items: ["إعداد أنظمة محاسبية وإطار التخطيط المالي", "تنويع الإيرادات ونماذج الاستدامة المؤسسية", "إرشادات تبني منظومة الدفع الرقمي", "تصميم سياسات المخزون واستراتيجية التسعير"],
+  },
+  {
+    n: "02", tag: "قانون · إدارة",
+    title: "الامتثال القانوني وكتابة المقترحات",
+    items: ["دعم التسجيل القانوني وإعداد ملفات المناقصات", "إرشادات الامتثال الضريبي والتوثيق", "كتابة مقترحات المنح للمؤسسات المستفيدة", "نماذج العقود وإطار الامتثال المؤسسي"],
+  },
+  {
+    n: "03", tag: "إعلام · تقنية",
+    title: "الحضور الرقمي والاستقلالية",
+    items: ["إنشاء منصات التواصل الاجتماعي وإدارتها واستراتيجية المحتوى", "تطوير الموقع الإلكتروني وأساسيات تحسين محركات البحث", "خطة المحتوى الشهرية والجدولة", "تدريب الفريق على الأدوات الرقمية — بهدف الاستقلالية التامة"],
+  },
+];
+
+const PHASES = [
+  {
+    tag: "المرحلة ٠", name: "التأسيس", period: "أغسطس – سبتمبر ٢٠٢٦",
+    bg: "#a84060", periodBg: "#f5d5de", periodColor: "#7a1f35",
+    items: ["توقيع اتفاقية الشراكة الرسمية مع INJAZ Lebanon", "تحديد والتحقق من ٣–٥ مؤسسات تجريبية في عكار", "بناء معايير اختيار الطلاب وحزمة التدريب التمهيدي", "تصميم أداة التشخيص المؤسسي (١٥–٢٠ سؤال)"],
+  },
+  {
+    tag: "المرحلة ١", name: "التجريب", period: "أكتوبر – ديسمبر ٢٠٢٦",
+    bg: R, periodBg: "#f0c8d4", periodColor: "#6a1f35",
+    items: ["استقطاب ٦–٩ متدربين من جامعات شمال لبنان", "توزيع ٢–٣ متدربين لكل مؤسسة لمدة شهرين", "تنفيذ خطط تطوير مخصصة لكل مؤسسة", "توثيق دقيق لجميع المخرجات ومؤشرات الأثر"],
+  },
+  {
+    tag: "المرحلة ٢", name: "التوسع والتمويل", period: "يناير – مارس ٢٠٢٧",
+    bg: "#7a2535", periodBg: "#e0a8b8", periodColor: "#50091a",
+    items: ["إعداد تقرير الأثر وقصص النجاح الموثقة", "بناء مقترح تمويل دولي شامل", "التقديم لـ EU Delegation وGIZ وSwisscontact وUNICEF", "التوسع لأكثر من ١٠ مؤسسات في شمال لبنان"],
+  },
+];
+
+const SECTORS = ["الزراعة والصناعات الغذائية", "الحرف التقليدية والمهن", "التجارة المحلية", "الخدمات الرقمية والتقنية", "التعاونيات الزراعية", "تعاونيات المرأة", "جمعيات الشباب", "المبادرات البلدية"];
+
+const RESPONSIBILITIES = {
+  injaz: ["استقطاب طلاب الجامعات وخريجيها من جامعات شمال لبنان", "تخصصات الطلاب: إدارة الأعمال، القانون، الإعلام والاتصالات، التقنية", "تغطية بدل نقل الطلاب طوال فترة التوظيف الممتدة لشهرين"],
+  shumul: ["البحث عن المؤسسات المستفيدة وتقييمها وإدراجها وفق معايير محددة", "تطوير وإدارة أداة التشخيص المؤسسي (١٥–٢٠ سؤال)", "الإشراف الميداني الكامل وإدارة المتدربين والتنسيق اللوجستي", "التوثيق وإعداد تقارير الأثر والاتصالات وطلبات المنح"],
+};
+
+/* ─── InstitutionForm ─────────────────────────────────────── */
+function InstitutionForm({ onDone }: { onDone: () => void }) {
+  const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState({ orgName: "", orgType: "", location: "", teamSize: "", challenges: "", description: "", contactName: "", email: "", phone: "" });
+  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setData(d => ({ ...d, [k]: e.target.value }));
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    await fetch("/api/initiatives/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "institution", ...data }) });
+    setLoading(false);
+    onDone();
+  }
+
+  const s0 = (
+    <div className="space-y-4">
+      <Input label="اسم المؤسسة *" value={data.orgName} onChange={set("orgName")} required placeholder="أدخل اسم مؤسستك" />
+      <Select label="نوع المؤسسة *" value={data.orgType} onChange={set("orgType")} required
+        placeholder="اختر..."
+        options={["جمعية شبابية", "مشروع صغير أو متناهي الصغر", "تعاونية", "مبادرة بلدية", "منظمة غير حكومية", "أخرى"]} />
+      <Select label="المنطقة *" value={data.location} onChange={set("location")} required
+        placeholder="اختر..."
+        options={["عكار", "شمال لبنان (مناطق أخرى)", "كلاهما"]} />
+      <Select label="حجم الفريق" value={data.teamSize} onChange={set("teamSize")}
+        placeholder="اختر..."
+        options={["١–٥ أشخاص", "٦–١٥ شخص", "١٦–٥٠ شخص", "أكثر من ٥٠"]} />
+    </div>
+  );
+  const s1 = (
+    <div className="space-y-4">
+      <Select label="أبرز تحدياتكم *" value={data.challenges} onChange={set("challenges")} required
+        placeholder="اختر..."
+        options={["الأنظمة المالية والاستدامة", "الامتثال القانوني وكتابة المقترحات", "الحضور الرقمي والتواصل", "المحاور الثلاثة مجتمعة"]} />
+      <Textarea label="وصف مختصر لمؤسستكم *" value={data.description} onChange={set("description")} rows={3} required placeholder="ماذا تفعل مؤسستك؟ وما الذي تأمل تحقيقه بدعم مبادرة شمول؟" />
+    </div>
+  );
+  const s2 = (
+    <div className="space-y-4">
+      <Input label="اسم جهة الاتصال *" value={data.contactName} onChange={set("contactName")} required placeholder="الاسم الكامل" />
+      <Input label="البريد الإلكتروني *" type="email" value={data.email} onChange={set("email")} required placeholder="example@domain.com" />
+      <Input label="رقم الهاتف" type="tel" value={data.phone} onChange={set("phone")} placeholder="+961 xx xxx xxx" />
+    </div>
+  );
+  const steps = [s0, s1, s2];
+  const labels = ["بيانات المؤسسة", "تقييم الاحتياجات", "معلومات التواصل"];
+
   return (
-    <div className="flex items-center gap-3 my-2">
-      <div className="flex-1 h-px" style={{ background: `${ROSE}30` }} />
-      {label && (
-        <span style={{ color: ROSE, fontFamily: FONT, fontSize: 11, letterSpacing: 2, textTransform: "uppercase" }}>
-          {label}
-        </span>
-      )}
-      <div className="flex-1 h-px" style={{ background: `${ROSE}30` }} />
+    <form onSubmit={submit} dir="rtl" style={{ fontFamily: FONT }}>
+      <StepIndicator steps={labels} current={step} />
+      <div className="mt-5">{steps[step]}</div>
+      <div className="flex gap-3 mt-6">
+        {step > 0 && <button type="button" onClick={() => setStep(s => s - 1)} className="flex-1 rounded-xl py-3 text-sm font-semibold" style={{ border: `1px solid ${BORDER}`, color: GRAY, fontFamily: FONT }}>→ رجوع</button>}
+        {step < steps.length - 1
+          ? <button type="button" onClick={() => setStep(s => s + 1)} className="flex-1 rounded-xl py-3 text-sm font-bold text-white" style={{ background: R, fontFamily: FONT }}>← التالي</button>
+          : <button type="submit" disabled={loading} className="flex-1 rounded-xl py-3 text-sm font-bold text-white" style={{ background: loading ? "#c49" : R, fontFamily: FONT }}>
+              {loading ? "جارٍ الإرسال…" : "إرسال الطلب"}
+            </button>}
+      </div>
+    </form>
+  );
+}
+
+function StudentForm({ onDone }: { onDone: () => void }) {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState({ fullName: "", university: "", faculty: "", year: "", email: "", phone: "", motivation: "" });
+  const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setData(d => ({ ...d, [k]: e.target.value }));
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    await fetch("/api/initiatives/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "student", ...data }) });
+    setLoading(false);
+    onDone();
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-4" dir="rtl" style={{ fontFamily: FONT }}>
+      <Input label="الاسم الكامل *" value={data.fullName} onChange={set("fullName")} required placeholder="أدخل اسمك الكامل" />
+      <div className="grid grid-cols-2 gap-3">
+        <Select label="الجامعة *" value={data.university} onChange={set("university")} required placeholder="اختر..."
+          options={["الجامعة اللبنانية الدولية (LIU)", "الجامعة الأمريكية للتكنولوجيا (AUT)", "جامعة البلمند", "الجامعة اللبنانية", "أخرى"]} />
+        <Select label="الكلية / التخصص *" value={data.faculty} onChange={set("faculty")} required placeholder="اختر..."
+          options={["إدارة الأعمال", "القانون", "الإعلام والاتصالات", "تقنية المعلومات", "الهندسة", "أخرى"]} />
+      </div>
+      <Select label="السنة الدراسية *" value={data.year} onChange={set("year")} required placeholder="اختر..."
+        options={["السنة الأولى", "السنة الثانية", "السنة الثالثة", "السنة الرابعة", "الدراسات العليا", "خريج حديث"]} />
+      <div className="grid grid-cols-2 gap-3">
+        <Input label="البريد الإلكتروني *" type="email" value={data.email} onChange={set("email")} required placeholder="example@domain.com" />
+        <Input label="رقم الهاتف" type="tel" value={data.phone} onChange={set("phone")} placeholder="+961" />
+      </div>
+      <Textarea label="لماذا تريد الانضمام؟ *" value={data.motivation} onChange={set("motivation")} rows={3} required placeholder="حدثنا عن اهتمامك بالمبادرة وما الذي تأمل المساهمة به…" />
+      <button type="submit" disabled={loading} className="w-full rounded-xl py-3 text-sm font-bold text-white mt-2" style={{ background: loading ? "#c49" : R, fontFamily: FONT }}>
+        {loading ? "جارٍ الإرسال…" : "تقديم الطلب"}
+      </button>
+    </form>
+  );
+}
+
+/* ─── Mini UI primitives ─────────────────────────────────────── */
+function Input({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold mb-1" style={{ color: NAVY, fontFamily: FONT }}>{label}</label>
+      <input {...props} className="w-full rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2" style={{ border: `1px solid ${BORDER}`, background: "#fafafa", color: NAVY, fontFamily: FONT }} />
+    </div>
+  );
+}
+function Select({ label, options, placeholder, ...props }: { label: string; options: string[]; placeholder?: string } & React.SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold mb-1" style={{ color: NAVY, fontFamily: FONT }}>{label}</label>
+      <select {...props} className="w-full rounded-lg px-3 py-2.5 text-sm outline-none" style={{ border: `1px solid ${BORDER}`, background: "#fafafa", color: props.value ? NAVY : GRAY, fontFamily: FONT }}>
+        <option value="">{placeholder || "اختر..."}</option>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </div>
+  );
+}
+function Textarea({ label, ...props }: { label: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold mb-1" style={{ color: NAVY, fontFamily: FONT }}>{label}</label>
+      <textarea {...props} className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none" style={{ border: `1px solid ${BORDER}`, background: "#fafafa", color: NAVY, fontFamily: FONT }} />
+    </div>
+  );
+}
+function StepIndicator({ steps, current }: { steps: string[]; current: number }) {
+  return (
+    <div className="flex items-center gap-1">
+      {steps.map((s, i) => (
+        <div key={i} className="flex items-center gap-1 flex-1">
+          <div className="flex items-center gap-2 flex-1">
+            <div className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold flex-shrink-0"
+              style={{ background: i <= current ? R : BORDER, color: i <= current ? "#fff" : GRAY }}>
+              {i < current ? "✓" : i + 1}
+            </div>
+            <span className="text-xs hidden sm:block" style={{ color: i === current ? R : GRAY, fontWeight: i === current ? 600 : 400, fontFamily: FONT }}>{s}</span>
+          </div>
+          {i < steps.length - 1 && <div className="h-px flex-1 mx-1" style={{ background: i < current ? R : BORDER }} />}
+        </div>
+      ))}
     </div>
   );
 }
 
-const PILLARS = [
-  {
-    n: "01",
-    title: "الأنظمة المالية والاستدامة",
-    items: ["أنظمة محاسبية ومالية", "التخطيط المالي ونماذج الاستدامة", "إرشادات الدفع الرقمي", "سياسات المخزون والتسعير"],
-  },
-  {
-    n: "02",
-    title: "الامتثال القانوني والمقترحات",
-    items: ["التسجيل القانوني وملفات المناقصات", "دليل الامتثال الضريبي", "كتابة المقترحات وطلبات المنح", "ملفات العروض والتقديم للمانحين"],
-  },
-  {
-    n: "03",
-    title: "الحضور الرقمي والتواصل",
-    items: ["التدقيق الرقمي وإعداد حسابات التواصل الاجتماعي", "بناء الموقع الإلكتروني", "خطة المحتوى الشهرية", "تدريب الفريق على الأدوات الرقمية"],
-  },
-];
+/* ─── Modal ──────────────────────────────────────────────────── */
+function Modal({ title, subtitle, onClose, children }: { title: string; subtitle: string; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.55)" }}>
+      <div className="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl" style={{ background: "#fff", maxHeight: "92vh", overflowY: "auto" }}>
+        <div className="px-6 pt-6 pb-4" style={{ background: `linear-gradient(135deg, ${RD}, ${R})` }}>
+          <div className="flex justify-between items-start" dir="rtl">
+            <div>
+              <h3 className="font-bold text-white text-lg" style={{ fontFamily: FONT }}>{title}</h3>
+              {subtitle && <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.8)", fontFamily: FONT }}>{subtitle}</p>}
+            </div>
+            <button onClick={onClose} className="text-white/70 hover:text-white text-xl leading-none mr-4">✕</button>
+          </div>
+        </div>
+        <div className="p-6">{children}</div>
+      </div>
+    </div>
+  );
+}
 
-const STEPS = [
-  { n: "١", title: "المؤسسة تتقدم", desc: "تُسجّل المؤسسة الناشئة طلبها عبر نموذج بسيط. يتضمن وصفاً لطبيعة عملها واحتياجاتها." },
-  { n: "٢", title: "فريق الطلاب يُشخّص", desc: "فريق من طلاب الجامعات يزور المؤسسة ويُجري تحليلاً ميدانياً دقيقاً لتحديد الأولويات." },
-  { n: "٣", title: "خطة عمل تُنفَّذ خلال ٦ أشهر", desc: "يُنجز الفريق خطة عمل شاملة مع المؤسسة ويتابع تنفيذها خطوة بخطوة على مدى ستة أشهر." },
-];
+function SuccessView({ message, onClose }: { message: string; onClose: () => void }) {
+  return (
+    <div className="text-center py-6" dir="rtl">
+      <div className="text-5xl mb-4">✅</div>
+      <h3 className="font-bold text-lg mb-2" style={{ color: NAVY, fontFamily: FONT }}>تم الإرسال بنجاح!</h3>
+      <p className="text-sm mb-6" style={{ color: GRAY, fontFamily: FONT }}>{message}</p>
+      <button onClick={onClose} className="rounded-full px-8 py-3 text-sm font-bold text-white" style={{ background: R, fontFamily: FONT }}>إغلاق</button>
+    </div>
+  );
+}
 
-const BENEFICIARIES = [
-  "جمعيات الشباب والمبادرات المجتمعية",
-  "المشاريع الصغيرة والمتناهية الصغر",
-  "التعاونيات المحلية",
-  "المبادرات البلدية",
-];
+/* ─── Section divider ─────────────────────────────────────────── */
+function Divider({ label }: { label?: string }) {
+  return (
+    <div className="flex items-center gap-3 my-2">
+      <div className="flex-1 h-px" style={{ background: `${R}30` }} />
+      {label && <span className="text-xs tracking-widest uppercase px-2" style={{ color: R, fontFamily: FONT }}>{label}</span>}
+      <div className="flex-1 h-px" style={{ background: `${R}30` }} />
+    </div>
+  );
+}
 
-export default function ShumulInitiativeArabic() {
+/* ─── Page ───────────────────────────────────────────────────── */
+export default function ShumulInitiativeAR() {
+  const [modal, setModal] = useState<"institution" | "student" | null>(null);
+  const [done, setDone] = useState<"institution" | "student" | null>(null);
+
   return (
     <div className="min-h-screen" style={{ background: "#fff", color: NAVY, fontFamily: FONT }} dir="rtl">
 
       {/* ── Nav ── */}
-      <header className="sticky top-0 z-50 backdrop-blur-sm" style={{ background: "rgba(255,255,255,0.96)", borderBottom: `1px solid ${ROSE}22` }}>
+      <header className="sticky top-0 z-40 backdrop-blur-sm" style={{ background: "rgba(255,255,255,0.96)", borderBottom: `1px solid ${BORDER}` }}>
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
-            <SpotCastLogo size={36} variant="color" />
+            <SpotCastLogo size={34} variant="color" />
             <div>
-              <p className="font-bold leading-tight" style={{ color: NAVY, fontSize: 15, fontFamily: FONT }}>مبادرة شمول</p>
-              <p style={{ color: GRAY, fontFamily: FONT, fontSize: 12 }}>للتطوير المؤسسي · عكار والشمال</p>
+              <p className="text-sm font-bold" style={{ color: NAVY, fontFamily: FONT }}>مبادرة شمول</p>
+              <p className="text-xs" style={{ color: GRAY, fontFamily: FONT }}>للتطوير المؤسسي · عكار والشمال</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link
-              href="/initiatives/shumul/en"
-              style={{ fontFamily: FONT, fontSize: 12, color: GRAY, border: `1px solid ${GRAY}44`, borderRadius: 20, padding: "4px 14px" }}
-              className="hover:border-rose-400 hover:text-rose-500 transition-colors"
-            >
+            <Link href="/initiatives/shumul/en" className="text-xs px-3 py-1.5 rounded-full transition-colors" style={{ color: GRAY, border: `1px solid ${BORDER}`, fontFamily: FONT }}>
               English
             </Link>
-            <a href="#register" className="rounded-full px-5 py-2 text-sm font-semibold text-white" style={{ background: ROSE, fontFamily: FONT }}>
-              سجّل مؤسستك
-            </a>
+            <button onClick={() => setModal("institution")} className="rounded-full px-5 py-2 text-sm font-semibold text-white" style={{ background: R, fontFamily: FONT }}>
+              سجّل الآن
+            </button>
           </div>
         </div>
       </header>
 
       {/* ── Hero ── */}
-      <section style={{ background: NAVY, minHeight: "68vh" }} className="flex items-center px-6 py-20">
-        <div className="mx-auto w-full max-w-4xl text-center text-white">
-          <p style={{ color: ROSE, fontFamily: FONT, fontSize: 12, letterSpacing: 3, textTransform: "uppercase", marginBottom: 16 }}>
-            SpotCast · مبادرة مجانية ممولة بالكامل
-          </p>
-          <h1 className="font-extrabold leading-snug mb-4" style={{ fontSize: "clamp(28px, 5vw, 48px)", fontFamily: FONT }}>
-            مبادرة شمول للتطوير المؤسسي
-          </h1>
-          <p className="font-semibold mb-4" style={{ fontSize: "clamp(16px, 2.5vw, 22px)", color: ROSE, fontFamily: FONT }}>
-            مؤسسات تنمو · شباب يتعلم · اقتصاد يتحرك
-          </p>
-          <p className="mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: GRAY, fontFamily: FONT, fontSize: 15 }}>
-            خدمات تطوير مؤسسي مجانية للمؤسسات الناشئة في عكار والشمال — مقدَّمة من فرق طلابية متخصصة
-            بإشراف مهني، ضمن نموذج ممول بالكامل من المانحين.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a href="#register" className="rounded-full px-8 py-3 font-bold text-white" style={{ background: ROSE, fontFamily: FONT, fontSize: 14 }}>
-              سجّل مؤسستك ←
-            </a>
-            <a href="#students" className="rounded-full px-8 py-3 font-semibold" style={{ border: `1px solid ${GRAY}`, color: GRAY, fontFamily: FONT, fontSize: 14 }}
-              onMouseOver={(e) => { e.currentTarget.style.borderColor = ROSE; e.currentTarget.style.color = ROSE; }}
-              onMouseOut={(e) => { e.currentTarget.style.borderColor = GRAY; e.currentTarget.style.color = GRAY; }}
-            >
-              انضم كطالب
-            </a>
+      <section style={{ background: `linear-gradient(135deg, #7a1f35 0%, ${R} 55%, #d97a92 100%)`, minHeight: "72vh", position: "relative", overflow: "hidden" }} className="flex items-center px-6 py-20">
+        <div style={{ position: "absolute", top: -80, left: -60, width: 320, height: 320, background: "rgba(255,255,255,0.05)", borderRadius: "50%" }} />
+        <div style={{ position: "absolute", bottom: -60, right: 60, width: 200, height: 200, background: "rgba(255,255,255,0.04)", borderRadius: "50%" }} />
+        <div className="mx-auto w-full max-w-5xl relative z-10">
+          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.28)" }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-white inline-block" />
+            <span className="text-white/90 text-xs font-semibold" style={{ fontFamily: FONT }}>ملخص البرنامج · شراكة INJAZ Lebanon</span>
           </div>
-          <div className="mt-12 grid grid-cols-3 gap-6 max-w-xs mx-auto">
-            {[["٣", "محاور"], ["٦", "أشهر"], ["٠$", "رسوم"]].map(([n, l]) => (
-              <div key={l}>
-                <p className="font-extrabold" style={{ color: ROSE, fontFamily: FONT, fontSize: 30 }}>{n}</p>
-                <p style={{ color: GRAY, fontFamily: FONT, fontSize: 12 }}>{l}</p>
+          <h1 className="font-extrabold leading-tight text-white mb-3" style={{ fontSize: "clamp(32px, 6vw, 58px)", fontFamily: FONT }}>
+            مبادرة شمول
+          </h1>
+          <p className="font-light text-white/75 mb-4" style={{ fontSize: "clamp(14px, 2.5vw, 20px)", fontFamily: FONT }}>
+            Shumul Institutional Development Initiative
+          </p>
+          <p className="max-w-xl leading-relaxed mb-8" style={{ color: "rgba(255,255,255,0.85)", fontSize: 15, fontFamily: FONT }}>
+            برنامج تطوير مؤسسي مجاني يربط طلاب الجامعات بالمؤسسات الناشئة والصغيرة في عكار وشمال لبنان
+            — ممول بالكامل ولا يُكلّف المستفيدين أي شيء.
+          </p>
+          <div className="flex flex-wrap gap-3 mb-10">
+            <button onClick={() => setModal("institution")} className="rounded-full px-7 py-3 font-bold text-sm" style={{ background: "#fff", color: R, fontFamily: FONT }}>
+              سجّل مؤسستك ←
+            </button>
+            <button onClick={() => setModal("student")} className="rounded-full px-7 py-3 font-semibold text-sm text-white" style={{ border: "1px solid rgba(255,255,255,0.45)", fontFamily: FONT }}>
+              انضم كطالب
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-5 pt-5" style={{ borderTop: "1px solid rgba(255,255,255,0.2)" }}>
+            {[["يونيو ٢٠٢٦", "تاريخ الإطلاق"], ["عكار وشمال لبنان", "نطاق التغطية"], ["أكتوبر–ديسمبر ٢٠٢٦", "مرحلة التجريب"], ["ممول بالكامل", "مجاني للمستفيدين"]].map(([v, l]) => (
+              <div key={l} className="flex items-center gap-2">
+                <span className="w-1 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.5)" }} />
+                <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.8)", fontFamily: FONT }}>{v}</span>
+                <span className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>·</span>
+                <span className="text-xs" style={{ color: "rgba(255,255,255,0.5)", fontFamily: FONT }}>{l}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Triple-win ── */}
+      <section className="py-16 px-6" style={{ background: "#fafafa" }}>
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-10">
+            <p className="text-xs tracking-widest uppercase mb-2" style={{ color: R, fontFamily: FONT }}>النموذج</p>
+            <h2 className="text-3xl font-bold" style={{ fontFamily: FONT, color: NAVY }}>نموذج الفوز الثلاثي</h2>
+            <p className="text-sm mt-2 max-w-lg mx-auto" style={{ color: GRAY, fontFamily: FONT }}>كل طرف يكسب — هذا ما يجعل مبادرة شمول مستدامة.</p>
+          </div>
+          <div className="grid gap-5 md:grid-cols-4">
+            {WINS.map(({ icon, title, desc }) => (
+              <div key={title} className="rounded-2xl bg-white p-6 text-center" style={{ border: `1.5px solid ${BORDER}`, boxShadow: `0 2px 16px ${NAVY}06` }}>
+                <div className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl" style={{ background: RL }}>{icon}</div>
+                <p className="font-bold text-sm mb-2" style={{ color: R, fontFamily: FONT }}>{title}</p>
+                <p className="text-xs leading-relaxed" style={{ color: GRAY, fontFamily: FONT }}>{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Lead quote ── */}
+      <section className="py-12 px-6">
+        <div className="mx-auto max-w-4xl">
+          <div className="rounded-2xl px-8 py-6" style={{ background: RL, borderRight: `4px solid ${R}` }}>
+            <p className="text-sm leading-relaxed" style={{ color: "#333", fontFamily: FONT }}>
+              <strong style={{ color: R }}>شمول</strong> هو ذراع التطوير المؤسسي المجاني لـ SpotCast المبني على نموذج الفوز الثلاثي —
+              يكتسب الطلاب تدريباً مهنياً حقيقياً وشهادة معتمدة، وتحصل المؤسسات على خدمات استشارية متخصصة
+              بـ <strong style={{ color: R }}>تكلفة صفرية</strong>، وتبني SpotCast سجل أثر يؤهّلها للمنح الدولية.
+              <strong style={{ color: R }}> الجميع يكسب.</strong>
+            </p>
           </div>
         </div>
       </section>
 
       {/* ── Pillars ── */}
-      <section className="py-20 px-6" style={{ background: LIGHT }}>
+      <section className="py-20 px-6" style={{ background: "#f9fafb" }}>
         <div className="mx-auto max-w-6xl">
-          <Divider label="المحاور الثلاثة" />
+          <Divider label="المحاور" />
           <div className="text-center my-10">
-            <h2 className="font-bold mb-3" style={{ fontFamily: FONT, fontSize: "clamp(22px,4vw,34px)", color: NAVY }}>ما الذي نقدمه؟</h2>
-            <p style={{ color: GRAY, fontFamily: FONT, fontSize: 14, maxWidth: 480, margin: "0 auto" }}>
-              ثلاثة محاور متكاملة تُغطّي كل ما تحتاجه المؤسسة الناشئة لتنطلق بثقة.
-            </p>
+            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: FONT, color: NAVY }}>المحاور الثلاثة للخدمة</h2>
+            <p className="text-sm max-w-lg mx-auto" style={{ color: GRAY, fontFamily: FONT }}>خبرات متكاملة تغطي كل ما تحتاجه المؤسسة الناشئة.</p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            {PILLARS.map(({ n, title, items }) => (
-              <div key={n} className="rounded-2xl bg-white p-7" style={{ border: `1px solid ${ROSE}22`, boxShadow: `0 2px 20px ${NAVY}08` }}>
-                <span className="font-black block mb-3" style={{ fontFamily: FONT, fontSize: 28, color: ROSE }}>{n}</span>
-                <h3 className="font-bold mb-4" style={{ fontFamily: FONT, fontSize: 16, color: NAVY }}>{title}</h3>
-                <ul className="space-y-2">
-                  {items.map((item) => (
-                    <li key={item} className="flex gap-2" style={{ fontFamily: FONT, fontSize: 14, color: GRAY }}>
-                      <span style={{ color: ROSE, flexShrink: 0 }}>●</span>{item}
-                    </li>
-                  ))}
-                </ul>
+            {PILLARS.map(({ n, tag, title, items }) => (
+              <div key={n} className="rounded-2xl overflow-hidden" style={{ border: `1.5px solid ${BORDER}` }}>
+                <div className="px-5 py-4 flex items-center gap-3" style={{ background: R }}>
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "rgba(255,255,255,0.22)", color: "#fff" }}>{n}</div>
+                  <p className="font-bold text-sm text-white" style={{ fontFamily: FONT }}>{title}</p>
+                </div>
+                <div className="p-5" style={{ background: "#f9fafb" }}>
+                  <span className="inline-block rounded px-2 py-1 text-xs font-bold mb-3" style={{ background: RL, color: R, border: `1px solid #f0c8d4`, fontFamily: FONT }}>{tag}</span>
+                  <ul className="space-y-2">
+                    {items.map(item => (
+                      <li key={item} className="flex gap-2 text-xs leading-relaxed" style={{ color: "#444", fontFamily: FONT }}>
+                        <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: R }} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── How it works ── */}
+      {/* ── Timeline ── */}
       <section className="py-20 px-6">
         <div className="mx-auto max-w-5xl">
-          <Divider label="آلية العمل" />
+          <Divider label="خطة التوسع" />
           <div className="text-center my-10">
-            <h2 className="font-bold mb-3" style={{ fontFamily: FONT, fontSize: "clamp(22px,4vw,34px)", color: NAVY }}>كيف تعمل المبادرة؟</h2>
+            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: FONT, color: NAVY }}>خطة التوسع المرحلي</h2>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {STEPS.map(({ n, title, desc }) => (
-              <div key={n} className="relative rounded-2xl p-7 text-center" style={{ background: LIGHT, border: `1px solid ${ROSE}22` }}>
-                <span className="inline-flex items-center justify-center w-12 h-12 rounded-full font-extrabold text-white mb-4" style={{ background: ROSE, fontFamily: FONT, fontSize: 22 }}>{n}</span>
-                <h3 className="font-bold mb-2" style={{ fontFamily: FONT, fontSize: 16, color: NAVY }}>{title}</h3>
-                <p className="leading-relaxed" style={{ fontFamily: FONT, fontSize: 13, color: GRAY }}>{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Students ── */}
-      <section id="students" className="py-20 px-6" style={{ background: NAVY }}>
-        <div className="mx-auto max-w-5xl">
-          <Divider label="للطلاب" />
-          <div className="my-10 grid items-center gap-12 md:grid-cols-2">
-            <div className="text-white">
-              <h2 className="font-bold mb-6" style={{ fontFamily: FONT, fontSize: "clamp(22px,4vw,32px)" }}>
-                انضم كطالب —<br /><span style={{ color: ROSE }}>تعلّم من الواقع.</span>
-              </h2>
-              <p className="leading-relaxed mb-6" style={{ color: GRAY, fontFamily: FONT, fontSize: 14 }}>
-                المبادرة ليست فرصة تطوع عادية. هي تجربة مهنية حقيقية على أرض الواقع — تُشخّص مؤسسة ناشئة وتبني لها خطة عمل وتتابع تنفيذها.
-              </p>
-              <ul className="space-y-3 mb-6">
-                {["التزام ٦ أشهر مع شهادة مشاركة معتمدة", "تدريب مهني حقيقي في البيئة الميدانية", "دعم النقل للطلاب من خارج المنطقة", "إشراف مباشر من فريق SpotCast"].map((item) => (
-                  <li key={item} className="flex gap-2" style={{ fontFamily: FONT, fontSize: 14, color: GRAY }}>
-                    <span style={{ color: ROSE }}>✓</span> {item}
-                  </li>
-                ))}
-              </ul>
-              <div className="rounded-xl p-5" style={{ background: "#122033", border: `1px solid ${ROSE}22` }}>
-                <p style={{ fontFamily: FONT, fontSize: 11, color: ROSE, marginBottom: 4 }}>شريك التوظيف</p>
-                <p className="font-bold text-white" style={{ fontFamily: FONT, fontSize: 15 }}>INJAZ Lebanon</p>
-                <p style={{ color: GRAY, fontFamily: FONT, fontSize: 13, marginTop: 4 }}>يتولى التوظيف وتنسيق دعم التنقل للطلاب من جميع الجامعات</p>
-              </div>
-            </div>
-            <div>
-              <div className="rounded-2xl p-7" style={{ background: "#122033", border: `1px solid ${ROSE}22` }}>
-                <p style={{ fontFamily: FONT, fontSize: 11, color: ROSE, letterSpacing: 2, textTransform: "uppercase", marginBottom: 16 }}>الجامعات المستهدفة</p>
-                {["جامعة اللبنانية الدولية — LIU", "الجامعة الأمريكية للتكنولوجيا — AUT", "جامعة البلمند", "طلاب عكار في الجامعات الأخرى"].map((u) => (
-                  <div key={u} className="flex gap-2 items-center py-3" style={{ borderBottom: `1px solid ${ROSE}15` }}>
-                    <span style={{ color: ROSE }}>◆</span>
-                    <span className="text-white" style={{ fontFamily: FONT, fontSize: 14 }}>{u}</span>
+          <div className="space-y-4">
+            {PHASES.map(({ tag, name, period, bg, periodBg, periodColor, items }) => (
+              <div key={tag} className="rounded-xl overflow-hidden" style={{ border: `1px solid ${BORDER}` }}>
+                <div className="flex items-stretch">
+                  <div className="flex flex-col items-center justify-center text-center px-5 py-4 min-w-[110px]" style={{ background: bg }}>
+                    <p className="text-xs font-semibold text-white/80 uppercase tracking-wide" style={{ fontFamily: FONT }}>{tag}</p>
+                    <p className="text-sm font-bold text-white mt-0.5" style={{ fontFamily: FONT }}>{name}</p>
                   </div>
-                ))}
-                <a href={`mailto:Omar.khaled@spotcast.press?subject=انضمام طالب - مبادرة شمول`}
-                  className="mt-5 block text-center rounded-full py-3 font-bold text-white"
-                  style={{ background: ROSE, fontFamily: FONT, fontSize: 14 }}>
-                  انضم كطالب ←
-                </a>
+                  <div className="flex items-center px-4 py-3 text-sm font-semibold whitespace-nowrap" style={{ background: periodBg, color: periodColor, fontFamily: FONT }}>{period}</div>
+                </div>
+                <div className="px-5 py-4" style={{ background: "#f9fafb", borderTop: `1px solid ${BORDER}` }}>
+                  <div className="grid sm:grid-cols-2 gap-1.5">
+                    {items.map(item => (
+                      <p key={item} className="text-xs flex gap-2" style={{ color: "#444", fontFamily: FONT }}>
+                        <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: R }} />{item}
+                      </p>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── Beneficiaries ── */}
-      <section className="py-20 px-6" style={{ background: LIGHT }}>
-        <div className="mx-auto max-w-5xl">
-          <Divider label="المستفيدون" />
-          <div className="text-center my-10">
-            <h2 className="font-bold mb-3" style={{ fontFamily: FONT, fontSize: "clamp(22px,4vw,34px)", color: NAVY }}>من يمكنه الاستفادة؟</h2>
-            <p style={{ color: GRAY, fontFamily: FONT, fontSize: 14, maxWidth: 440, margin: "0 auto" }}>
-              المرحلة الأولى مخصصة للمؤسسات الناشئة في عكار والشمال فقط.
-            </p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {BENEFICIARIES.map((b) => (
-              <div key={b} className="flex items-center gap-4 rounded-2xl bg-white px-6 py-5" style={{ border: `1px solid ${ROSE}22`, boxShadow: `0 2px 12px ${NAVY}06` }}>
-                <span style={{ color: ROSE, fontSize: 18, flexShrink: 0 }}>◆</span>
-                <p className="font-medium" style={{ fontFamily: FONT, fontSize: 15, color: NAVY }}>{b}</p>
-              </div>
+      {/* ── Sectors ── */}
+      <section className="py-16 px-6" style={{ background: "#f9fafb" }}>
+        <div className="mx-auto max-w-5xl text-center">
+          <Divider label="القطاعات المستهدفة" />
+          <h2 className="text-2xl font-bold my-6" style={{ fontFamily: FONT, color: NAVY }}>من يمكنه الاستفادة؟</h2>
+          <div className="flex flex-wrap justify-center gap-3 mb-4">
+            {SECTORS.map(s => (
+              <span key={s} className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium" style={{ background: RL, border: `1.5px solid #f0c8d4`, color: "#6a1f35", fontFamily: FONT }}>
+                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: R }} />{s}
+              </span>
             ))}
           </div>
-          <p className="mt-6 text-center" style={{ fontFamily: FONT, fontSize: 12, color: GRAY }}>
-            المرحلة الأولى: عكار والشمال حصراً · سيتم التوسع لاحقاً
-          </p>
+          <p className="text-xs italic mt-4" style={{ color: GRAY, fontFamily: FONT }}>نطاق المرحلة الأولى: عكار وشمال لبنان فقط</p>
+        </div>
+      </section>
+
+      {/* ── Responsibilities ── */}
+      <section className="py-20 px-6">
+        <div className="mx-auto max-w-5xl">
+          <Divider label="الشراكة" />
+          <div className="text-center my-10">
+            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: FONT, color: NAVY }}>توزيع المسؤوليات</h2>
+          </div>
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid #b0d4e3` }}>
+              <div className="px-5 py-4 flex items-center gap-2 font-bold text-sm text-white" style={{ background: "linear-gradient(90deg,#1a6e8a,#2a8aab)", fontFamily: FONT }}>🤝 INJAZ Lebanon</div>
+              <div className="px-5 py-4 space-y-3" style={{ background: "#e8f4f9" }}>
+                {RESPONSIBILITIES.injaz.map(r => <p key={r} className="flex gap-2 text-sm" style={{ color: "#1a4a5e", fontFamily: FONT }}><span style={{ color: "#1a6e8a", fontWeight: 700 }}>✓</span>{r}</p>)}
+              </div>
+            </div>
+            <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid #f0c8d4` }}>
+              <div className="px-5 py-4 flex items-center gap-2 font-bold text-sm text-white" style={{ background: `linear-gradient(90deg,${RD},${R})`, fontFamily: FONT }}>🌟 شمول / SpotCast</div>
+              <div className="px-5 py-4 space-y-3" style={{ background: RL }}>
+                {RESPONSIBILITIES.shumul.map(r => <p key={r} className="flex gap-2 text-sm" style={{ color: RD, fontFamily: FONT }}><span style={{ color: R, fontWeight: 700 }}>✓</span>{r}</p>)}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ── CTA ── */}
-      <section id="register" className="py-24 px-6" style={{ background: ROSE }}>
+      <section id="register" className="py-24 px-6" style={{ background: `linear-gradient(135deg, ${RD}, ${R})` }}>
         <div className="mx-auto max-w-4xl text-center">
-          <p style={{ fontFamily: FONT, fontSize: 11, color: "rgba(255,255,255,0.8)", letterSpacing: 3, textTransform: "uppercase", marginBottom: 16 }}>ابدأ الآن</p>
-          <h2 className="font-extrabold text-white mb-6" style={{ fontFamily: FONT, fontSize: "clamp(26px,5vw,44px)" }}>
-            مؤسستك تستحق أن تنمو.
+          <p className="text-xs tracking-widest uppercase mb-4 text-white/70" style={{ fontFamily: FONT }}>انضم إلينا</p>
+          <h2 className="text-4xl font-bold text-white mb-4 md:text-5xl" style={{ fontFamily: FONT }}>
+            مؤسستك تستحق<br />أن تنمو.
           </h2>
-          <p className="mb-10 max-w-xl mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.82)", fontFamily: FONT, fontSize: 15 }}>
+          <p className="text-base mb-10 max-w-xl mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.8)", fontFamily: FONT }}>
             لا رسوم، لا شروط معقدة. فقط التزام حقيقي بالتطوير وفريق طلابي متحمس يعمل معك.
           </p>
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <a href={`mailto:Omar.khaled@spotcast.press?subject=تسجيل مؤسسة - مبادرة شمول`}
-              className="flex items-center gap-3 rounded-full px-7 py-4 font-bold text-white"
-              style={{ background: NAVY, fontFamily: FONT, fontSize: 14 }}>
-              <span>✉</span><span>سجّل مؤسستك الآن</span>
-            </a>
-            <a href={`mailto:Omar.khaled@spotcast.press?subject=انضمام طالب - مبادرة شمول`}
-              className="flex items-center gap-3 rounded-full px-7 py-4 font-bold text-white"
-              style={{ background: "rgba(255,255,255,0.25)", fontFamily: FONT, fontSize: 14 }}>
-              <span>🎓</span><span>انضم كطالب</span>
-            </a>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center mb-10">
+            <button onClick={() => setModal("institution")} className="flex items-center gap-3 rounded-full px-8 py-4 text-sm font-bold" style={{ background: "#fff", color: R, fontFamily: FONT }}>
+              🏢 سجّل مؤسستك
+            </button>
+            <button onClick={() => setModal("student")} className="flex items-center gap-3 rounded-full px-8 py-4 text-sm font-bold text-white" style={{ border: "2px solid rgba(255,255,255,0.5)", fontFamily: FONT }}>
+              🎓 انضم كطالب
+            </button>
           </div>
-          <p className="mt-5" style={{ fontFamily: FONT, fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
-            Omar.khaled@spotcast.press · مسؤول المبادرة: بشير الرفاعي
-          </p>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer className="px-6 py-10" style={{ background: NAVY, borderTop: `1px solid ${ROSE}22` }}>
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 md:flex-row">
+      <footer className="px-6 py-10" style={{ background: NAVY }}>
+        <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <SpotCastLogo size={30} variant="white" />
+            <SpotCastLogo size={28} variant="white" />
             <div>
-              <p className="font-semibold text-white" style={{ fontFamily: FONT, fontSize: 13 }}>مبادرة شمول للتطوير المؤسسي</p>
-              <p style={{ fontFamily: FONT, fontSize: 12, color: GRAY }}>مبادرة SpotCast · عكار والشمال · لبنان</p>
+              <p className="text-xs font-bold text-white" style={{ fontFamily: FONT }}>مبادرة شمول للتطوير المؤسسي</p>
+              <p className="text-xs" style={{ color: GRAY, fontFamily: FONT }}>مبادرة SpotCast · عكار والشمال · لبنان · ٢٠٢٦</p>
             </div>
           </div>
-          <a href="/" style={{ fontFamily: FONT, fontSize: 12, color: GRAY }}
-            onMouseOver={(e) => (e.currentTarget.style.color = ROSE)}
-            onMouseOut={(e) => (e.currentTarget.style.color = GRAY)}>
-            ← العودة إلى موقع شمول
-          </a>
-          <a href="mailto:Omar.khaled@spotcast.press" style={{ fontFamily: FONT, fontSize: 12, color: GRAY }}
-            onMouseOver={(e) => (e.currentTarget.style.color = ROSE)}
-            onMouseOut={(e) => (e.currentTarget.style.color = GRAY)}>
-            Omar.khaled@spotcast.press
-          </a>
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-xs font-semibold" style={{ color: R, fontFamily: FONT }}>مسؤول البرنامج</p>
+            <p className="text-xs text-white" style={{ fontFamily: FONT }}>عمر خالد — المدير التنفيذي، SpotCast</p>
+            <a href="mailto:Omar.khaled@spotcast.press" className="text-xs" style={{ color: GRAY }}>Omar.khaled@spotcast.press</a>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-xs font-semibold" style={{ color: R, fontFamily: FONT }}>منسق الميدان</p>
+            <p className="text-xs text-white" style={{ fontFamily: FONT }}>بشير الرفاعي — مدير المشروع</p>
+            <a href="mailto:alrifaibashir66@gmail.com" className="text-xs" style={{ color: GRAY }}>alrifaibashir66@gmail.com</a>
+          </div>
+          <a href="/" className="text-xs hover:text-rose-400 transition-colors" style={{ color: GRAY, fontFamily: FONT }}>← العودة إلى شمول هاب</a>
         </div>
       </footer>
+
+      {/* ── Modals ── */}
+      {modal === "institution" && !done && (
+        <Modal title="سجّل مؤسستك" subtitle="خدمات تطوير مؤسسي مجانية — عكار وشمال لبنان" onClose={() => setModal(null)}>
+          <InstitutionForm onDone={() => { setModal(null); setDone("institution"); }} />
+        </Modal>
+      )}
+      {modal === "student" && !done && (
+        <Modal title="انضم كطالب" subtitle="التزام ٦ أشهر · شهادة معتمدة · تدريب ميداني حقيقي" onClose={() => setModal(null)}>
+          <StudentForm onDone={() => { setModal(null); setDone("student"); }} />
+        </Modal>
+      )}
+      {done === "institution" && (
+        <Modal title="شكراً لكم!" subtitle="" onClose={() => setDone(null)}>
+          <SuccessView message="تم استلام طلب تسجيلكم. سيتواصل معكم عمر خالد وبشير الرفاعي خلال ٤٨ ساعة." onClose={() => setDone(null)} />
+        </Modal>
+      )}
+      {done === "student" && (
+        <Modal title="تم استلام طلبك!" subtitle="" onClose={() => setDone(null)}>
+          <SuccessView message="تم تقديم طلبك بنجاح. سنراجعه ونتواصل معك قريباً." onClose={() => setDone(null)} />
+        </Modal>
+      )}
     </div>
   );
 }
