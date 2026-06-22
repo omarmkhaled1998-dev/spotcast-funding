@@ -2,23 +2,36 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ShumulLogo } from "@/components/hub/ShumulLogo";
+import { InjazLogo } from "@/components/hub/InjazLogo";
 import { SpotCastLogo } from "@/components/hub/SpotCastLogo";
 
 /* ─── Design tokens ─────────────────────────────────────────── */
-const R = "#C4607A";
-const RD = "#9e3d55";
-const RL = "#fdf0f4";
-const NAVY = "#1a1a2e";
-const GRAY = "#6b7280";
-const BORDER = "#e5e7eb";
-const FONT = "var(--font-cairo), 'Cairo', 'Segoe UI', sans-serif";
+const OLIVE    = "#4A5C39";
+const OLIVE_D  = "#3A4A2C";
+const OLIVE_L  = "#7A8F5E";
+const TERRA    = "#C76B4A";
+const TERRA_D  = "#B05839";
+const BG       = "#F8F3E8";
+const BG_ALT   = "#F1E9DA";
+const SURFACE  = "#FBF7EE";
+const INK      = "#1F1A14";
+const INK_BODY = "#3D362F";
+const INK_MUTE = "#6B6258";
+const RULE     = "rgba(31,26,20,0.12)";
+const RULE_S   = "rgba(31,26,20,0.06)";
+const RULE_D   = "rgba(248,243,232,0.18)";
+const ON_DARK  = "#FBF7EE";
+
+const FONT_AR_D = "var(--font-noto-kufi), 'Noto Kufi Arabic', 'Cairo', sans-serif";
+const FONT_AR_B = "var(--font-cairo), 'Cairo', 'Noto Kufi Arabic', sans-serif";
 
 /* ─── Content ───────────────────────────────────────────────── */
 const WINS = [
-  { icon: "🎓", title: "الطلاب", desc: "تدريب ميداني حقيقي وشهادة معتمدة ومهارات جاهزة لسوق العمل على مدى ٦ أشهر" },
-  { icon: "🏢", title: "المؤسسات", desc: "خدمات مالية وقانونية ورقمية — مجانية بالكامل وممولة من المانحين" },
-  { icon: "🌱", title: "SpotCast", desc: "أثر مجتمعي موثّق ونتائج قابلة للقياس وأهلية للحصول على المنح الدولية" },
-  { icon: "🤝", title: "INJAZ Lebanon", desc: "توسيع الانتشار في عكار وتوفير فرص حقيقية للطلاب وتعاون في قياس الأثر" },
+  { mark: "◆", title: "الطلاب", desc: "تدريب ميداني حقيقي وشهادة معتمدة ومهارات جاهزة لسوق العمل خلال ٦ أشهر" },
+  { mark: "◆", title: "المؤسسات", desc: "خدمات مالية وقانونية ورقمية — مجانية بالكامل وممولة من المانحين" },
+  { mark: "◆", title: "SpotCast", desc: "أثر مجتمعي موثّق ونتائج قابلة للقياس وأهلية للمنح الدولية" },
+  { mark: "◆", title: "INJAZ Lebanon", desc: "توسيع الانتشار في عكار وفرص حقيقية للطلاب وتعاون في قياس الأثر" },
 ];
 
 const PILLARS = [
@@ -42,29 +55,21 @@ const PILLARS = [
 const PHASES = [
   {
     tag: "المرحلة ٠", name: "التأسيس", period: "أغسطس – سبتمبر ٢٠٢٦",
-    bg: "#a84060", periodBg: "#f5d5de", periodColor: "#7a1f35",
     items: ["توقيع اتفاقية الشراكة الرسمية مع INJAZ Lebanon", "تحديد والتحقق من ٣–٥ مؤسسات تجريبية في عكار", "بناء معايير اختيار الطلاب وحزمة التدريب التمهيدي", "تصميم أداة التشخيص المؤسسي (١٥–٢٠ سؤال)"],
   },
   {
     tag: "المرحلة ١", name: "التجريب", period: "أكتوبر – ديسمبر ٢٠٢٦",
-    bg: R, periodBg: "#f0c8d4", periodColor: "#6a1f35",
     items: ["استقطاب ٦–٩ متدربين من جامعات شمال لبنان", "توزيع ٢–٣ متدربين لكل مؤسسة لمدة شهرين", "تنفيذ خطط تطوير مخصصة لكل مؤسسة", "توثيق دقيق لجميع المخرجات ومؤشرات الأثر"],
   },
   {
     tag: "المرحلة ٢", name: "التوسع والتمويل", period: "يناير – مارس ٢٠٢٧",
-    bg: "#7a2535", periodBg: "#e0a8b8", periodColor: "#50091a",
     items: ["إعداد تقرير الأثر وقصص النجاح الموثقة", "بناء مقترح تمويل دولي شامل", "التقديم لـ EU Delegation وGIZ وSwisscontact وUNICEF", "التوسع لأكثر من ١٠ مؤسسات في شمال لبنان"],
   },
 ];
 
 const SECTORS = ["الزراعة والصناعات الغذائية", "الحرف التقليدية والمهن", "التجارة المحلية", "الخدمات الرقمية والتقنية", "التعاونيات الزراعية", "تعاونيات المرأة", "جمعيات الشباب", "المبادرات البلدية"];
 
-const RESPONSIBILITIES = {
-  injaz: ["استقطاب طلاب الجامعات وخريجيها من جامعات شمال لبنان", "تخصصات الطلاب: إدارة الأعمال، القانون، الإعلام والاتصالات، التقنية", "تغطية بدل نقل الطلاب طوال فترة التوظيف الممتدة لشهرين"],
-  shumul: ["البحث عن المؤسسات المستفيدة وتقييمها وإدراجها وفق معايير محددة", "تطوير وإدارة أداة التشخيص المؤسسي (١٥–٢٠ سؤال)", "الإشراف الميداني الكامل وإدارة المتدربين والتنسيق اللوجستي", "التوثيق وإعداد تقارير الأثر والاتصالات وطلبات المنح"],
-};
-
-/* ─── InstitutionForm ─────────────────────────────────────── */
+/* ─── Registration forms ────────────────────────────────────── */
 function InstitutionForm({ onDone }: { onDone: () => void }) {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -81,45 +86,53 @@ function InstitutionForm({ onDone }: { onDone: () => void }) {
 
   const s0 = (
     <div className="space-y-4">
-      <Input label="اسم المؤسسة *" value={data.orgName} onChange={set("orgName")} required placeholder="أدخل اسم مؤسستك" />
-      <Select label="نوع المؤسسة *" value={data.orgType} onChange={set("orgType")} required
-        placeholder="اختر..."
+      <FInput label="اسم المؤسسة *" value={data.orgName} onChange={set("orgName")} required placeholder="أدخل اسم مؤسستك" />
+      <FSelect label="نوع المؤسسة *" value={data.orgType} onChange={set("orgType")} required
         options={["جمعية شبابية", "مشروع صغير أو متناهي الصغر", "تعاونية", "مبادرة بلدية", "منظمة غير حكومية", "أخرى"]} />
-      <Select label="المنطقة *" value={data.location} onChange={set("location")} required
-        placeholder="اختر..."
+      <FSelect label="المنطقة *" value={data.location} onChange={set("location")} required
         options={["عكار", "شمال لبنان (مناطق أخرى)", "كلاهما"]} />
-      <Select label="حجم الفريق" value={data.teamSize} onChange={set("teamSize")}
-        placeholder="اختر..."
+      <FSelect label="حجم الفريق" value={data.teamSize} onChange={set("teamSize")}
         options={["١–٥ أشخاص", "٦–١٥ شخص", "١٦–٥٠ شخص", "أكثر من ٥٠"]} />
     </div>
   );
   const s1 = (
     <div className="space-y-4">
-      <Select label="أبرز تحدياتكم *" value={data.challenges} onChange={set("challenges")} required
-        placeholder="اختر..."
+      <FSelect label="أبرز تحدياتكم *" value={data.challenges} onChange={set("challenges")} required
         options={["الأنظمة المالية والاستدامة", "الامتثال القانوني وكتابة المقترحات", "الحضور الرقمي والتواصل", "المحاور الثلاثة مجتمعة"]} />
-      <Textarea label="وصف مختصر لمؤسستكم *" value={data.description} onChange={set("description")} rows={3} required placeholder="ماذا تفعل مؤسستك؟ وما الذي تأمل تحقيقه بدعم مبادرة شمول؟" />
+      <FTextarea label="وصف مختصر لمؤسستكم *" value={data.description} onChange={set("description")} rows={3} required placeholder="ماذا تفعل مؤسستك؟ وما الذي تأمل تحقيقه بدعم مبادرة شمول؟" />
     </div>
   );
   const s2 = (
     <div className="space-y-4">
-      <Input label="اسم جهة الاتصال *" value={data.contactName} onChange={set("contactName")} required placeholder="الاسم الكامل" />
-      <Input label="البريد الإلكتروني *" type="email" value={data.email} onChange={set("email")} required placeholder="example@domain.com" />
-      <Input label="رقم الهاتف" type="tel" value={data.phone} onChange={set("phone")} placeholder="+961 xx xxx xxx" />
+      <FInput label="اسم جهة الاتصال *" value={data.contactName} onChange={set("contactName")} required />
+      <FInput label="البريد الإلكتروني *" type="email" value={data.email} onChange={set("email")} required />
+      <FInput label="رقم الهاتف" type="tel" value={data.phone} onChange={set("phone")} placeholder="+961 xx xxx xxx" />
     </div>
   );
   const steps = [s0, s1, s2];
   const labels = ["بيانات المؤسسة", "تقييم الاحتياجات", "معلومات التواصل"];
 
   return (
-    <form onSubmit={submit} dir="rtl" style={{ fontFamily: FONT }}>
+    <form onSubmit={submit} dir="rtl" style={{ fontFamily: FONT_AR_B }}>
       <StepIndicator steps={labels} current={step} />
       <div className="mt-5">{steps[step]}</div>
       <div className="flex gap-3 mt-6">
-        {step > 0 && <button type="button" onClick={() => setStep(s => s - 1)} className="flex-1 rounded-xl py-3 text-sm font-semibold" style={{ border: `1px solid ${BORDER}`, color: GRAY, fontFamily: FONT }}>→ رجوع</button>}
+        {step > 0 && (
+          <button type="button" onClick={() => setStep(s => s - 1)}
+            className="flex-1 py-3 text-sm font-semibold"
+            style={{ border: `1px solid ${RULE}`, color: INK_MUTE, borderRadius: 2, fontFamily: FONT_AR_B }}>
+            → رجوع
+          </button>
+        )}
         {step < steps.length - 1
-          ? <button type="button" onClick={() => setStep(s => s + 1)} className="flex-1 rounded-xl py-3 text-sm font-bold text-white" style={{ background: R, fontFamily: FONT }}>← التالي</button>
-          : <button type="submit" disabled={loading} className="flex-1 rounded-xl py-3 text-sm font-bold text-white" style={{ background: loading ? "#c49" : R, fontFamily: FONT }}>
+          ? <button type="button" onClick={() => setStep(s => s + 1)}
+              className="flex-1 py-3 text-sm font-bold"
+              style={{ background: OLIVE, color: ON_DARK, borderRadius: 2, fontFamily: FONT_AR_B }}>
+              ← التالي
+            </button>
+          : <button type="submit" disabled={loading}
+              className="flex-1 py-3 text-sm font-bold"
+              style={{ background: loading ? OLIVE_L : OLIVE, color: ON_DARK, borderRadius: 2, fontFamily: FONT_AR_B }}>
               {loading ? "جارٍ الإرسال…" : "إرسال الطلب"}
             </button>}
       </div>
@@ -141,53 +154,58 @@ function StudentForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4" dir="rtl" style={{ fontFamily: FONT }}>
-      <Input label="الاسم الكامل *" value={data.fullName} onChange={set("fullName")} required placeholder="أدخل اسمك الكامل" />
+    <form onSubmit={submit} className="space-y-4" dir="rtl" style={{ fontFamily: FONT_AR_B }}>
+      <FInput label="الاسم الكامل *" value={data.fullName} onChange={set("fullName")} required />
       <div className="grid grid-cols-2 gap-3">
-        <Select label="الجامعة *" value={data.university} onChange={set("university")} required placeholder="اختر..."
+        <FSelect label="الجامعة *" value={data.university} onChange={set("university")} required
           options={["الجامعة اللبنانية الدولية (LIU)", "الجامعة الأمريكية للتكنولوجيا (AUT)", "جامعة البلمند", "الجامعة اللبنانية", "أخرى"]} />
-        <Select label="الكلية / التخصص *" value={data.faculty} onChange={set("faculty")} required placeholder="اختر..."
+        <FSelect label="الكلية / التخصص *" value={data.faculty} onChange={set("faculty")} required
           options={["إدارة الأعمال", "القانون", "الإعلام والاتصالات", "تقنية المعلومات", "الهندسة", "أخرى"]} />
       </div>
-      <Select label="السنة الدراسية *" value={data.year} onChange={set("year")} required placeholder="اختر..."
+      <FSelect label="السنة الدراسية *" value={data.year} onChange={set("year")} required
         options={["السنة الأولى", "السنة الثانية", "السنة الثالثة", "السنة الرابعة", "الدراسات العليا", "خريج حديث"]} />
       <div className="grid grid-cols-2 gap-3">
-        <Input label="البريد الإلكتروني *" type="email" value={data.email} onChange={set("email")} required placeholder="example@domain.com" />
-        <Input label="رقم الهاتف" type="tel" value={data.phone} onChange={set("phone")} placeholder="+961" />
+        <FInput label="البريد الإلكتروني *" type="email" value={data.email} onChange={set("email")} required />
+        <FInput label="رقم الهاتف" type="tel" value={data.phone} onChange={set("phone")} placeholder="+961" />
       </div>
-      <Textarea label="لماذا تريد الانضمام؟ *" value={data.motivation} onChange={set("motivation")} rows={3} required placeholder="حدثنا عن اهتمامك بالمبادرة وما الذي تأمل المساهمة به…" />
-      <button type="submit" disabled={loading} className="w-full rounded-xl py-3 text-sm font-bold text-white mt-2" style={{ background: loading ? "#c49" : R, fontFamily: FONT }}>
+      <FTextarea label="لماذا تريد الانضمام؟ *" value={data.motivation} onChange={set("motivation")} rows={3} required
+        placeholder="حدثنا عن اهتمامك بالمبادرة وما الذي تأمل المساهمة به…" />
+      <button type="submit" disabled={loading} className="w-full py-3 text-sm font-bold"
+        style={{ background: loading ? OLIVE_L : OLIVE, color: ON_DARK, borderRadius: 2, fontFamily: FONT_AR_B }}>
         {loading ? "جارٍ الإرسال…" : "تقديم الطلب"}
       </button>
     </form>
   );
 }
 
-/* ─── Mini UI primitives ─────────────────────────────────────── */
-function Input({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+/* ─── Form primitives ─────────────────────────────────────────── */
+function FInput({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div>
-      <label className="block text-xs font-semibold mb-1" style={{ color: NAVY, fontFamily: FONT }}>{label}</label>
-      <input {...props} className="w-full rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2" style={{ border: `1px solid ${BORDER}`, background: "#fafafa", color: NAVY, fontFamily: FONT }} />
+      <label className="block text-xs font-semibold mb-1.5" style={{ color: INK_BODY, fontFamily: FONT_AR_B }}>{label}</label>
+      <input {...props} className="w-full text-sm outline-none"
+        style={{ padding: "12px 14px", border: `1px solid ${RULE}`, borderRadius: 3, background: SURFACE, color: INK, fontFamily: FONT_AR_B }} />
     </div>
   );
 }
-function Select({ label, options, placeholder, ...props }: { label: string; options: string[]; placeholder?: string } & React.SelectHTMLAttributes<HTMLSelectElement>) {
+function FSelect({ label, options, ...props }: { label: string; options: string[] } & React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <div>
-      <label className="block text-xs font-semibold mb-1" style={{ color: NAVY, fontFamily: FONT }}>{label}</label>
-      <select {...props} className="w-full rounded-lg px-3 py-2.5 text-sm outline-none" style={{ border: `1px solid ${BORDER}`, background: "#fafafa", color: props.value ? NAVY : GRAY, fontFamily: FONT }}>
-        <option value="">{placeholder || "اختر..."}</option>
+      <label className="block text-xs font-semibold mb-1.5" style={{ color: INK_BODY, fontFamily: FONT_AR_B }}>{label}</label>
+      <select {...props} className="w-full text-sm outline-none"
+        style={{ padding: "12px 14px", border: `1px solid ${RULE}`, borderRadius: 3, background: SURFACE, color: props.value ? INK : INK_MUTE, fontFamily: FONT_AR_B }}>
+        <option value="">اختر...</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
     </div>
   );
 }
-function Textarea({ label, ...props }: { label: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+function FTextarea({ label, ...props }: { label: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <div>
-      <label className="block text-xs font-semibold mb-1" style={{ color: NAVY, fontFamily: FONT }}>{label}</label>
-      <textarea {...props} className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none" style={{ border: `1px solid ${BORDER}`, background: "#fafafa", color: NAVY, fontFamily: FONT }} />
+      <label className="block text-xs font-semibold mb-1.5" style={{ color: INK_BODY, fontFamily: FONT_AR_B }}>{label}</label>
+      <textarea {...props} className="w-full text-sm outline-none resize-none"
+        style={{ padding: "12px 14px", border: `1px solid ${RULE}`, borderRadius: 3, background: SURFACE, color: INK, fontFamily: FONT_AR_B }} />
     </div>
   );
 }
@@ -197,13 +215,13 @@ function StepIndicator({ steps, current }: { steps: string[]; current: number })
       {steps.map((s, i) => (
         <div key={i} className="flex items-center gap-1 flex-1">
           <div className="flex items-center gap-2 flex-1">
-            <div className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold flex-shrink-0"
-              style={{ background: i <= current ? R : BORDER, color: i <= current ? "#fff" : GRAY }}>
+            <div className="flex items-center justify-center w-6 h-6 text-xs font-bold flex-shrink-0"
+              style={{ background: i <= current ? OLIVE : BG_ALT, color: i <= current ? ON_DARK : INK_MUTE, borderRadius: 2 }}>
               {i < current ? "✓" : i + 1}
             </div>
-            <span className="text-xs hidden sm:block" style={{ color: i === current ? R : GRAY, fontWeight: i === current ? 600 : 400, fontFamily: FONT }}>{s}</span>
+            <span className="text-xs hidden sm:block" style={{ color: i === current ? OLIVE : INK_MUTE, fontWeight: i === current ? 600 : 400, fontFamily: FONT_AR_B }}>{s}</span>
           </div>
-          {i < steps.length - 1 && <div className="h-px flex-1 mx-1" style={{ background: i < current ? R : BORDER }} />}
+          {i < steps.length - 1 && <div className="h-px flex-1 mx-1" style={{ background: i < current ? OLIVE : RULE }} />}
         </div>
       ))}
     </div>
@@ -213,15 +231,15 @@ function StepIndicator({ steps, current }: { steps: string[]; current: number })
 /* ─── Modal ──────────────────────────────────────────────────── */
 function Modal({ title, subtitle, onClose, children }: { title: string; subtitle: string; onClose: () => void; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.55)" }}>
-      <div className="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl" style={{ background: "#fff", maxHeight: "92vh", overflowY: "auto" }}>
-        <div className="px-6 pt-6 pb-4" style={{ background: `linear-gradient(135deg, ${RD}, ${R})` }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(31,26,20,0.6)" }}>
+      <div className="w-full max-w-lg overflow-hidden shadow-2xl" style={{ background: SURFACE, maxHeight: "92vh", overflowY: "auto", borderRadius: 6 }}>
+        <div className="px-6 pt-6 pb-4" style={{ background: OLIVE_D }}>
           <div className="flex justify-between items-start" dir="rtl">
             <div>
-              <h3 className="font-bold text-white text-lg" style={{ fontFamily: FONT }}>{title}</h3>
-              {subtitle && <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.8)", fontFamily: FONT }}>{subtitle}</p>}
+              <h3 className="font-bold text-lg" style={{ color: ON_DARK, fontFamily: FONT_AR_D }}>{title}</h3>
+              {subtitle && <p className="text-sm mt-1" style={{ color: "rgba(248,243,232,0.75)", fontFamily: FONT_AR_B }}>{subtitle}</p>}
             </div>
-            <button onClick={onClose} className="text-white/70 hover:text-white text-xl leading-none mr-4">✕</button>
+            <button onClick={onClose} className="text-xl leading-none mr-4" style={{ color: "rgba(248,243,232,0.6)" }}>✕</button>
           </div>
         </div>
         <div className="p-6">{children}</div>
@@ -232,22 +250,23 @@ function Modal({ title, subtitle, onClose, children }: { title: string; subtitle
 
 function SuccessView({ message, onClose }: { message: string; onClose: () => void }) {
   return (
-    <div className="text-center py-6" dir="rtl">
-      <div className="text-5xl mb-4">✅</div>
-      <h3 className="font-bold text-lg mb-2" style={{ color: NAVY, fontFamily: FONT }}>تم الإرسال بنجاح!</h3>
-      <p className="text-sm mb-6" style={{ color: GRAY, fontFamily: FONT }}>{message}</p>
-      <button onClick={onClose} className="rounded-full px-8 py-3 text-sm font-bold text-white" style={{ background: R, fontFamily: FONT }}>إغلاق</button>
+    <div className="text-center py-8" dir="rtl">
+      <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center text-2xl"
+        style={{ background: BG_ALT, borderRadius: 4, color: OLIVE, fontSize: 28 }}>✓</div>
+      <h3 className="font-bold text-lg mb-2" style={{ color: INK, fontFamily: FONT_AR_D }}>تم الإرسال بنجاح</h3>
+      <p className="text-sm mb-6" style={{ color: INK_MUTE, fontFamily: FONT_AR_B }}>{message}</p>
+      <button onClick={onClose} className="px-8 py-3 text-sm font-bold"
+        style={{ background: OLIVE, color: ON_DARK, borderRadius: 2, fontFamily: FONT_AR_B }}>إغلاق</button>
     </div>
   );
 }
 
-/* ─── Section divider ─────────────────────────────────────────── */
-function Divider({ label }: { label?: string }) {
+/* ─── Section eyebrow ─────────────────────────────────────────── */
+function Eyebrow({ label, onDark }: { label: string; onDark?: boolean }) {
   return (
-    <div className="flex items-center gap-3 my-2">
-      <div className="flex-1 h-px" style={{ background: `${R}30` }} />
-      {label && <span className="text-xs tracking-widest uppercase px-2" style={{ color: R, fontFamily: FONT }}>{label}</span>}
-      <div className="flex-1 h-px" style={{ background: `${R}30` }} />
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 10, fontFamily: FONT_AR_B, fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: onDark ? "#C9A96E" : OLIVE }}>
+      <span style={{ width: 28, height: 1, background: "currentColor", display: "inline-block", flexShrink: 0 }} />
+      {label}
     </div>
   );
 }
@@ -258,23 +277,28 @@ export default function ShumulInitiativeAR() {
   const [done, setDone] = useState<"institution" | "student" | null>(null);
 
   return (
-    <div className="min-h-screen" style={{ background: "#fff", color: NAVY, fontFamily: FONT }} dir="rtl">
+    <div className="min-h-screen" style={{ background: BG, color: INK }} dir="rtl">
 
       {/* ── Nav ── */}
-      <header className="sticky top-0 z-40 backdrop-blur-sm" style={{ background: "rgba(255,255,255,0.96)", borderBottom: `1px solid ${BORDER}` }}>
+      <header className="sticky top-0 z-40"
+        style={{ background: "rgba(248,243,232,0.95)", backdropFilter: "saturate(140%) blur(12px)", borderBottom: `1px solid ${RULE}` }}>
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <div className="flex items-center gap-3">
-            <SpotCastLogo size={34} variant="color" />
+            <ShumulLogo size={36} variant="light" />
             <div>
-              <p className="text-sm font-bold" style={{ color: NAVY, fontFamily: FONT }}>مبادرة شمول</p>
-              <p className="text-xs" style={{ color: GRAY, fontFamily: FONT }}>للتطوير المؤسسي · عكار والشمال</p>
+              <p className="font-bold leading-tight" style={{ color: OLIVE_D, fontFamily: FONT_AR_D, fontSize: 16 }}>مبادرة شمول</p>
+              <p style={{ color: INK_MUTE, fontFamily: FONT_AR_B, fontSize: 11 }}>للتطوير المؤسسي · عكار والشمال</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/initiatives/shumul/en" className="text-xs px-3 py-1.5 rounded-full transition-colors" style={{ color: GRAY, border: `1px solid ${BORDER}`, fontFamily: FONT }}>
-              English
+            <Link href="/initiatives/shumul/en"
+              className="text-xs px-3 py-1.5 transition-colors"
+              style={{ color: INK_MUTE, border: `1px solid ${RULE}`, borderRadius: 999, fontFamily: "var(--font-barlow), 'Barlow', sans-serif", letterSpacing: "0.06em" }}>
+              EN
             </Link>
-            <button onClick={() => setModal("institution")} className="rounded-full px-5 py-2 text-sm font-semibold text-white" style={{ background: R, fontFamily: FONT }}>
+            <button onClick={() => setModal("institution")}
+              className="px-5 py-2 text-sm font-semibold"
+              style={{ background: OLIVE, color: ON_DARK, borderRadius: 2, fontFamily: FONT_AR_B }}>
               سجّل الآن
             </button>
           </div>
@@ -282,39 +306,48 @@ export default function ShumulInitiativeAR() {
       </header>
 
       {/* ── Hero ── */}
-      <section style={{ background: `linear-gradient(135deg, #7a1f35 0%, ${R} 55%, #d97a92 100%)`, minHeight: "72vh", position: "relative", overflow: "hidden" }} className="flex items-center px-6 py-20">
-        <div style={{ position: "absolute", top: -80, left: -60, width: 320, height: 320, background: "rgba(255,255,255,0.05)", borderRadius: "50%" }} />
-        <div style={{ position: "absolute", bottom: -60, right: 60, width: 200, height: 200, background: "rgba(255,255,255,0.04)", borderRadius: "50%" }} />
+      <section style={{ position: "relative", overflow: "hidden", minHeight: "76vh",
+        background: "radial-gradient(ellipse at 30% 20%, rgba(122,143,94,0.45), transparent 55%), radial-gradient(ellipse at 80% 70%, rgba(58,74,44,0.55), transparent 60%), linear-gradient(135deg, #5E7349 0%, #3A4A2C 100%)"
+      }} className="flex items-center px-6 py-20">
+        {/* grain overlay */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`, opacity: 0.5, mixBlendMode: "overlay" as const, pointerEvents: "none" as const }} />
+        {/* watermark letter */}
+        <div style={{ position: "absolute", left: "-0.1em", bottom: "-0.15em", fontFamily: FONT_AR_D, fontWeight: 900, fontSize: "clamp(180px,28vw,360px)", color: "rgba(248,243,232,0.04)", lineHeight: 1, userSelect: "none", pointerEvents: "none" }}>شمول</div>
         <div className="mx-auto w-full max-w-5xl relative z-10">
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.28)" }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-white inline-block" />
-            <span className="text-white/90 text-xs font-semibold" style={{ fontFamily: FONT }}>ملخص البرنامج · شراكة INJAZ Lebanon</span>
+          <div className="mb-6">
+            <Eyebrow label="ملخص البرنامج · شراكة INJAZ Lebanon" onDark />
           </div>
-          <h1 className="font-extrabold leading-tight text-white mb-3" style={{ fontSize: "clamp(32px, 6vw, 58px)", fontFamily: FONT }}>
+          <h1 className="font-extrabold leading-tight mb-3"
+            style={{ fontFamily: FONT_AR_D, fontSize: "clamp(40px,7vw,80px)", color: ON_DARK, letterSpacing: 0, lineHeight: 1.15 }}>
             مبادرة شمول
           </h1>
-          <p className="font-light text-white/75 mb-4" style={{ fontSize: "clamp(14px, 2.5vw, 20px)", fontFamily: FONT }}>
+          <p style={{ fontFamily: "var(--font-barlow), 'Barlow', sans-serif", fontSize: "clamp(13px,1.8vw,17px)", color: "rgba(248,243,232,0.65)", marginBottom: 16 }}>
             Shumul Institutional Development Initiative
           </p>
-          <p className="max-w-xl leading-relaxed mb-8" style={{ color: "rgba(255,255,255,0.85)", fontSize: 15, fontFamily: FONT }}>
-            برنامج تطوير مؤسسي مجاني يربط طلاب الجامعات بالمؤسسات الناشئة والصغيرة في عكار وشمال لبنان
-            — ممول بالكامل ولا يُكلّف المستفيدين أي شيء.
+          <p className="max-w-xl leading-relaxed mb-8"
+            style={{ fontFamily: FONT_AR_B, fontSize: 15, color: "rgba(248,243,232,0.85)", lineHeight: 1.85 }}>
+            برنامج تطوير مؤسسي مجاني يربط طلاب الجامعات بالمؤسسات الناشئة والصغيرة
+            في عكار وشمال لبنان — ممول بالكامل ولا يُكلّف المستفيدين أي شيء.
           </p>
           <div className="flex flex-wrap gap-3 mb-10">
-            <button onClick={() => setModal("institution")} className="rounded-full px-7 py-3 font-bold text-sm" style={{ background: "#fff", color: R, fontFamily: FONT }}>
-              سجّل مؤسستك ←
+            <button onClick={() => setModal("institution")}
+              className="px-7 py-3 text-sm font-bold"
+              style={{ background: ON_DARK, color: OLIVE_D, borderRadius: 2, fontFamily: FONT_AR_B }}>
+              سجّل مؤسستك
             </button>
-            <button onClick={() => setModal("student")} className="rounded-full px-7 py-3 font-semibold text-sm text-white" style={{ border: "1px solid rgba(255,255,255,0.45)", fontFamily: FONT }}>
+            <button onClick={() => setModal("student")}
+              className="px-7 py-3 text-sm font-semibold"
+              style={{ border: `1px solid rgba(248,243,232,0.4)`, color: ON_DARK, borderRadius: 2, fontFamily: FONT_AR_B }}>
               انضم كطالب
             </button>
           </div>
-          <div className="flex flex-wrap gap-5 pt-5" style={{ borderTop: "1px solid rgba(255,255,255,0.2)" }}>
-            {[["يونيو ٢٠٢٦", "تاريخ الإطلاق"], ["عكار وشمال لبنان", "نطاق التغطية"], ["أكتوبر–ديسمبر ٢٠٢٦", "مرحلة التجريب"], ["ممول بالكامل", "مجاني للمستفيدين"]].map(([v, l]) => (
+          <div className="flex flex-wrap gap-6 pt-5" style={{ borderTop: `1px solid ${RULE_D}` }}>
+            {[["يونيو ٢٠٢٦", "تاريخ الإطلاق"], ["عكار وشمال لبنان", "نطاق التغطية"], ["أكتوبر–ديسمبر ٢٠٢٦", "مرحلة التجريب"], ["مجاني للمستفيدين", "ممول بالكامل"]].map(([v, l]) => (
               <div key={l} className="flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.5)" }} />
-                <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.8)", fontFamily: FONT }}>{v}</span>
-                <span className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>·</span>
-                <span className="text-xs" style={{ color: "rgba(255,255,255,0.5)", fontFamily: FONT }}>{l}</span>
+                <span style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(248,243,232,0.45)", display: "inline-block" }} />
+                <span style={{ fontFamily: FONT_AR_B, fontSize: 12, color: "rgba(248,243,232,0.85)", fontWeight: 500 }}>{v}</span>
+                <span style={{ color: "rgba(248,243,232,0.35)", fontSize: 12 }}>·</span>
+                <span style={{ fontFamily: FONT_AR_B, fontSize: 12, color: "rgba(248,243,232,0.5)" }}>{l}</span>
               </div>
             ))}
           </div>
@@ -322,19 +355,26 @@ export default function ShumulInitiativeAR() {
       </section>
 
       {/* ── Triple-win ── */}
-      <section className="py-16 px-6" style={{ background: "#fafafa" }}>
+      <section className="py-16 px-6" style={{ background: BG_ALT }}>
         <div className="mx-auto max-w-6xl">
-          <div className="text-center mb-10">
-            <p className="text-xs tracking-widest uppercase mb-2" style={{ color: R, fontFamily: FONT }}>النموذج</p>
-            <h2 className="text-3xl font-bold" style={{ fontFamily: FONT, color: NAVY }}>نموذج الفوز الثلاثي</h2>
-            <p className="text-sm mt-2 max-w-lg mx-auto" style={{ color: GRAY, fontFamily: FONT }}>كل طرف يكسب — هذا ما يجعل مبادرة شمول مستدامة.</p>
+          <div className="mb-10">
+            <Eyebrow label="النموذج" />
+            <h2 className="font-bold mt-4"
+              style={{ fontFamily: FONT_AR_D, fontSize: "clamp(24px,4vw,40px)", color: INK, lineHeight: 1.2 }}>
+              نموذج الفوز الثلاثي
+            </h2>
+            <p style={{ fontFamily: FONT_AR_B, fontSize: 14, color: INK_MUTE, marginTop: 8 }}>
+              كل طرف يكسب — هذا ما يجعل مبادرة شمول مستدامة.
+            </p>
           </div>
-          <div className="grid gap-5 md:grid-cols-4">
-            {WINS.map(({ icon, title, desc }) => (
-              <div key={title} className="rounded-2xl bg-white p-6 text-center" style={{ border: `1.5px solid ${BORDER}`, boxShadow: `0 2px 16px ${NAVY}06` }}>
-                <div className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl" style={{ background: RL }}>{icon}</div>
-                <p className="font-bold text-sm mb-2" style={{ color: R, fontFamily: FONT }}>{title}</p>
-                <p className="text-xs leading-relaxed" style={{ color: GRAY, fontFamily: FONT }}>{desc}</p>
+          <div className="grid gap-4 md:grid-cols-4">
+            {WINS.map(({ mark, title, desc }) => (
+              <div key={title} className="p-6"
+                style={{ background: SURFACE, border: `1px solid ${RULE_S}`, borderRadius: 6, boxShadow: `0 1px 2px rgba(31,26,20,0.06)` }}>
+                <div className="w-10 h-10 flex items-center justify-center mb-4 text-lg"
+                  style={{ background: BG_ALT, color: OLIVE, borderRadius: 4 }}>{mark}</div>
+                <p className="font-bold text-sm mb-2" style={{ color: OLIVE_D, fontFamily: FONT_AR_D }}>{title}</p>
+                <p style={{ fontFamily: FONT_AR_B, fontSize: 13, color: INK_MUTE, lineHeight: 1.75 }}>{desc}</p>
               </div>
             ))}
           </div>
@@ -342,40 +382,48 @@ export default function ShumulInitiativeAR() {
       </section>
 
       {/* ── Lead quote ── */}
-      <section className="py-12 px-6">
+      <section className="py-12 px-6" style={{ background: BG }}>
         <div className="mx-auto max-w-4xl">
-          <div className="rounded-2xl px-8 py-6" style={{ background: RL, borderRight: `4px solid ${R}` }}>
-            <p className="text-sm leading-relaxed" style={{ color: "#333", fontFamily: FONT }}>
-              <strong style={{ color: R }}>شمول</strong> هو ذراع التطوير المؤسسي المجاني لـ SpotCast المبني على نموذج الفوز الثلاثي —
+          <div className="px-8 py-6" style={{ background: SURFACE, borderInlineEnd: `3px solid ${TERRA}`, borderRadius: "0 4px 4px 0", boxShadow: `0 1px 2px rgba(31,26,20,0.06)` }}>
+            <p style={{ fontFamily: FONT_AR_B, fontSize: 15, color: INK_BODY, lineHeight: 1.85 }}>
+              <strong style={{ color: OLIVE_D }}>شمول</strong> هو ذراع التطوير المؤسسي المجاني لـ SpotCast المبني على نموذج الفوز الثلاثي —
               يكتسب الطلاب تدريباً مهنياً حقيقياً وشهادة معتمدة، وتحصل المؤسسات على خدمات استشارية متخصصة
-              بـ <strong style={{ color: R }}>تكلفة صفرية</strong>، وتبني SpotCast سجل أثر يؤهّلها للمنح الدولية.
-              <strong style={{ color: R }}> الجميع يكسب.</strong>
+              بـ <strong style={{ color: TERRA }}>تكلفة صفرية</strong>، وتبني SpotCast سجل أثر يؤهّلها للمنح الدولية.
+              <strong style={{ color: OLIVE_D }}> الجميع يكسب.</strong>
             </p>
           </div>
         </div>
       </section>
 
       {/* ── Pillars ── */}
-      <section className="py-20 px-6" style={{ background: "#f9fafb" }}>
+      <section className="py-20 px-6" style={{ background: BG_ALT }}>
         <div className="mx-auto max-w-6xl">
-          <Divider label="المحاور" />
-          <div className="text-center my-10">
-            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: FONT, color: NAVY }}>المحاور الثلاثة للخدمة</h2>
-            <p className="text-sm max-w-lg mx-auto" style={{ color: GRAY, fontFamily: FONT }}>خبرات متكاملة تغطي كل ما تحتاجه المؤسسة الناشئة.</p>
+          <Eyebrow label="المحاور" />
+          <div className="my-10">
+            <h2 className="font-bold mb-2" style={{ fontFamily: FONT_AR_D, fontSize: "clamp(24px,4vw,40px)", color: INK, lineHeight: 1.2 }}>
+              المحاور الثلاثة للخدمة
+            </h2>
+            <p style={{ fontFamily: FONT_AR_B, fontSize: 14, color: INK_MUTE }}>
+              خبرات متكاملة تغطي كل ما تحتاجه المؤسسة الناشئة.
+            </p>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-3">
             {PILLARS.map(({ n, tag, title, items }) => (
-              <div key={n} className="rounded-2xl overflow-hidden" style={{ border: `1.5px solid ${BORDER}` }}>
-                <div className="px-5 py-4 flex items-center gap-3" style={{ background: R }}>
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "rgba(255,255,255,0.22)", color: "#fff" }}>{n}</div>
-                  <p className="font-bold text-sm text-white" style={{ fontFamily: FONT }}>{title}</p>
+              <div key={n} style={{ background: SURFACE, border: `1px solid ${RULE_S}`, borderRadius: 6, overflow: "hidden", boxShadow: `0 1px 2px rgba(31,26,20,0.06)` }}>
+                <div className="px-5 py-4 flex items-center gap-3" style={{ background: OLIVE_D }}>
+                  <div className="flex items-center justify-center text-xs font-bold flex-shrink-0"
+                    style={{ width: 28, height: 28, background: "rgba(248,243,232,0.15)", color: ON_DARK, borderRadius: 2, fontFamily: "var(--font-barlow-condensed), 'Barlow Condensed', sans-serif" }}>{n}</div>
+                  <p className="font-bold text-sm" style={{ color: ON_DARK, fontFamily: FONT_AR_D }}>{title}</p>
                 </div>
-                <div className="p-5" style={{ background: "#f9fafb" }}>
-                  <span className="inline-block rounded px-2 py-1 text-xs font-bold mb-3" style={{ background: RL, color: R, border: `1px solid #f0c8d4`, fontFamily: FONT }}>{tag}</span>
+                <div className="p-5">
+                  <span className="inline-block px-2 py-1 text-xs font-semibold mb-3"
+                    style={{ background: BG_ALT, color: OLIVE, border: `1px solid rgba(74,92,57,0.2)`, borderRadius: 2, fontFamily: FONT_AR_B }}>
+                    {tag}
+                  </span>
                   <ul className="space-y-2">
                     {items.map(item => (
-                      <li key={item} className="flex gap-2 text-xs leading-relaxed" style={{ color: "#444", fontFamily: FONT }}>
-                        <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: R }} />
+                      <li key={item} className="flex gap-2 text-xs leading-relaxed" style={{ color: INK_BODY, fontFamily: FONT_AR_B, lineHeight: 1.75 }}>
+                        <span style={{ width: 4, height: 4, borderRadius: "50%", background: TERRA, marginTop: 7, flexShrink: 0, display: "inline-block" }} />
                         {item}
                       </li>
                     ))}
@@ -388,27 +436,32 @@ export default function ShumulInitiativeAR() {
       </section>
 
       {/* ── Timeline ── */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6" style={{ background: BG }}>
         <div className="mx-auto max-w-5xl">
-          <Divider label="خطة التوسع" />
-          <div className="text-center my-10">
-            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: FONT, color: NAVY }}>خطة التوسع المرحلي</h2>
-          </div>
-          <div className="space-y-4">
-            {PHASES.map(({ tag, name, period, bg, periodBg, periodColor, items }) => (
-              <div key={tag} className="rounded-xl overflow-hidden" style={{ border: `1px solid ${BORDER}` }}>
+          <Eyebrow label="خطة التوسع" />
+          <h2 className="font-bold mt-4 mb-10" style={{ fontFamily: FONT_AR_D, fontSize: "clamp(24px,4vw,40px)", color: INK, lineHeight: 1.2 }}>
+            خطة التوسع المرحلي
+          </h2>
+          <div className="space-y-3">
+            {PHASES.map(({ tag, name, period, items }, idx) => (
+              <div key={tag} style={{ border: `1px solid ${RULE}`, borderRadius: 4, overflow: "hidden" }}>
                 <div className="flex items-stretch">
-                  <div className="flex flex-col items-center justify-center text-center px-5 py-4 min-w-[110px]" style={{ background: bg }}>
-                    <p className="text-xs font-semibold text-white/80 uppercase tracking-wide" style={{ fontFamily: FONT }}>{tag}</p>
-                    <p className="text-sm font-bold text-white mt-0.5" style={{ fontFamily: FONT }}>{name}</p>
+                  <div className="flex flex-col items-center justify-center text-center px-5 py-4 min-w-[110px]"
+                    style={{ background: idx === 0 ? "#6B7F56" : idx === 1 ? OLIVE : OLIVE_D }}>
+                    <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "rgba(248,243,232,0.75)", fontFamily: FONT_AR_B }}>{tag}</p>
+                    <p className="text-sm font-bold mt-0.5" style={{ color: ON_DARK, fontFamily: FONT_AR_D }}>{name}</p>
                   </div>
-                  <div className="flex items-center px-4 py-3 text-sm font-semibold whitespace-nowrap" style={{ background: periodBg, color: periodColor, fontFamily: FONT }}>{period}</div>
+                  <div className="flex items-center px-4 py-3 text-sm font-semibold"
+                    style={{ background: BG_ALT, color: OLIVE_D, fontFamily: FONT_AR_B, borderInlineStart: `1px solid ${RULE}` }}>
+                    {period}
+                  </div>
                 </div>
-                <div className="px-5 py-4" style={{ background: "#f9fafb", borderTop: `1px solid ${BORDER}` }}>
+                <div className="px-5 py-4" style={{ background: SURFACE, borderTop: `1px solid ${RULE_S}` }}>
                   <div className="grid sm:grid-cols-2 gap-1.5">
                     {items.map(item => (
-                      <p key={item} className="text-xs flex gap-2" style={{ color: "#444", fontFamily: FONT }}>
-                        <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: R }} />{item}
+                      <p key={item} className="flex gap-2 text-xs" style={{ color: INK_BODY, fontFamily: FONT_AR_B, lineHeight: 1.75 }}>
+                        <span style={{ width: 4, height: 4, borderRadius: "50%", background: TERRA, marginTop: 7, flexShrink: 0, display: "inline-block" }} />
+                        {item}
                       </p>
                     ))}
                   </div>
@@ -420,87 +473,107 @@ export default function ShumulInitiativeAR() {
       </section>
 
       {/* ── Sectors ── */}
-      <section className="py-16 px-6" style={{ background: "#f9fafb" }}>
+      <section className="py-16 px-6" style={{ background: BG_ALT }}>
         <div className="mx-auto max-w-5xl text-center">
-          <Divider label="القطاعات المستهدفة" />
-          <h2 className="text-2xl font-bold my-6" style={{ fontFamily: FONT, color: NAVY }}>من يمكنه الاستفادة؟</h2>
-          <div className="flex flex-wrap justify-center gap-3 mb-4">
+          <Eyebrow label="القطاعات المستهدفة" />
+          <h2 className="font-bold mt-4 mb-8" style={{ fontFamily: FONT_AR_D, fontSize: "clamp(22px,3.5vw,34px)", color: INK }}>
+            من يمكنه الاستفادة؟
+          </h2>
+          <div className="flex flex-wrap justify-center gap-2.5 mb-4">
             {SECTORS.map(s => (
-              <span key={s} className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium" style={{ background: RL, border: `1.5px solid #f0c8d4`, color: "#6a1f35", fontFamily: FONT }}>
-                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: R }} />{s}
+              <span key={s} className="px-4 py-2 text-sm font-medium"
+                style={{ background: SURFACE, border: `1.5px solid rgba(74,92,57,0.25)`, color: OLIVE_D, borderRadius: 999, fontFamily: FONT_AR_B }}>
+                {s}
               </span>
             ))}
           </div>
-          <p className="text-xs italic mt-4" style={{ color: GRAY, fontFamily: FONT }}>نطاق المرحلة الأولى: عكار وشمال لبنان فقط</p>
-        </div>
-      </section>
-
-      {/* ── Responsibilities ── */}
-      <section className="py-20 px-6">
-        <div className="mx-auto max-w-5xl">
-          <Divider label="الشراكة" />
-          <div className="text-center my-10">
-            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: FONT, color: NAVY }}>توزيع المسؤوليات</h2>
-          </div>
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid #b0d4e3` }}>
-              <div className="px-5 py-4 flex items-center gap-2 font-bold text-sm text-white" style={{ background: "linear-gradient(90deg,#1a6e8a,#2a8aab)", fontFamily: FONT }}>🤝 INJAZ Lebanon</div>
-              <div className="px-5 py-4 space-y-3" style={{ background: "#e8f4f9" }}>
-                {RESPONSIBILITIES.injaz.map(r => <p key={r} className="flex gap-2 text-sm" style={{ color: "#1a4a5e", fontFamily: FONT }}><span style={{ color: "#1a6e8a", fontWeight: 700 }}>✓</span>{r}</p>)}
-              </div>
-            </div>
-            <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid #f0c8d4` }}>
-              <div className="px-5 py-4 flex items-center gap-2 font-bold text-sm text-white" style={{ background: `linear-gradient(90deg,${RD},${R})`, fontFamily: FONT }}>🌟 شمول / SpotCast</div>
-              <div className="px-5 py-4 space-y-3" style={{ background: RL }}>
-                {RESPONSIBILITIES.shumul.map(r => <p key={r} className="flex gap-2 text-sm" style={{ color: RD, fontFamily: FONT }}><span style={{ color: R, fontWeight: 700 }}>✓</span>{r}</p>)}
-              </div>
-            </div>
-          </div>
+          <p style={{ fontFamily: FONT_AR_B, fontSize: 12, color: INK_MUTE, marginTop: 16, fontStyle: "italic" }}>
+            نطاق المرحلة الأولى: عكار وشمال لبنان فقط
+          </p>
         </div>
       </section>
 
       {/* ── CTA ── */}
-      <section id="register" className="py-24 px-6" style={{ background: `linear-gradient(135deg, ${RD}, ${R})` }}>
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="text-xs tracking-widest uppercase mb-4 text-white/70" style={{ fontFamily: FONT }}>انضم إلينا</p>
-          <h2 className="text-4xl font-bold text-white mb-4 md:text-5xl" style={{ fontFamily: FONT }}>
-            مؤسستك تستحق<br />أن تنمو.
+      <section id="register" className="py-24 px-6" style={{ position: "relative", overflow: "hidden",
+        background: "radial-gradient(ellipse at 30% 20%, rgba(122,143,94,0.45), transparent 55%), radial-gradient(ellipse at 80% 70%, rgba(58,74,44,0.55), transparent 60%), linear-gradient(135deg, #5E7349 0%, #3A4A2C 100%)"
+      }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`, opacity: 0.5, mixBlendMode: "overlay" as const, pointerEvents: "none" as const }} />
+        <div className="mx-auto max-w-4xl text-center relative z-10">
+          <Eyebrow label="انضم إلينا" onDark />
+          <h2 className="font-extrabold mt-4 mb-4"
+            style={{ fontFamily: FONT_AR_D, fontSize: "clamp(30px,5vw,56px)", color: ON_DARK, lineHeight: 1.15 }}>
+            مؤسستك تستحق أن تنمو.
           </h2>
-          <p className="text-base mb-10 max-w-xl mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.8)", fontFamily: FONT }}>
+          <p className="mb-10 max-w-xl mx-auto leading-relaxed"
+            style={{ fontFamily: FONT_AR_B, fontSize: 15, color: "rgba(248,243,232,0.8)", lineHeight: 1.85 }}>
             لا رسوم، لا شروط معقدة. فقط التزام حقيقي بالتطوير وفريق طلابي متحمس يعمل معك.
           </p>
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center mb-10">
-            <button onClick={() => setModal("institution")} className="flex items-center gap-3 rounded-full px-8 py-4 text-sm font-bold" style={{ background: "#fff", color: R, fontFamily: FONT }}>
-              🏢 سجّل مؤسستك
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <button onClick={() => setModal("institution")}
+              className="flex items-center gap-3 px-8 py-4 text-sm font-bold"
+              style={{ background: ON_DARK, color: OLIVE_D, borderRadius: 2, fontFamily: FONT_AR_B }}>
+              سجّل مؤسستك
             </button>
-            <button onClick={() => setModal("student")} className="flex items-center gap-3 rounded-full px-8 py-4 text-sm font-bold text-white" style={{ border: "2px solid rgba(255,255,255,0.5)", fontFamily: FONT }}>
-              🎓 انضم كطالب
+            <button onClick={() => setModal("student")}
+              className="flex items-center gap-3 px-8 py-4 text-sm font-bold"
+              style={{ border: `2px solid rgba(248,243,232,0.45)`, color: ON_DARK, borderRadius: 2, fontFamily: FONT_AR_B }}>
+              انضم كطالب
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Partner logos ── */}
+      <section className="py-14 px-6" style={{ background: BG_ALT, borderTop: `1px solid ${RULE}` }}>
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center mb-8">
+            <Eyebrow label="شركاؤنا" />
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-12">
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex items-center gap-3">
+                <ShumulLogo size={44} variant="light" />
+                <div>
+                  <p className="font-extrabold" style={{ fontFamily: FONT_AR_D, fontSize: 18, color: OLIVE_D }}>شمول</p>
+                  <p style={{ fontFamily: FONT_AR_B, fontSize: 10, color: INK_MUTE, letterSpacing: "0.1em" }}>SHUMUL FOR AWARENESS & CULTURE</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ width: 1, height: 48, background: RULE }} />
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex items-center gap-3">
+                <InjazLogo size={44} />
+                <div>
+                  <p className="font-bold" style={{ fontFamily: "var(--font-barlow-condensed), 'Barlow Condensed', sans-serif", fontSize: 18, color: INK, letterSpacing: "-0.01em" }}>INJAZ</p>
+                  <p style={{ fontFamily: "var(--font-barlow), 'Barlow', sans-serif", fontSize: 11, color: INK_MUTE }}>Lebanon · Member of JA Worldwide</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer className="px-6 py-10" style={{ background: NAVY }}>
+      <footer className="px-6 py-10" style={{ background: OLIVE_D }}>
         <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <SpotCastLogo size={28} variant="white" />
             <div>
-              <p className="text-xs font-bold text-white" style={{ fontFamily: FONT }}>مبادرة شمول للتطوير المؤسسي</p>
-              <p className="text-xs" style={{ color: GRAY, fontFamily: FONT }}>مبادرة SpotCast · عكار والشمال · لبنان · ٢٠٢٦</p>
+              <p className="text-xs font-bold" style={{ color: ON_DARK, fontFamily: FONT_AR_D }}>مبادرة شمول للتطوير المؤسسي</p>
+              <p className="text-xs" style={{ color: "rgba(248,243,232,0.55)", fontFamily: FONT_AR_B }}>مبادرة SpotCast · عكار والشمال · لبنان · ٢٠٢٦</p>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-xs font-semibold" style={{ color: R, fontFamily: FONT }}>مسؤول البرنامج</p>
-            <p className="text-xs text-white" style={{ fontFamily: FONT }}>عمر خالد — المدير التنفيذي، SpotCast</p>
-            <a href="mailto:Omar.khaled@spotcast.press" className="text-xs" style={{ color: GRAY }}>Omar.khaled@spotcast.press</a>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <p className="text-xs font-semibold" style={{ color: "#C9A96E", fontFamily: FONT_AR_B }}>مسؤول البرنامج</p>
+            <p className="text-xs" style={{ color: ON_DARK, fontFamily: FONT_AR_D }}>عمر خالد — المدير التنفيذي، SpotCast</p>
+            <a href="mailto:Omar.khaled@spotcast.press" className="text-xs" style={{ color: "rgba(248,243,232,0.55)" }}>Omar.khaled@spotcast.press</a>
           </div>
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-xs font-semibold" style={{ color: R, fontFamily: FONT }}>منسق الميدان</p>
-            <p className="text-xs text-white" style={{ fontFamily: FONT }}>بشير الرفاعي — مدير المشروع</p>
-            <a href="mailto:alrifaibashir66@gmail.com" className="text-xs" style={{ color: GRAY }}>alrifaibashir66@gmail.com</a>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <p className="text-xs font-semibold" style={{ color: "#C9A96E", fontFamily: FONT_AR_B }}>منسق الميدان</p>
+            <p className="text-xs" style={{ color: ON_DARK, fontFamily: FONT_AR_D }}>بشير الرفاعي — مدير المشروع</p>
+            <a href="mailto:alrifaibashir66@gmail.com" className="text-xs" style={{ color: "rgba(248,243,232,0.55)" }}>alrifaibashir66@gmail.com</a>
           </div>
-          <a href="/" className="text-xs hover:text-rose-400 transition-colors" style={{ color: GRAY, fontFamily: FONT }}>← العودة إلى شمول هاب</a>
+          <a href="/" className="text-xs" style={{ color: "rgba(248,243,232,0.45)", fontFamily: FONT_AR_B }}>← العودة إلى شمول هاب</a>
         </div>
       </footer>
 
@@ -516,12 +589,12 @@ export default function ShumulInitiativeAR() {
         </Modal>
       )}
       {done === "institution" && (
-        <Modal title="شكراً لكم!" subtitle="" onClose={() => setDone(null)}>
+        <Modal title="شكراً لكم" subtitle="" onClose={() => setDone(null)}>
           <SuccessView message="تم استلام طلب تسجيلكم. سيتواصل معكم عمر خالد وبشير الرفاعي خلال ٤٨ ساعة." onClose={() => setDone(null)} />
         </Modal>
       )}
       {done === "student" && (
-        <Modal title="تم استلام طلبك!" subtitle="" onClose={() => setDone(null)}>
+        <Modal title="تم استلام طلبك" subtitle="" onClose={() => setDone(null)}>
           <SuccessView message="تم تقديم طلبك بنجاح. سنراجعه ونتواصل معك قريباً." onClose={() => setDone(null)} />
         </Modal>
       )}
