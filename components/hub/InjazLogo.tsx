@@ -1,18 +1,16 @@
 export function InjazLogo({ size = 48 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="INJAZ Lebanon logo">
-      {/* Upper-right large triangle */}
-      <polygon points="55,8 92,8 92,45" fill="#1B7F8E" />
-      {/* Upper-right small triangle (dark) */}
-      <polygon points="55,8 92,45 55,45" fill="#0D5F6C" />
-      {/* Lower-left large triangle */}
-      <polygon points="8,55 45,55 8,92" fill="#1B7F8E" />
-      {/* Lower-left small triangle (dark) */}
-      <polygon points="45,55 45,92 8,92" fill="#0D5F6C" />
-      {/* Center-right small triangle */}
-      <polygon points="55,48 70,48 55,63" fill="#1B7F8E" />
-      {/* Center-bottom small triangle */}
-      <polygon points="48,55 48,70 63,55" fill="#0D5F6C" />
+      {/* Upper-right block — bright teal outer face */}
+      <polygon points="48,8 92,8 92,52" fill="#1A8FA0" />
+      {/* Upper-right block — dark teal shadow face */}
+      <polygon points="48,8 92,52 48,52" fill="#0A5F6E" />
+      {/* Lower-left block — bright teal outer face */}
+      <polygon points="8,48 52,48 8,92" fill="#1A8FA0" />
+      {/* Lower-left block — dark teal shadow face */}
+      <polygon points="52,48 52,92 8,92" fill="#0A5F6E" />
+      {/* Thin centre bridge so the two blocks read as one mark */}
+      <polygon points="48,48 52,48 52,52 48,52" fill="#147880" />
     </svg>
   );
 }
