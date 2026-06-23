@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-const RESEND_KEY = process.env.RESEND_API_KEY || "re_ZguZP5r3_6MqLBDvTdLYVCaUerxF52j4b";
+const RESEND_KEY = process.env.RESEND_API_KEY || "re_QXa1LfDK_8AxQHWwzsMXqYLPk1N7bnRwo";
 
 const NOTIFY_EMAILS = [
   "omar.m.khaled1998@gmail.com",
