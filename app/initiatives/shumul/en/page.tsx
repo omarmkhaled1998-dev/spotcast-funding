@@ -27,8 +27,8 @@ const FONT_BODY = "var(--font-barlow), 'Barlow', sans-serif";
 /* ─── Content ───────────────────────────────────────────────── */
 const WINS = [
   { glyph: "◈", title: "Students", desc: "Real field training, recognized certificate & job-ready skills over 6 months" },
-  { glyph: "◫", title: "Institutions", desc: "Finance, legal & digital services — 100% free, grant-funded" },
-  { glyph: "◉", title: "SpotCast", desc: "Community impact, documented outcomes & international grant eligibility" },
+  { glyph: "◫", title: "Institutions", desc: "Finance, legal & digital services — 100% free to beneficiaries" },
+  { glyph: "◉", title: "SpotCast", desc: "Community impact, documented outcomes & a real institutional track record" },
   { glyph: "◎", title: "INJAZ Lebanon", desc: "Expanded reach in Akkar, meaningful student placements, co-authored impact" },
 ];
 
@@ -60,8 +60,8 @@ const PHASES = [
     items: ["Recruit 6–9 student interns from North Lebanon universities", "Deploy 2–3 interns per institution for 2 months", "Execute tailored development action plans per institution", "Rigorous documentation of all outputs & impact metrics"],
   },
   {
-    tag: "Phase 2", name: "Scale & Fund", period: "Jan – Mar 2027",
-    items: ["Compile impact report & documented success stories", "Build full international funding proposal", "Submit to EU Delegation, GIZ, Swisscontact, UNICEF", "Expand to 10+ institutions across North Lebanon"],
+    tag: "Phase 2", name: "Scale", period: "Jan – Mar 2027",
+    items: ["Compile impact report & documented success stories", "Expand to 10+ institutions across North Lebanon"],
   },
 ];
 
@@ -339,12 +339,12 @@ export default function ShumulInitiativeEN() {
           <h1 style={{ fontFamily: FONT_HEAD, fontWeight: 800, lineHeight: 1.0, color: ON_DARK, marginBottom: 12, letterSpacing: "-0.01em", fontSize: "clamp(36px, 6.5vw, 64px)" }}>
             Shumul Initiative
           </h1>
-          <p style={{ fontWeight: 400, color: "rgba(251,247,238,0.6)", marginBottom: 16, fontSize: "clamp(15px, 2.5vw, 20px)", fontFamily: FONT_BODY }}>
+          <p style={{ fontWeight: 400, color: "rgba(251,247,238,0.6)", marginBottom: 16, fontSize: "clamp(15px, 2.5vw, 20px)", fontFamily: "var(--font-noto-kufi), 'Noto Kufi Arabic', sans-serif" }}>
             مبادرة شمول للتطوير المؤسسي
           </p>
           <p style={{ maxWidth: 560, lineHeight: 1.65, marginBottom: 32, color: "rgba(251,247,238,0.82)", fontSize: 15, fontFamily: FONT_BODY }}>
             A free institutional development program pairing university students with small and emerging
-            organizations in Akkar &amp; North Lebanon — grant-funded, zero cost to beneficiaries.
+            organizations in Akkar &amp; North Lebanon — zero cost to beneficiaries.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 40 }}>
             <button onClick={() => setModal("institution")}
@@ -357,7 +357,7 @@ export default function ShumulInitiativeEN() {
             </button>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 20, paddingTop: 20, borderTop: "1px solid rgba(251,247,238,0.15)" }}>
-            {[["June 2026", "Launch Date"], ["Akkar & North Lebanon", "Coverage"], ["Oct–Dec 2026", "Pilot Phase"], ["Grant-Funded", "Free to Beneficiaries"]].map(([v, l]) => (
+            {[["June 2026", "Launch Date"], ["Akkar & North Lebanon", "Coverage"], ["Oct–Dec 2026", "Pilot Phase"], ["Free", "Zero Cost to Beneficiaries"]].map(([v, l]) => (
               <div key={l} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(251,247,238,0.4)", display: "inline-block", flexShrink: 0 }} />
                 <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(251,247,238,0.82)", fontFamily: FONT_BODY }}>{v}</span>
@@ -402,7 +402,7 @@ export default function ShumulInitiativeEN() {
             <p style={{ fontSize: 15, lineHeight: 1.75, color: INK_700, fontFamily: FONT_BODY, margin: 0 }}>
               <strong style={{ color: OLIVE }}>Shumul</strong> is SpotCast&apos;s free institutional development arm built on a triple-win model —
               students gain real professional training and a recognized certificate, institutions receive specialized advisory services
-              at <strong style={{ color: OLIVE }}>zero cost</strong>, and SpotCast builds the track record needed for international development grants.
+              at <strong style={{ color: OLIVE }}>zero cost</strong>, and SpotCast builds a measurable community impact record.
               <strong style={{ color: OLIVE }}> Every stakeholder wins.</strong>
             </p>
           </div>

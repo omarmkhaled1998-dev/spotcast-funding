@@ -28,9 +28,9 @@ const FONT_AR_B = "var(--font-cairo), 'Cairo', 'Noto Kufi Arabic', sans-serif";
 
 /* ─── Content ───────────────────────────────────────────────── */
 const WINS = [
-  { mark: "◆", title: "الطلاب", desc: "تدريب ميداني حقيقي وشهادة معتمدة ومهارات جاهزة لسوق العمل خلال ٦ أشهر" },
-  { mark: "◆", title: "المؤسسات", desc: "خدمات مالية وقانونية ورقمية — مجانية بالكامل وممولة من المانحين" },
-  { mark: "◆", title: "SpotCast", desc: "أثر مجتمعي موثّق ونتائج قابلة للقياس وأهلية للمنح الدولية" },
+  { mark: "◆", title: "الطلاب", desc: "تدريب ميداني حقيقي وشهادة معتمدة ومهارات جاهزة لسوق العمل خلال 6 أشهر" },
+  { mark: "◆", title: "المؤسسات", desc: "خدمات مالية وقانونية ورقمية — مجانية بالكامل للمؤسسات المستفيدة" },
+  { mark: "◆", title: "SpotCast", desc: "أثر مجتمعي موثّق ونتائج قابلة للقياس وسجل مؤسسي حقيقي" },
   { mark: "◆", title: "INJAZ Lebanon", desc: "توسيع الانتشار في عكار وفرص حقيقية للطلاب وتعاون في قياس الأثر" },
 ];
 
@@ -54,16 +54,16 @@ const PILLARS = [
 
 const PHASES = [
   {
-    tag: "المرحلة ٠", name: "التأسيس", period: "أغسطس – سبتمبر ٢٠٢٦",
-    items: ["توقيع اتفاقية الشراكة الرسمية مع INJAZ Lebanon", "تحديد والتحقق من ٣–٥ مؤسسات تجريبية في عكار", "بناء معايير اختيار الطلاب وحزمة التدريب التمهيدي", "تصميم أداة التشخيص المؤسسي (١٥–٢٠ سؤال)"],
+    tag: "المرحلة 0", name: "التأسيس", period: "أغسطس – سبتمبر 2026",
+    items: ["توقيع اتفاقية الشراكة الرسمية مع INJAZ Lebanon", "تحديد والتحقق من 3–5 مؤسسات تجريبية في عكار", "بناء معايير اختيار الطلاب وحزمة التدريب التمهيدي", "تصميم أداة التشخيص المؤسسي (15–20 سؤال)"],
   },
   {
-    tag: "المرحلة ١", name: "التجريب", period: "أكتوبر – ديسمبر ٢٠٢٦",
-    items: ["استقطاب ٦–٩ متدربين من جامعات شمال لبنان", "توزيع ٢–٣ متدربين لكل مؤسسة لمدة شهرين", "تنفيذ خطط تطوير مخصصة لكل مؤسسة", "توثيق دقيق لجميع المخرجات ومؤشرات الأثر"],
+    tag: "المرحلة 1", name: "التجريب", period: "أكتوبر – ديسمبر 2026",
+    items: ["استقطاب 6–9 متدربين من جامعات شمال لبنان", "توزيع 2–3 متدربين لكل مؤسسة لمدة شهرين", "تنفيذ خطط تطوير مخصصة لكل مؤسسة", "توثيق دقيق لجميع المخرجات ومؤشرات الأثر"],
   },
   {
-    tag: "المرحلة ٢", name: "التوسع والتمويل", period: "يناير – مارس ٢٠٢٧",
-    items: ["إعداد تقرير الأثر وقصص النجاح الموثقة", "بناء مقترح تمويل دولي شامل", "التقديم لـ EU Delegation وGIZ وSwisscontact وUNICEF", "التوسع لأكثر من ١٠ مؤسسات في شمال لبنان"],
+    tag: "المرحلة 2", name: "التوسع", period: "يناير – مارس 2027",
+    items: ["إعداد تقرير الأثر وقصص النجاح الموثقة", "التوسع لأكثر من 10 مؤسسات في شمال لبنان"],
   },
 ];
 
@@ -92,7 +92,7 @@ function InstitutionForm({ onDone }: { onDone: () => void }) {
       <FSelect label="المنطقة *" value={data.location} onChange={set("location")} required
         options={["عكار", "شمال لبنان (مناطق أخرى)", "كلاهما"]} />
       <FSelect label="حجم الفريق" value={data.teamSize} onChange={set("teamSize")}
-        options={["١–٥ أشخاص", "٦–١٥ شخص", "١٦–٥٠ شخص", "أكثر من ٥٠"]} />
+        options={["1–5 أشخاص", "6–15 شخص", "16–50 شخص", "أكثر من 50"]} />
     </div>
   );
   const s1 = (
@@ -327,7 +327,7 @@ export default function ShumulInitiativeAR() {
           <p className="max-w-xl leading-relaxed mb-8"
             style={{ fontFamily: FONT_AR_B, fontSize: 15, color: "rgba(248,243,232,0.85)", lineHeight: 1.85 }}>
             برنامج تطوير مؤسسي مجاني يربط طلاب الجامعات بالمؤسسات الناشئة والصغيرة
-            في عكار وشمال لبنان — ممول بالكامل ولا يُكلّف المستفيدين أي شيء.
+            في عكار وشمال لبنان — لا يُكلّف المستفيدين أي شيء.
           </p>
           <div className="flex flex-wrap gap-3 mb-10">
             <button onClick={() => setModal("institution")}
@@ -342,7 +342,7 @@ export default function ShumulInitiativeAR() {
             </button>
           </div>
           <div className="flex flex-wrap gap-6 pt-5" style={{ borderTop: `1px solid ${RULE_D}` }}>
-            {[["يونيو ٢٠٢٦", "تاريخ الإطلاق"], ["عكار وشمال لبنان", "نطاق التغطية"], ["أكتوبر–ديسمبر ٢٠٢٦", "مرحلة التجريب"], ["مجاني للمستفيدين", "ممول بالكامل"]].map(([v, l]) => (
+            {[["يونيو 2026", "تاريخ الإطلاق"], ["عكار وشمال لبنان", "نطاق التغطية"], ["أكتوبر–ديسمبر 2026", "مرحلة التجريب"], ["مجاني للمستفيدين", "بلا تكلفة"]].map(([v, l]) => (
               <div key={l} className="flex items-center gap-2">
                 <span style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(248,243,232,0.45)", display: "inline-block" }} />
                 <span style={{ fontFamily: FONT_AR_B, fontSize: 12, color: "rgba(248,243,232,0.85)", fontWeight: 500 }}>{v}</span>
@@ -388,7 +388,7 @@ export default function ShumulInitiativeAR() {
             <p style={{ fontFamily: FONT_AR_B, fontSize: 15, color: INK_BODY, lineHeight: 1.85 }}>
               <strong style={{ color: OLIVE_D }}>شمول</strong> هو ذراع التطوير المؤسسي المجاني لـ SpotCast المبني على نموذج الفوز الثلاثي —
               يكتسب الطلاب تدريباً مهنياً حقيقياً وشهادة معتمدة، وتحصل المؤسسات على خدمات استشارية متخصصة
-              بـ <strong style={{ color: TERRA }}>تكلفة صفرية</strong>، وتبني SpotCast سجل أثر يؤهّلها للمنح الدولية.
+              بـ <strong style={{ color: TERRA }}>تكلفة صفرية</strong>، وتبني SpotCast سجل أثر مجتمعي قابل للقياس.
               <strong style={{ color: OLIVE_D }}> الجميع يكسب.</strong>
             </p>
           </div>
@@ -560,7 +560,7 @@ export default function ShumulInitiativeAR() {
             <SpotCastLogo size={28} variant="white" />
             <div>
               <p className="text-xs font-bold" style={{ color: ON_DARK, fontFamily: FONT_AR_D }}>مبادرة شمول للتطوير المؤسسي</p>
-              <p className="text-xs" style={{ color: "rgba(248,243,232,0.55)", fontFamily: FONT_AR_B }}>مبادرة SpotCast · عكار والشمال · لبنان · ٢٠٢٦</p>
+              <p className="text-xs" style={{ color: "rgba(248,243,232,0.55)", fontFamily: FONT_AR_B }}>مبادرة SpotCast · عكار والشمال · لبنان · 2026</p>
             </div>
           </div>
           <div className="flex flex-col items-center gap-1 text-center">
@@ -584,13 +584,13 @@ export default function ShumulInitiativeAR() {
         </Modal>
       )}
       {modal === "student" && !done && (
-        <Modal title="انضم كطالب" subtitle="التزام ٦ أشهر · شهادة معتمدة · تدريب ميداني حقيقي" onClose={() => setModal(null)}>
+        <Modal title="انضم كطالب" subtitle="التزام 6 أشهر · شهادة معتمدة · تدريب ميداني حقيقي" onClose={() => setModal(null)}>
           <StudentForm onDone={() => { setModal(null); setDone("student"); }} />
         </Modal>
       )}
       {done === "institution" && (
         <Modal title="شكراً لكم" subtitle="" onClose={() => setDone(null)}>
-          <SuccessView message="تم استلام طلب تسجيلكم. سيتواصل معكم عمر خالد وبشير الرفاعي خلال ٤٨ ساعة." onClose={() => setDone(null)} />
+          <SuccessView message="تم استلام طلب تسجيلكم. سيتواصل معكم عمر خالد وبشير الرفاعي خلال 48 ساعة." onClose={() => setDone(null)} />
         </Modal>
       )}
       {done === "student" && (
