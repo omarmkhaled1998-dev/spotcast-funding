@@ -1,9 +1,21 @@
+import nodemailer from "nodemailer";
+
 export const dynamic = "force-dynamic";
 
 const NOTIFY_EMAILS = [
   "Omar.khaled@spotcast.press",
   "alrifaibashir66@gmail.com",
 ];
+
+const transport = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: "omar.m.khaled1998@gmail.com",
+    pass: "ovwwbdwnygqhiyge",
+  },
+});
 
 function buildHtml(type: "institution" | "student", data: Record<string, string>) {
   const isInstitution = type === "institution";
@@ -44,30 +56,6 @@ function buildHtml(type: "institution" | "student", data: Record<string, string>
 </html>`;
 }
 
-const RESEND_KEY = process.env.RESEND_API_KEY || "re_ZguZP5r3_6MqLBDvTdLYVCaUerxF52j4b";
-
-async function sendViaResend(to: string, subject: string, html: string, replyTo: string) {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${RESEND_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: "Shumul Initiative <onboarding@resend.dev>",
-      to: [to],
-      reply_to: replyTo,
-      subject,
-      html,
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Resend error ${res.status}: ${err}`);
-  }
-}
-
 export async function POST(req: Request) {
   try {
     const body = await req.json() as Record<string, string> & { type: "institution" | "student" };
@@ -76,7 +64,6 @@ export async function POST(req: Request) {
     if (!type || !fields.email) {
       return Response.json({ error: "Missing required fields" }, { status: 400 });
     }
-
 
     const isInstitution = type === "institution";
     const subject = isInstitution
@@ -105,10 +92,15 @@ export async function POST(req: Request) {
 
     const html = buildHtml(type, emailData);
 
-    // Send a separate email to each recipient
     await Promise.all(
-      NOTIFY_EMAILS.map(address =>
-        sendViaResend(address, subject, html, fields.email)
+      NOTIFY_EMAILS.map(to =>
+        transport.sendMail({
+          from: '"Shumul Initiative" <omar.m.khaled1998@gmail.com>',
+          to,
+          replyTo: fields.email,
+          subject,
+          html,
+        })
       )
     );
 
