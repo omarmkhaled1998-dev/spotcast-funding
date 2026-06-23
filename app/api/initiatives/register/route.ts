@@ -106,7 +106,8 @@ export async function POST(req: Request) {
 
     return Response.json({ ok: true });
   } catch (err) {
-    console.error("[initiatives/register]", err);
-    return Response.json({ error: "Failed to send" }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[initiatives/register] ERROR:", message);
+    return Response.json({ error: message }, { status: 500 });
   }
 }
