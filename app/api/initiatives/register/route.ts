@@ -44,11 +44,13 @@ function buildHtml(type: "institution" | "student", data: Record<string, string>
 </html>`;
 }
 
+const RESEND_KEY = process.env.RESEND_API_KEY || "re_ZguZP5r3_6MqLBDvTdLYVCaUerxF52j4b";
+
 async function sendViaResend(to: string, subject: string, html: string, replyTo: string) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
+      "Authorization": `Bearer ${RESEND_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -75,10 +77,6 @@ export async function POST(req: Request) {
       return Response.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    if (!process.env.RESEND_API_KEY) {
-      console.warn("[initiatives/register] RESEND_API_KEY not set — email skipped. Payload:", JSON.stringify(body));
-      return Response.json({ ok: true });
-    }
 
     const isInstitution = type === "institution";
     const subject = isInstitution
