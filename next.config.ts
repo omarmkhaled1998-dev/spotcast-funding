@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: path.join(__dirname),
   // instrumentation.ts is enabled by default in Next.js 15
   serverExternalPackages: [
     // node-cron must not be bundled
