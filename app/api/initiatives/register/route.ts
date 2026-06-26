@@ -1,12 +1,19 @@
 export const dynamic = "force-dynamic";
 
-import { neon } from "@neondatabase/serverless";
+import { db } from "@/lib/db";
 
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbxsYzumeMn-A_s-SEB2U5zfCknXLMOZoww8eWeIYC7XgJc_jjSZJQ5Muk3F3eXZXEPk5A/exec";
 
-function getDb() {
-  return neon(process.env.DATABASE_URL!);
+async function ensureTable() {
+  await db.$executeRaw`
+    CREATE TABLE IF NOT EXISTS shumul_registrations (
+      id         SERIAL PRIMARY KEY,
+      type       TEXT        NOT NULL,
+      data       JSONB       NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
 }
 
 export async function POST(req: Request) {
@@ -19,25 +26,14 @@ export async function POST(req: Request) {
       return Response.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const sql = getDb();
-
-    await sql`
-      CREATE TABLE IF NOT EXISTS shumul_registrations (
-        id        SERIAL PRIMARY KEY,
-        type      TEXT        NOT NULL,
-        data      JSONB       NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      )
-    `;
-
-    await sql`
+    await ensureTable();
+    await db.$executeRaw`
       INSERT INTO shumul_registrations (type, data)
-      VALUES (${body.type}, ${JSON.stringify(body)})
+      VALUES (${body.type}, ${JSON.stringify(body)}::jsonb)
     `;
 
-    console.log("[initiatives/register] Saved to DB:", body.email);
+    console.log("[initiatives/register] Saved:", body.email, body.type);
 
-    // Fire-and-forget notification (best effort)
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

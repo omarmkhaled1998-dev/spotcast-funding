@@ -1,11 +1,18 @@
 export const dynamic = "force-dynamic";
 
-import { neon } from "@neondatabase/serverless";
+import { db } from "@/lib/db";
 
 const ADMIN_TOKEN = "shumul2026";
 
-function getDb() {
-  return neon(process.env.DATABASE_URL!);
+async function ensureTable() {
+  await db.$executeRaw`
+    CREATE TABLE IF NOT EXISTS shumul_registrations (
+      id         SERIAL PRIMARY KEY,
+      type       TEXT        NOT NULL,
+      data       JSONB       NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
 }
 
 export async function GET(req: Request) {
@@ -15,18 +22,11 @@ export async function GET(req: Request) {
   }
 
   try {
-    const sql = getDb();
+    await ensureTable();
 
-    await sql`
-      CREATE TABLE IF NOT EXISTS shumul_registrations (
-        id         SERIAL PRIMARY KEY,
-        type       TEXT        NOT NULL,
-        data       JSONB       NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      )
-    `;
-
-    const rows = await sql`
+    const rows = await db.$queryRaw<
+      { id: number; type: string; data: Record<string, string>; created_at: Date }[]
+    >`
       SELECT id, type, data, created_at
       FROM shumul_registrations
       ORDER BY created_at DESC
