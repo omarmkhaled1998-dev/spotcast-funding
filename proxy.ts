@@ -16,6 +16,7 @@ const PUBLIC_PREFIXES = [
   "/subscription-required",
   "/gallery",
   "/initiatives",
+  "/hub",
 ];
 
 // Routes that require auth but NOT an active subscription

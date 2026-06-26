@@ -584,7 +584,7 @@ export default function ShumulInitiativeEN() {
             <p style={{ fontSize: 13, color: ON_DARK, fontFamily: FONT_BODY, margin: 0 }}>Bashir AlRifaii — Project Manager</p>
             <a href="mailto:alrifaibashir66@gmail.com" style={{ fontSize: 12, color: "rgba(251,247,238,0.45)", fontFamily: FONT_BODY, textDecoration: "none" }}>alrifaibashir66@gmail.com</a>
           </div>
-          <a href="/" style={{ fontSize: 12, color: "rgba(251,247,238,0.45)", fontFamily: FONT_BODY, textDecoration: "none" }}>
+          <a href="/hub" style={{ fontSize: 12, color: "rgba(251,247,238,0.45)", fontFamily: FONT_BODY, textDecoration: "none" }}>
             Back to Shumul Hub
           </a>
         </div>

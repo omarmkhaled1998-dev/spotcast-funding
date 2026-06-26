@@ -573,7 +573,7 @@ export default function ShumulInitiativeAR() {
             <p className="text-xs" style={{ color: ON_DARK, fontFamily: FONT_AR_D }}>بشير الرفاعي — مدير المشروع</p>
             <a href="mailto:alrifaibashir66@gmail.com" className="text-xs" style={{ color: "rgba(248,243,232,0.55)" }}>alrifaibashir66@gmail.com</a>
           </div>
-          <a href="/" className="text-xs" style={{ color: "rgba(248,243,232,0.45)", fontFamily: FONT_AR_B }}>← العودة إلى شمول هاب</a>
+          <a href="/hub" className="text-xs" style={{ color: "rgba(248,243,232,0.45)", fontFamily: FONT_AR_B }}>← العودة إلى شمول هاب</a>
         </div>
       </footer>
 
