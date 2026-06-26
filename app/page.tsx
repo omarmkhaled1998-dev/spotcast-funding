@@ -69,9 +69,9 @@ function Eyebrow({ label, onDark }: { label: string; onDark?: boolean }) {
   );
 }
 
-function Section({ children, bg, tight }: { children: React.ReactNode; bg?: string; tight?: boolean }) {
+function Section({ children, bg, tight, id }: { children: React.ReactNode; bg?: string; tight?: boolean; id?: string }) {
   return (
-    <section style={{ background: bg || BG, paddingBlock: tight ? "72px" : "96px" }}>
+    <section id={id} style={{ background: bg || BG, paddingBlock: tight ? "72px" : "96px" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(20px,4vw,56px)" }}>
         {children}
       </div>
