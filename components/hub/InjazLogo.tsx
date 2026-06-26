@@ -4,9 +4,7 @@ export function InjazLogo({ size = 48 }: { size?: number }) {
     <img
       src="/injaz-lebanon.png"
       alt="INJAZ Lebanon"
-      width={size}
-      height={size}
-      style={{ objectFit: "contain", display: "block" }}
+      style={{ width: size, height: size, objectFit: "contain", display: "block" }}
     />
   );
 }

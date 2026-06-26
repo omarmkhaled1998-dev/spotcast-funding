@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 const RESEND_KEY = process.env.RESEND_API_KEY || "re_QXa1LfDK_8AxQHWwzsMXqYLPk1N7bnRwo";
 
 const NOTIFY_EMAILS = [
+  "Omar.khaled@spotcast.press",
   "omar.m.khaled1998@gmail.com",
   "alrifaibashir66@gmail.com",
 ];
@@ -86,7 +87,7 @@ export async function POST(req: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "Shumul Initiative <onboarding@resend.dev>",
+            from: "Shumul Initiative <noreply@shumul.org>",
             to: [to],
             reply_to: fields.email,
             subject,
