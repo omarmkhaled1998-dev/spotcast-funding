@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Dark olive background -->
+  <circle cx="50" cy="50" r="50" fill="#3A4A2C"/>
+  <!-- Inner arcs — gold (#C9A96E, r=22, halfSpan=20°, strokeWidth=8) -->
+  <path d="M 71.67 53.82 A 22 22 0 0 1 64.14 66.85" stroke="#C9A96E" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M 57.52 70.67 A 22 22 0 0 1 42.48 70.67" stroke="#C9A96E" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M 35.86 66.85 A 22 22 0 0 1 28.33 53.82" stroke="#C9A96E" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M 28.33 46.18 A 22 22 0 0 1 35.86 33.15" stroke="#C9A96E" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M 42.48 29.33 A 22 22 0 0 1 57.52 29.33" stroke="#C9A96E" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M 64.14 33.15 A 22 22 0 0 1 71.67 46.18" stroke="#C9A96E" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <!-- Outer arcs — cream (#E8DFCC, r=34, halfSpan=24°, strokeWidth=11) -->
+  <path d="M 81.06 36.17 A 34 34 0 0 1 81.06 63.83" stroke="#E8DFCC" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <path d="M 77.51 69.98 A 34 34 0 0 1 53.55 83.81" stroke="#E8DFCC" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <path d="M 46.45 83.81 A 34 34 0 0 1 22.49 69.98" stroke="#E8DFCC" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <path d="M 18.94 63.83 A 34 34 0 0 1 18.94 36.17" stroke="#E8DFCC" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <path d="M 22.49 30.01 A 34 34 0 0 1 46.45 16.19" stroke="#E8DFCC" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <path d="M 53.55 16.19 A 34 34 0 0 1 77.51 30.01" stroke="#E8DFCC" stroke-width="11" fill="none" stroke-linecap="round"/>
+</svg>

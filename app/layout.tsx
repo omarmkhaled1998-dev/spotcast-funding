@@ -10,8 +10,15 @@ const barlowCondensed = Barlow_Condensed({ subsets: ["latin"], variable: "--font
 const barlow = Barlow({ subsets: ["latin"], variable: "--font-barlow", weight: ["300", "400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
-  title: "Shumul Community & Media Hub | شمول",
-  description: "Shumul is building a 6-level community and media center in Berqayel, Akkar — broadcast studios, co-working, youth programs, and confidential social services. Net-zero by design.",
+  title: "شمول | Shumul",
+  description: "مؤسسة اجتماعية وإنسانية تعمل في عكار وشمال لبنان. Shumul Foundation — Akkar, North Lebanon.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
