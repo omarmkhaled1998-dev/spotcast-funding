@@ -117,7 +117,7 @@ function ContactForm() {
 
   return (
     <form onSubmit={submit} style={{ display: "flex", flexDirection: "column" as const, gap: 16 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div className="sh-form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <div>
           <label style={{ display: "block", fontFamily: FAR_B, fontSize: 12, fontWeight: 600, color: INK_B, marginBottom: 6 }}>الاسم *</label>
           <input value={form.name} onChange={set("name")} required placeholder="اسمك الكامل" style={inputStyle} />
@@ -127,7 +127,7 @@ function ContactForm() {
           <input type="email" value={form.email} onChange={set("email")} required placeholder="name@example.com" style={inputStyle} />
         </div>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div className="sh-form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <div>
           <label style={{ display: "block", fontFamily: FAR_B, fontSize: 12, fontWeight: 600, color: INK_B, marginBottom: 6 }}>رقم الهاتف</label>
           <input type="tel" value={form.phone} onChange={set("phone")} placeholder="+961 …" style={inputStyle} />
@@ -155,6 +155,23 @@ export default function ShumulHome() {
   return (
     <div style={{ background: BG, color: INK, fontFamily: FAR_B }} dir="rtl">
 
+      <style>{`
+  .sh-2col { display: grid; }
+  .sh-3col { display: grid; }
+  .sh-4col { display: grid; }
+  .sh-form-row { display: grid; }
+  @media (max-width: 860px) {
+    .sh-2col { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .sh-3col { grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
+    .sh-4col { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+    .sh-form-row { grid-template-columns: 1fr !important; }
+    .sh-nav-links { display: none !important; }
+  }
+  @media (max-width: 540px) {
+    .sh-3col { grid-template-columns: 1fr !important; }
+  }
+`}</style>
+
       {/* ── Top nav ── */}
       <ShumulTopNav />
 
@@ -168,10 +185,14 @@ export default function ShumulHome() {
               <p style={{ fontFamily: FAR_B, fontSize: 11, color: INK_M, margin: 0 }}>مؤسسة اجتماعية وإنسانية · عكار</p>
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div className="sh-nav-links" style={{ display: "flex", alignItems: "center", gap: 16 }}>
             {[["#about", "من نحن"], ["#programs", "برامجنا"], ["#contact", "تواصل"]].map(([href, label]) => (
               <a key={href} href={href} style={{ fontFamily: FAR_B, fontSize: 13, fontWeight: 500, color: INK_M, textDecoration: "none" }}>{label}</a>
             ))}
+            <Link href="/en"
+              style={{ fontFamily: "var(--font-barlow),'Barlow',sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", color: INK_M, border: `1px solid ${RULE}`, borderRadius: 999, padding: "5px 12px", textDecoration: "none" }}>
+              EN
+            </Link>
             <a href="#contact" style={{ fontFamily: FAR_B, fontSize: 13, fontWeight: 700, color: ON_DARK, background: OLIVE, borderRadius: 2, padding: "8px 20px", textDecoration: "none" }}>ادعمنا</a>
           </div>
         </div>
@@ -216,7 +237,7 @@ export default function ShumulHome() {
 
       {/* ── About ── */}
       <Section bg={SURFACE} tight>
-        <div id="about" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(40px,6vw,96px)", alignItems: "start" }}>
+        <div id="about" className="sh-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(40px,6vw,96px)", alignItems: "start" }}>
           <div>
             <div style={{ marginBottom: 20 }}><Eyebrow label="من نحن" /></div>
             <h2 style={{ fontFamily: FAR, fontWeight: 800, fontSize: "clamp(30px,4vw,52px)", color: INK, lineHeight: 1.25, letterSpacing: 0, margin: "0 0 24px" }}>
@@ -246,7 +267,7 @@ export default function ShumulHome() {
             ستة محاور تعمل بشكل متشابك لتغطية الحاجات الاجتماعية والثقافية والإنسانية في المنطقة.
           </p>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(16px,2vw,24px)" }}>
+        <div className="sh-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(16px,2vw,24px)" }}>
           {PROGRAMS.map(p => (
             <div key={p.num} style={{ background: SURFACE, border: `1px solid ${RULE_S}`, borderRadius: 4, padding: "clamp(20px,2.4vw,28px)", transition: "transform 220ms, box-shadow 220ms" }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-3px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 32px rgba(31,26,20,0.08)"; }}
@@ -268,7 +289,7 @@ export default function ShumulHome() {
           <p style={{ fontFamily: FAR_B, fontSize: 16, color: "rgba(248,243,232,0.72)", lineHeight: 1.9, maxWidth: 560, marginBottom: 64 }}>
             لسنا منظمة كبيرة، ولا نريد أن نكون. نحن شبكة محلية تعمل بثبات في منطقة قلّما تصلها الأضواء.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(24px,3vw,48px)" }}>
+          <div className="sh-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "clamp(24px,3vw,48px)" }}>
             {STATS.map(s => (
               <div key={s.num}>
                 <span style={{ fontFamily: "var(--font-barlow-condensed), 'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: "clamp(52px,6vw,84px)", color: TERRA, lineHeight: 0.95, letterSpacing: "-0.02em", display: "block" }}>{s.num}</span>
@@ -285,7 +306,7 @@ export default function ShumulHome() {
           <div style={{ marginBottom: 16 }}><Eyebrow label="مشاريع ومبادرات" /></div>
           <h2 style={{ fontFamily: FAR, fontWeight: 800, fontSize: "clamp(32px,4vw,56px)", color: INK, margin: 0 }}>من الفكرة إلى الأرض.</h2>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(16px,2vw,24px)" }}>
+        <div className="sh-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(16px,2vw,24px)" }}>
           {PROJECTS.map(p => (
             <div key={p.title} style={{ background: p.bg, borderRadius: 4, padding: "clamp(24px,2.4vw,32px)", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0, backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.15 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`, opacity: 0.4, mixBlendMode: "overlay" as const, pointerEvents: "none" as const }} />
@@ -320,7 +341,7 @@ export default function ShumulHome() {
 
       {/* ── Volunteer ── */}
       <Section id="volunteer" bg={SURFACE} tight>
-        <div id="volunteer" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(40px,6vw,96px)", alignItems: "center" }}>
+        <div id="volunteer" className="sh-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(40px,6vw,96px)", alignItems: "center" }}>
           <div>
             <div style={{ marginBottom: 16 }}><Eyebrow label="كن جزءًا من شمول" /></div>
             <h2 style={{ fontFamily: FAR, fontWeight: 800, fontSize: "clamp(28px,3.5vw,48px)", color: INK, margin: "0 0 20px", lineHeight: 1.25 }}>
@@ -344,7 +365,7 @@ export default function ShumulHome() {
 
       {/* ── Contact ── */}
       <Section bg={BG} tight>
-        <div id="contact" style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "clamp(40px,6vw,96px)", alignItems: "start" }}>
+        <div id="contact" className="sh-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "clamp(40px,6vw,96px)", alignItems: "start" }}>
           <div style={{ paddingTop: 8 }}>
             <div style={{ marginBottom: 16 }}><Eyebrow label="تواصل معنا" /></div>
             <h2 style={{ fontFamily: FAR, fontWeight: 800, fontSize: "clamp(28px,3.5vw,48px)", color: INK, margin: "0 0 16px" }}>تحدّث إلينا.</h2>
@@ -373,7 +394,7 @@ export default function ShumulHome() {
             <span style={{ width: 28, height: 1.5, background: "currentColor", display: "inline-block" }} />
             مبادراتنا
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+          <div className="sh-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
             <Link href="/initiatives/shumul" style={{ background: OLIVE_D, borderRadius: 6, padding: "clamp(28px,3vw,44px)", textDecoration: "none", display: "block", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", inset: 0, backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.15 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`, opacity: 0.4, mixBlendMode: "overlay" as const, pointerEvents: "none" as const }} />
               <div style={{ position: "relative", zIndex: 1 }}>
@@ -396,7 +417,7 @@ export default function ShumulHome() {
       {/* ── Footer ── */}
       <footer style={{ background: OLIVE_D, color: ON_DARK, padding: "56px clamp(20px,4vw,56px) 32px" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr", gap: "clamp(32px,4vw,64px)", paddingBottom: 40, borderBottom: `1px solid ${RULE_D}` }}>
+          <div className="sh-2col" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr", gap: "clamp(32px,4vw,64px)", paddingBottom: 40, borderBottom: `1px solid ${RULE_D}` }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
                 <ShumulLogo size={36} variant="white" />
