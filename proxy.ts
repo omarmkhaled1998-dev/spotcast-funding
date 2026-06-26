@@ -17,6 +17,7 @@ const PUBLIC_PREFIXES = [
   "/gallery",
   "/initiatives",
   "/hub",
+  "/en",
   "/api/initiatives",
 ];
 
