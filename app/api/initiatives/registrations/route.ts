@@ -1,19 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { db } from "@/lib/db";
-
 const ADMIN_TOKEN = "shumul2026";
-
-async function ensureTable() {
-  await db.$executeRaw`
-    CREATE TABLE IF NOT EXISTS shumul_registrations (
-      id         SERIAL PRIMARY KEY,
-      type       TEXT        NOT NULL,
-      data       JSONB       NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `;
-}
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -22,7 +9,16 @@ export async function GET(req: Request) {
   }
 
   try {
-    await ensureTable();
+    const { db } = await import("@/lib/db");
+
+    await db.$executeRaw`
+      CREATE TABLE IF NOT EXISTS shumul_registrations (
+        id         SERIAL PRIMARY KEY,
+        type       TEXT        NOT NULL,
+        data       JSONB       NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `;
 
     const rows = await db.$queryRaw<
       { id: number; type: string; data: Record<string, string>; created_at: Date }[]
@@ -35,6 +31,10 @@ export async function GET(req: Request) {
     return Response.json({ count: rows.length, registrations: rows });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return Response.json({ error: message }, { status: 500 });
+    // DB not available — registrations are delivered by email to omar + bashir
+    return Response.json({
+      note: "Database unavailable. Registrations are sent by email to omar.m.khaled1998@gmail.com and alrifaibashir66@gmail.com for each new submission.",
+      error: message,
+    }, { status: 503 });
   }
 }
