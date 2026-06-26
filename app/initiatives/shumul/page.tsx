@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ShumulLogo } from "@/components/hub/ShumulLogo";
 import { InjazLogo } from "@/components/hub/InjazLogo";
 import { SpotCastLogo } from "@/components/hub/SpotCastLogo";
+import { ShumulTopNav } from "@/components/shumul/ShumulTopNav";
 
 /* ─── Design tokens ─────────────────────────────────────────── */
 const OLIVE    = "#4A5C39";
@@ -279,7 +280,10 @@ export default function ShumulInitiativeAR() {
   return (
     <div className="min-h-screen" style={{ background: BG, color: INK }} dir="rtl">
 
-      {/* ── Nav ── */}
+      {/* ── Top section nav ── */}
+      <ShumulTopNav />
+
+      {/* ── Page header ── */}
       <header className="sticky top-0 z-40"
         style={{ background: "rgba(248,243,232,0.95)", backdropFilter: "saturate(140%) blur(12px)", borderBottom: `1px solid ${RULE}` }}>
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">

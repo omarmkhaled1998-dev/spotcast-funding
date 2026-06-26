@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { SpotCastLogo } from "@/components/hub/SpotCastLogo";
+import { ShumulTopNav } from "@/components/shumul/ShumulTopNav";
 
 const Building3D = dynamic(() => import("@/components/hub/Building3D"), { ssr: false });
 
@@ -225,7 +226,10 @@ export default function ShumulHubPage() {
   return (
     <div className="min-h-screen" style={{ background: "#fff", color: NAVY }}>
 
-      {/* ── Nav ────────────────────────────────────────────── */}
+      {/* ── Top section nav ── */}
+      <ShumulTopNav />
+
+      {/* ── Hub header ── */}
       <header
         className="sticky top-0 z-50 backdrop-blur-sm"
         style={{ background: "rgba(255,255,255,0.95)", borderBottom: `1px solid ${PINK}22` }}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ShumulLogo } from "@/components/hub/ShumulLogo";
 import { InjazLogo } from "@/components/hub/InjazLogo";
 import { SpotCastLogo } from "@/components/hub/SpotCastLogo";
+import { ShumulTopNav } from "@/components/shumul/ShumulTopNav";
 
 /* ─── Design tokens ─────────────────────────────────────────── */
 const BG        = "#F8F3E8";
@@ -300,7 +301,10 @@ export default function ShumulInitiativeEN() {
   return (
     <div style={{ minHeight: "100vh", background: BG, color: INK, fontFamily: FONT_BODY }}>
 
-      {/* ── Nav ── */}
+      {/* ── Top section nav ── */}
+      <ShumulTopNav />
+
+      {/* ── Page header ── */}
       <header style={{ position: "sticky", top: 0, zIndex: 40, backdropFilter: "blur(8px)", background: "rgba(248,243,232,0.96)", borderBottom: `1px solid ${RULE}` }}>
         <div style={{ margin: "0 auto", maxWidth: 1152, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
