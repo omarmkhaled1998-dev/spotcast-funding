@@ -73,5 +73,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|gallery/|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|otf|eot)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|gallery/|models/|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|otf|eot|obj|mtl|glb|gltf|bin|mp4|mp3|pdf)$).*)"],
 };
