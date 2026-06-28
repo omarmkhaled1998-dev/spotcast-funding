@@ -74,19 +74,17 @@ function Scene() {
         });
 
         // Centre on XZ, bottom at y = 0, normalise longest horiz. dim to 12 units
-        // Some usemtl groups produce empty geometries → NaN bounding box.
-        // Build the box only from meshes with valid, finite positions.
+        // Build box from valid meshes only; fallback to Python-analysed bounds
         const box = new THREE.Box3();
         obj.traverse((child) => {
           if (!(child instanceof THREE.Mesh)) return;
           const pos = child.geometry?.attributes?.position;
           if (!pos || pos.count === 0) return;
           const arr = pos.array as Float32Array;
-          if (!isFinite(arr[0])) return;                    // skip NaN geometry
+          if (!isFinite(arr[0])) return;
           const cb = new THREE.Box3().setFromBufferAttribute(pos as THREE.BufferAttribute);
           if (isFinite(cb.min.x)) box.union(cb);
         });
-        // Fallback to Python-analysed bounds if nothing was valid
         if (!isFinite(box.min.x)) {
           box.set(new THREE.Vector3(22.26, -3.20, -26.48),
                   new THREE.Vector3(60.73,  13.90,  34.98));
