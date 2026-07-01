@@ -4,243 +4,320 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
 
-/* ─── Palette (from architectural render) ──────────────────── */
-const FRAME   = "#33373E";  // dark bronze-charcoal steel frame
-const FRAME_D = "#26292F";  // deeper frame shadow
-const GLASS   = "#3E5B6E";  // tinted curtain-wall glass
-const PLINTH  = "#B9B0A2";  // concrete plinth / retaining wall
-const PANEL   = "#7C746A";  // solid signage panel (taupe)
-const GOLD    = "#C9A96E";  // signage + accents
-const COURT   = "#1F5FA8";  // padel court blue
-const SOLAR   = "#13233A";  // solar panel dark blue
+/* ─── Material palette (matched to architectural render) ───── */
+const STEEL    = "#2E3238";  // dark bronze-charcoal exoskeleton
+const STEEL_D  = "#22252A";  // deep frame shadow
+const GLASS    = "#41586A";  // tinted Low-E curtain glass
+const GLASS_HI = "#6E8CA0";  // sky reflection tint
+const TAUPE    = "#8A8177";  // solid facade panels
+const CONCRETE = "#C9C1B2";  // plinth / retaining walls
+const PAVING   = "#D3CCBE";  // site paving
+const GOLD     = "#C9A96E";  // signage
+const COURT    = "#2563AE";  // padel court
+const COURT_LN = "#E8EDF2";  // court lines
+const SOLAR    = "#101F33";  // PV cells
+const LEAF     = "#6F7D52";  // olive foliage
+const TRUNK    = "#6B5840";
 
 /* ─── Dimensions ────────────────────────────────────────────── */
-const W = 6.4;     // width  (X)
-const D = 3.8;     // depth  (Z)
-const FH = 1.5;    // floor height
-const FLOORS_N = 3;
-const BODY_H = FH * FLOORS_N;
+const W  = 7.4;             // building width  (X)
+const D  = 4.4;             // building depth  (Z)
+const FH = 1.62;            // floor height
+const NF = 3;               // floors above ground
+const H  = FH * NF;         // body height
 
-/* ─── Floor labels ──────────────────────────────────────────── */
 const FLOORS = [
   { label: "G",  name: "Café · Entrance · Hall" },
   { label: "1F", name: "Co-working · Meeting · Offices" },
-  { label: "2F", name: "Studios · Radio · Edit Room" },
+  { label: "2F", name: "Studios · Radio · Edit Suite" },
   { label: "RF", name: "Padel Court · Solar Array" },
 ];
 
-/* ─── Reusable box ─────────────────────────────────────────── */
-function Box({
-  args, position, color, metalness = 0.3, roughness = 0.6,
-  transparent = false, opacity = 1,
-}: {
-  args: [number, number, number];
-  position: [number, number, number];
-  color: string;
-  metalness?: number;
-  roughness?: number;
-  transparent?: boolean;
-  opacity?: number;
-}) {
+/* ─── Primitive helper ──────────────────────────────────────── */
+type BoxProps = {
+  a: [number, number, number];
+  p: [number, number, number];
+  c: string;
+  m?: number;
+  r?: number;
+  t?: boolean;
+  o?: number;
+  rot?: [number, number, number];
+};
+function B({ a, p, c, m = 0.25, r = 0.65, t = false, o = 1, rot }: BoxProps) {
   return (
-    <mesh position={position} castShadow receiveShadow>
-      <boxGeometry args={args} />
+    <mesh position={p} rotation={rot} castShadow receiveShadow>
+      <boxGeometry args={a} />
       <meshStandardMaterial
-        color={color}
-        metalness={metalness}
-        roughness={roughness}
-        transparent={transparent}
-        opacity={opacity}
+        color={c} metalness={m} roughness={r}
+        transparent={t} opacity={o}
+        {...(t ? { side: THREE.DoubleSide, depthWrite: false } : {})}
       />
     </mesh>
   );
 }
 
-/* ─── One glazed facade (front or back) ────────────────────── */
-function GlassFacade({ z }: { z: number }) {
-  const cols = 6;
-  const colW = W / cols;
+/* ─── Glazed facade with recessed bays (front/back) ────────── */
+function Facade({ z, dir }: { z: number; dir: 1 | -1 }) {
+  const bays = 5;
+  const bayW = (W - 0.3) / bays;
   return (
     <group>
-      {/* Continuous glass curtain wall */}
-      <Box
-        args={[W - 0.1, BODY_H - 0.1, 0.06]}
-        position={[0, BODY_H / 2, z]}
-        color={GLASS}
-        metalness={0.85}
-        roughness={0.08}
-        transparent
-        opacity={0.55}
-      />
-      {/* Vertical mullions */}
-      {Array.from({ length: cols + 1 }).map((_, i) => (
-        <Box
-          key={`v${i}`}
-          args={[0.12, BODY_H, 0.16]}
-          position={[-W / 2 + i * colW, BODY_H / 2, z]}
-          color={FRAME}
-          metalness={0.5}
-          roughness={0.4}
+      {/* Recessed glass panels per floor & bay */}
+      {Array.from({ length: NF }).map((_, f) =>
+        Array.from({ length: bays }).map((_, b) => (
+          <B
+            key={`g${f}-${b}`}
+            a={[bayW - 0.24, FH - 0.42, 0.05]}
+            p={[-W / 2 + 0.15 + bayW * (b + 0.5), FH * f + FH / 2 + 0.05, z - dir * 0.16]}
+            c={f === 2 ? GLASS_HI : GLASS}
+            m={0.9} r={0.06} t o={0.62}
+          />
+        ))
+      )}
+      {/* Deep vertical mullion fins */}
+      {Array.from({ length: bays + 1 }).map((_, i) => (
+        <B
+          key={`m${i}`}
+          a={[0.14, H + 0.1, 0.5]}
+          p={[-W / 2 + 0.15 + bayW * i, H / 2, z - dir * 0.05]}
+          c={STEEL} m={0.55} r={0.35}
         />
       ))}
-      {/* Horizontal floor bands (spandrels) */}
-      {Array.from({ length: FLOORS_N + 1 }).map((_, i) => (
-        <Box
-          key={`h${i}`}
-          args={[W, 0.22, 0.2]}
-          position={[0, i * FH, z]}
-          color={i === 0 ? PLINTH : FRAME}
-          metalness={0.35}
-          roughness={0.5}
+      {/* Spandrel bands at each slab line */}
+      {Array.from({ length: NF + 1 }).map((_, i) => (
+        <B
+          key={`s${i}`}
+          a={[W + 0.05, i === 0 ? 0.5 : 0.34, 0.42]}
+          p={[0, i * FH + (i === 0 ? 0.02 : 0.02), z]}
+          c={i === 0 ? CONCRETE : STEEL} m={0.35} r={0.5}
         />
       ))}
     </group>
   );
 }
 
-/* ─── Building ──────────────────────────────────────────────── */
-function Building() {
-  const sideZ = D / 2;
-
-  // Tall corner / facade fin columns (the prominent vertical elements)
-  const finXs = [-W / 2, -W / 6, W / 6, W / 2];
-
+/* ─── Corner portal frames (the render's signature steel) ──── */
+function PortalFrames() {
+  const fx = W / 2 + 0.14;
+  const fz = D / 2 + 0.14;
+  const beamY = H + 0.28;
   return (
-    <group position={[0, 0, 0]}>
-      {/* Concrete plinth / base */}
-      <Box args={[W + 1.4, 0.6, D + 1.4]} position={[0, -0.3, 0]} color={PLINTH} metalness={0.05} roughness={0.95} />
-
-      {/* Solid core (so glass reads against a mass) */}
-      <Box args={[W - 0.4, BODY_H, D - 0.4]} position={[0, BODY_H / 2, 0]} color={FRAME_D} metalness={0.2} roughness={0.7} />
-
-      {/* Front & back glazed facades */}
-      <GlassFacade z={sideZ} />
-      <GlassFacade z={-sideZ} />
-
-      {/* Side walls — solid taupe panels with windows */}
-      {[-W / 2, W / 2].map((x, i) => (
-        <group key={i}>
-          <Box args={[0.16, BODY_H, D]} position={[x, BODY_H / 2, 0]} color={PANEL} metalness={0.2} roughness={0.7} />
-          {/* side glazing strip */}
-          <Box args={[0.18, BODY_H - 0.6, D * 0.5]} position={[x, BODY_H / 2, 0]} color={GLASS} metalness={0.85} roughness={0.1} transparent opacity={0.5} />
+    <group>
+      {/* Corner columns */}
+      {[[-fx, -fz], [fx, -fz], [-fx, fz], [fx, fz]].map(([x, z], i) => (
+        <B key={`c${i}`} a={[0.34, H + 0.62, 0.34]} p={[x, (H + 0.62) / 2, z]} c={STEEL_D} m={0.55} r={0.32} />
+      ))}
+      {/* Roof edge beams connecting columns */}
+      <B a={[W + 0.7, 0.3, 0.3]} p={[0, beamY, fz]}  c={STEEL_D} m={0.55} r={0.32} />
+      <B a={[W + 0.7, 0.3, 0.3]} p={[0, beamY, -fz]} c={STEEL_D} m={0.55} r={0.32} />
+      <B a={[0.3, 0.3, D + 0.7]} p={[fx, beamY, 0]}  c={STEEL_D} m={0.55} r={0.32} />
+      <B a={[0.3, 0.3, D + 0.7]} p={[-fx, beamY, 0]} c={STEEL_D} m={0.55} r={0.32} />
+      {/* Intermediate facade fins */}
+      {[-W / 6, W / 6].map((x, i) => (
+        <group key={`f${i}`}>
+          <B a={[0.24, H + 0.5, 0.42]} p={[x, (H + 0.5) / 2, fz]}  c={STEEL} m={0.5} r={0.35} />
+          <B a={[0.24, H + 0.5, 0.42]} p={[x, (H + 0.5) / 2, -fz]} c={STEEL} m={0.5} r={0.35} />
         </group>
       ))}
+    </group>
+  );
+}
 
-      {/* Prominent vertical fin columns (front) */}
-      {finXs.map((x, i) => (
-        <Box
-          key={`fin-f-${i}`}
-          args={[0.26, BODY_H + 0.7, 0.4]}
-          position={[x, (BODY_H + 0.7) / 2, sideZ + 0.18]}
-          color={FRAME}
-          metalness={0.55}
-          roughness={0.35}
-        />
+/* ─── Rooftop program ───────────────────────────────────────── */
+function Roof() {
+  const y = H;
+  const courtW = 3.1, courtD = 3.4;
+  const courtX = -W / 2 + courtW / 2 + 0.35;
+  return (
+    <group>
+      {/* Roof slab + parapet */}
+      <B a={[W, 0.22, D]} p={[0, y + 0.11, 0]} c={CONCRETE} m={0.1} r={0.9} />
+      {[[0, D / 2], [0, -D / 2]].map(([x, z], i) => (
+        <B key={`pp${i}`} a={[W, 0.32, 0.1]} p={[x, y + 0.36, z]} c={TAUPE} m={0.2} r={0.7} />
       ))}
-      {finXs.map((x, i) => (
-        <Box
-          key={`fin-b-${i}`}
-          args={[0.26, BODY_H + 0.7, 0.4]}
-          position={[x, (BODY_H + 0.7) / 2, -sideZ - 0.18]}
-          color={FRAME}
-          metalness={0.55}
-          roughness={0.35}
-        />
+      {[[W / 2, 0], [-W / 2, 0]].map(([x, z], i) => (
+        <B key={`ps${i}`} a={[0.1, 0.32, D]} p={[x, y + 0.36, z]} c={TAUPE} m={0.2} r={0.7} />
       ))}
 
-      {/* Gold "shumul center" signage panel on a solid section */}
-      <Box args={[W / 6 - 0.2, BODY_H, 0.1]} position={[W / 6, BODY_H / 2, sideZ + 0.12]} color={PANEL} metalness={0.2} roughness={0.7} />
-      <Html
-        position={[W / 6, BODY_H / 2, sideZ + 0.22]}
-        distanceFactor={9}
-        occlude={false}
-        style={{ pointerEvents: "none", userSelect: "none" }}
-        transform
-      >
-        <div style={{
-          fontFamily: "var(--font-barlow-condensed,'Barlow Condensed',sans-serif)",
-          fontSize: 13,
-          fontWeight: 800,
-          color: GOLD,
-          letterSpacing: "0.04em",
-          lineHeight: 1.05,
-          textAlign: "center",
-          whiteSpace: "nowrap",
-          textShadow: "0 1px 2px rgba(0,0,0,0.4)",
-        }}>
-          shumul<br />center
-        </div>
-      </Html>
-
-      {/* Entrance canopy at ground */}
-      <Box args={[W * 0.34, 0.12, 1.1]} position={[-W * 0.2, FH * 0.78, sideZ + 0.55]} color={FRAME} metalness={0.5} roughness={0.4} />
-
-      {/* ── Rooftop ──────────────────────────────────────────── */}
-      {/* Roof slab */}
-      <Box args={[W, 0.18, D]} position={[0, BODY_H + 0.09, 0]} color={PLINTH} metalness={0.1} roughness={0.9} />
-
-      {/* Blue padel court */}
-      <Box args={[W * 0.42, 0.06, D * 0.72]} position={[-W * 0.22, BODY_H + 0.2, 0]} color={COURT} metalness={0.1} roughness={0.5} />
-      {/* Court center net line */}
-      <Box args={[W * 0.42, 0.08, 0.04]} position={[-W * 0.22, BODY_H + 0.25, 0]} color="#dfe7ee" metalness={0.1} roughness={0.6} />
-      {/* Glass railing around court */}
-      {[
-        { a: [W * 0.42, 0.7, 0.04] as [number, number, number], p: [-W * 0.22, BODY_H + 0.5, D * 0.36] as [number, number, number] },
-        { a: [W * 0.42, 0.7, 0.04] as [number, number, number], p: [-W * 0.22, BODY_H + 0.5, -D * 0.36] as [number, number, number] },
-        { a: [0.04, 0.7, D * 0.72] as [number, number, number], p: [-W * 0.43, BODY_H + 0.5, 0] as [number, number, number] },
-      ].map((r, i) => (
-        <Box key={`rail${i}`} args={r.a} position={r.p} color="#9fb8c8" metalness={0.6} roughness={0.1} transparent opacity={0.35} />
+      {/* ── Padel court ── */}
+      <B a={[courtW, 0.06, courtD]} p={[courtX, y + 0.26, 0]} c={COURT} m={0.05} r={0.55} />
+      {/* Court lines */}
+      <B a={[courtW, 0.012, 0.05]} p={[courtX, y + 0.3, 0]} c={COURT_LN} r={0.8} />
+      <B a={[0.05, 0.012, courtD]} p={[courtX, y + 0.3, 0]} c={COURT_LN} r={0.8} />
+      <B a={[courtW - 0.1, 0.012, 0.05]} p={[courtX, y + 0.3, courtD / 2 - 0.05]} c={COURT_LN} r={0.8} />
+      <B a={[courtW - 0.1, 0.012, 0.05]} p={[courtX, y + 0.3, -courtD / 2 + 0.05]} c={COURT_LN} r={0.8} />
+      {/* Net */}
+      <B a={[courtW - 0.15, 0.34, 0.02]} p={[courtX, y + 0.48, 0]} c="#3a4148" m={0.3} r={0.6} t o={0.65} />
+      <B a={[0.05, 0.5, 0.05]} p={[courtX - courtW / 2 + 0.08, y + 0.5, 0]} c={STEEL_D} m={0.5} r={0.4} />
+      <B a={[0.05, 0.5, 0.05]} p={[courtX + courtW / 2 - 0.08, y + 0.5, 0]} c={STEEL_D} m={0.5} r={0.4} />
+      {/* Glass surround */}
+      {[courtD / 2 + 0.12, -(courtD / 2 + 0.12)].map((z, i) => (
+        <B key={`cg${i}`} a={[courtW + 0.24, 1.0, 0.04]} p={[courtX, y + 0.78, z]} c="#AFC6D6" m={0.7} r={0.08} t o={0.32} />
       ))}
+      <B a={[0.04, 1.0, courtD + 0.24]} p={[courtX - courtW / 2 - 0.12, y + 0.78, 0]} c="#AFC6D6" m={0.7} r={0.08} t o={0.32} />
+      <B a={[0.04, 1.0, courtD + 0.24]} p={[courtX + courtW / 2 + 0.12, y + 0.78, 0]} c="#AFC6D6" m={0.7} r={0.08} t o={0.32} />
 
-      {/* Solar panel array */}
-      {Array.from({ length: 3 }).map((_, row) =>
-        Array.from({ length: 4 }).map((_, col) => (
-          <mesh
-            key={`solar-${row}-${col}`}
-            position={[W * 0.12 + col * 0.62, BODY_H + 0.28, -D * 0.28 + row * 0.62]}
-            rotation={[-0.32, 0, 0]}
-            castShadow
-          >
-            <boxGeometry args={[0.56, 0.04, 0.5]} />
-            <meshStandardMaterial color={SOLAR} metalness={0.7} roughness={0.18} />
-          </mesh>
+      {/* ── Solar array ── (2 rows × 3 tilted panels) */}
+      {Array.from({ length: 2 }).map((_, row) =>
+        Array.from({ length: 3 }).map((_, col) => (
+          <group key={`pv${row}-${col}`}>
+            <B
+              a={[0.86, 0.045, 0.72]}
+              p={[W / 2 - 2.35 + col * 0.95, y + 0.52, -D / 2 + 0.85 + row * 1.05]}
+              c={SOLAR} m={0.75} r={0.15}
+              rot={[-0.42, 0, 0]}
+            />
+            <B a={[0.05, 0.24, 0.05]} p={[W / 2 - 2.35 + col * 0.95, y + 0.34, -D / 2 + 1.0 + row * 1.05]} c={STEEL} m={0.5} r={0.4} />
+          </group>
         ))
       )}
 
-      {/* HVAC units */}
-      <Box args={[0.7, 0.5, 0.7]} position={[W * 0.05, BODY_H + 0.43, D * 0.22]} color="#9a9890" metalness={0.6} roughness={0.4} />
-      <Box args={[0.6, 0.4, 0.6]} position={[W * 0.05, BODY_H + 0.38, -D * 0.02]} color="#8a8880" metalness={0.6} roughness={0.4} />
+      {/* HVAC + plant */}
+      <B a={[0.85, 0.6, 0.85]} p={[W / 2 - 1.15, y + 0.52, D / 2 - 0.95]} c="#9C9A92" m={0.55} r={0.45} />
+      <B a={[0.6, 0.42, 0.6]}  p={[W / 2 - 2.1, y + 0.43, D / 2 - 0.85]} c="#8D8B83" m={0.55} r={0.45} />
+      <B a={[0.5, 0.85, 0.5]}  p={[W / 2 - 0.65, y + 0.65, -D / 2 + 0.65]} c={TAUPE} m={0.25} r={0.65} />
+    </group>
+  );
+}
 
-      {/* Floor labels */}
-      {FLOORS.map((floor, i) => {
-        const y = i < 3 ? FH * i + FH / 2 : BODY_H + 0.5;
+/* ─── Signage pillar with gold lettering ────────────────────── */
+function Signage() {
+  const x = W / 6 + (W / 2 - W / 6) / 2 - 0.55;
+  return (
+    <group>
+      <B a={[1.15, H + 0.4, 0.16]} p={[x, (H + 0.4) / 2, D / 2 + 0.22]} c={TAUPE} m={0.25} r={0.6} />
+      <Html
+        position={[x, H / 2 + 0.15, D / 2 + 0.32]}
+        distanceFactor={7.5}
+        occlude={false}
+        transform
+        style={{ pointerEvents: "none", userSelect: "none" }}
+      >
+        <div style={{
+          fontFamily: "var(--font-barlow-condensed),'Barlow Condensed',sans-serif",
+          fontWeight: 800,
+          fontSize: 30,
+          lineHeight: 1.02,
+          color: GOLD,
+          letterSpacing: "0.03em",
+          textAlign: "center",
+          transform: "rotate(-90deg)",
+          whiteSpace: "nowrap",
+          textShadow: "0 1px 3px rgba(0,0,0,0.45)",
+        }}>
+          shumul&nbsp;center
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+/* ─── Entrance ──────────────────────────────────────────────── */
+function Entrance() {
+  const x = -W / 4;
+  return (
+    <group>
+      {/* Canopy */}
+      <B a={[2.3, 0.14, 1.25]} p={[x, FH - 0.12, D / 2 + 0.62]} c={STEEL} m={0.5} r={0.35} />
+      {/* Canopy ties */}
+      {[-0.85, 0.85].map((dx, i) => (
+        <B key={i} a={[0.06, 0.9, 0.06]} p={[x + dx, FH + 0.3, D / 2 + 1.1]} c={STEEL_D} m={0.5} r={0.35}
+           rot={[0.5, 0, 0]} />
+      ))}
+      {/* Steps */}
+      <B a={[2.5, 0.12, 0.9]} p={[x, 0.06, D / 2 + 0.65]} c={CONCRETE} m={0.05} r={0.9} />
+      <B a={[2.8, 0.1, 1.25]} p={[x, -0.05, D / 2 + 0.85]} c={CONCRETE} m={0.05} r={0.9} />
+      {/* Door glass */}
+      <B a={[1.7, FH - 0.5, 0.05]} p={[x, (FH - 0.4) / 2, D / 2 + 0.02]} c={GLASS} m={0.9} r={0.05} t o={0.7} />
+    </group>
+  );
+}
+
+/* ─── Landscape ─────────────────────────────────────────────── */
+function OliveTree({ x, z, s = 1 }: { x: number; z: number; s?: number }) {
+  return (
+    <group position={[x, 0, z]} scale={s}>
+      <mesh position={[0, 0.55, 0]} castShadow>
+        <cylinderGeometry args={[0.06, 0.11, 1.1, 7]} />
+        <meshStandardMaterial color={TRUNK} roughness={0.95} />
+      </mesh>
+      {[[0, 1.35, 0, 0.52], [0.3, 1.15, 0.15, 0.34], [-0.28, 1.2, -0.12, 0.3]].map(([dx, dy, dz, r], i) => (
+        <mesh key={i} position={[dx, dy, dz]} castShadow>
+          <sphereGeometry args={[r, 10, 10]} />
+          <meshStandardMaterial color={LEAF} roughness={0.9} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function Shrub({ x, z, r = 0.22 }: { x: number; z: number; r?: number }) {
+  return (
+    <mesh position={[x, r * 0.75, z]} castShadow>
+      <sphereGeometry args={[r, 8, 8]} />
+      <meshStandardMaterial color="#7d8a5e" roughness={0.92} />
+    </mesh>
+  );
+}
+
+function Landscape() {
+  return (
+    <group>
+      {/* Site retaining wall */}
+      {([
+        [[0, 0.28, D / 2 + 3.1], [W + 6.5, 0.55, 0.18]],
+        [[0, 0.28, -(D / 2 + 3.1)], [W + 6.5, 0.55, 0.18]],
+        [[W / 2 + 3.2, 0.28, 0], [0.18, 0.55, D + 6.2]],
+        [[-(W / 2 + 3.2), 0.28, 0], [0.18, 0.55, D + 6.2]],
+      ] as [ [number, number, number], [number, number, number] ][]).map(([p, a], i) => (
+        <B key={`w${i}`} a={a} p={p} c={CONCRETE} m={0.05} r={0.92} />
+      ))}
+
+      {/* Planting beds */}
+      <B a={[2.6, 0.3, 1.5]} p={[-(W / 2 + 1.6), 0.15, D / 2 + 1.7]} c="#B5AB99" m={0.05} r={0.95} />
+      <B a={[3.2, 0.3, 1.4]} p={[W / 2 + 1.4, 0.15, -(D / 2 + 1.5)]} c="#B5AB99" m={0.05} r={0.95} />
+
+      <OliveTree x={-(W / 2 + 1.6)} z={D / 2 + 1.7} s={1.15} />
+      <OliveTree x={W / 2 + 1.9} z={-(D / 2 + 1.4)} s={0.9} />
+      <Shrub x={W / 2 + 0.8} z={-(D / 2 + 1.6)} r={0.26} />
+      <Shrub x={W / 2 + 2.6} z={-(D / 2 + 1.2)} r={0.2} />
+      <Shrub x={-(W / 2 + 2.4)} z={D / 2 + 1.4} r={0.18} />
+    </group>
+  );
+}
+
+/* ─── Floor annotations ─────────────────────────────────────── */
+function FloorLabels() {
+  return (
+    <group>
+      {FLOORS.map((f, i) => {
+        const y = i < NF ? FH * i + FH / 2 : H + 0.55;
         return (
           <Html
-            key={floor.label}
-            position={[W / 2 + 0.5, y, 0]}
-            distanceFactor={11}
+            key={f.label}
+            position={[W / 2 + 0.55, y, 0]}
+            distanceFactor={9}
             occlude={false}
             style={{ pointerEvents: "none", userSelect: "none" }}
           >
             <div style={{
-              display: "flex", alignItems: "center", gap: 6,
+              display: "flex", alignItems: "center", gap: 7,
               whiteSpace: "nowrap", transform: "translateY(-50%)",
             }}>
-              <div style={{ width: 16, height: 1.5, background: GOLD, flexShrink: 0 }} />
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <span style={{
-                  fontFamily: "var(--font-barlow-condensed,'Barlow Condensed',sans-serif)",
-                  fontSize: 10, fontWeight: 700, color: GOLD, letterSpacing: "0.08em",
-                }}>
-                  {floor.label}
-                </span>
-                <span style={{
-                  fontFamily: "var(--font-barlow,'Barlow',sans-serif)",
-                  fontSize: 8.5, color: "#D0DDE8",
-                }}>
-                  {floor.name}
-                </span>
-              </div>
+              <div style={{ width: 20, height: 1.5, background: GOLD, flexShrink: 0, opacity: 0.9 }} />
+              <span style={{
+                fontFamily: "var(--font-barlow-condensed),'Barlow Condensed',sans-serif",
+                fontSize: 11, fontWeight: 700, color: GOLD, letterSpacing: "0.1em",
+              }}>
+                {f.label}
+              </span>
+              <span style={{
+                fontFamily: "var(--font-barlow),'Barlow',sans-serif",
+                fontSize: 9, fontWeight: 500, color: "#3D362F", opacity: 0.85,
+              }}>
+                {f.name}
+              </span>
             </div>
           </Html>
         );
@@ -249,74 +326,96 @@ function Building() {
   );
 }
 
-/* ─── Landscaping ───────────────────────────────────────────── */
-function Tree({ x, z }: { x: number; z: number }) {
+/* ─── Building assembly ─────────────────────────────────────── */
+function Building() {
   return (
-    <group position={[x, 0, z]}>
-      <mesh position={[0, 0.5, 0]} castShadow>
-        <cylinderGeometry args={[0.07, 0.1, 1, 8]} />
-        <meshStandardMaterial color="#6b5840" roughness={0.9} />
-      </mesh>
-      <mesh position={[0, 1.25, 0]} castShadow>
-        <sphereGeometry args={[0.55, 12, 12]} />
-        <meshStandardMaterial color="#6f7d52" roughness={0.85} />
-      </mesh>
+    <group>
+      {/* Podium plinth */}
+      <B a={[W + 2.2, 0.42, D + 2.2]} p={[0, -0.21, 0]} c={CONCRETE} m={0.05} r={0.92} />
+
+      {/* Core mass */}
+      <B a={[W - 0.25, H, D - 0.25]} p={[0, H / 2, 0]} c={STEEL_D} m={0.2} r={0.72} />
+
+      {/* Side walls: taupe panels + glazing strip */}
+      {[-W / 2, W / 2].map((x, i) => (
+        <group key={i}>
+          <B a={[0.14, H, D]} p={[x, H / 2, 0]} c={TAUPE} m={0.22} r={0.68} />
+          <B a={[0.16, H - 0.7, D * 0.42]} p={[x, H / 2, -D * 0.16]} c={GLASS} m={0.88} r={0.07} t o={0.55} />
+        </group>
+      ))}
+
+      <Facade z={D / 2} dir={1} />
+      <Facade z={-D / 2} dir={-1} />
+      <PortalFrames />
+      <Signage />
+      <Entrance />
+      <Roof />
+      <FloorLabels />
     </group>
   );
 }
 
-/* ─── Canvas ─────────────────────────────────────────────────── */
+/* ─── Scene ─────────────────────────────────────────────────── */
 export default function Building3D() {
   return (
     <Canvas
-      camera={{ position: [11, 7, 13], fov: 42 }}
       shadows
-      style={{ background: "#0D1520", width: "100%", height: "100%" }}
+      dpr={[1, 2]}
+      camera={{ position: [14.5, 8.5, 15.5], fov: 37 }}
       gl={{
         antialias: true,
+        alpha: true,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.15,
+        toneMappingExposure: 1.12,
+      }}
+      style={{
+        width: "100%",
+        height: "100%",
+        background: "linear-gradient(180deg, #AEC3D2 0%, #D9DCD3 55%, #CFC7B6 100%)",
       }}
     >
-      {/* Sky-toned ambient */}
-      <ambientLight intensity={0.55} color="#cdd9e4" />
+      <fog attach="fog" args={["#D9DCD3", 34, 68]} />
+
+      {/* Daylight rig */}
+      <ambientLight intensity={0.5} color="#dfe8ef" />
       <hemisphereLight
-        args={["#dce8f2", "#2a2620", 0.7] as [THREE.ColorRepresentation, THREE.ColorRepresentation, number]}
+        args={["#e8f0f6", "#8f8574", 0.65] as [THREE.ColorRepresentation, THREE.ColorRepresentation, number]}
       />
-      {/* Warm key sun (upper-right, like the render) */}
       <directionalLight
-        position={[12, 16, 9]}
-        intensity={2.1}
-        color="#fff3e2"
+        position={[13, 17, 9]}
+        intensity={2.0}
+        color="#fff2df"
         castShadow
         shadow-mapSize={[2048, 2048]}
-        shadow-camera-left={-14}
-        shadow-camera-right={14}
-        shadow-camera-top={14}
-        shadow-camera-bottom={-14}
-        shadow-camera-near={0.5}
-        shadow-camera-far={50}
+        shadow-bias={-0.0004}
+        shadow-camera-left={-16}
+        shadow-camera-right={16}
+        shadow-camera-top={16}
+        shadow-camera-bottom={-16}
+        shadow-camera-near={1}
+        shadow-camera-far={55}
       />
-      <directionalLight position={[-9, 5, -7]} intensity={0.5} color="#8fb0c8" />
+      <directionalLight position={[-9, 6, -8]} intensity={0.45} color="#9db4c6" />
 
-      {/* Ground plane — light paving */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.61, 0]} receiveShadow>
-        <planeGeometry args={[60, 60]} />
-        <meshStandardMaterial color="#cfc7ba" roughness={0.95} metalness={0} />
+      {/* Paving */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.42, 0]} receiveShadow>
+        <planeGeometry args={[90, 90]} />
+        <meshStandardMaterial color={PAVING} roughness={0.96} metalness={0} />
       </mesh>
 
       <Building />
-      <Tree x={-W / 2 - 1.2} z={D / 2 + 1.0} />
-      <Tree x={W / 2 + 1.3} z={-D / 2 - 0.6} />
+      <Landscape />
 
       <OrbitControls
         autoRotate
         autoRotateSpeed={0.45}
+        enableDamping
+        dampingFactor={0.08}
         enablePan={false}
-        minDistance={9}
+        minDistance={10}
         maxDistance={30}
-        maxPolarAngle={Math.PI * 0.5}
-        target={[0, 2.2, 0]}
+        maxPolarAngle={Math.PI * 0.49}
+        target={[0, 2.4, 0]}
       />
     </Canvas>
   );
