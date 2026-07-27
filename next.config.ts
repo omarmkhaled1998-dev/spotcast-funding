@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    // Explicitly set the workspace root so Turbopack doesn't get confused
+    // by the remotion/ subdirectory having its own package.json.
+    root: process.cwd(),
+  },
   // instrumentation.ts is enabled by default in Next.js 15
   serverExternalPackages: [
     // node-cron must not be bundled
