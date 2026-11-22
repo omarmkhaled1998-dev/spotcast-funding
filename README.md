@@ -34,3 +34,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Claude Code tooling
+
+This repo ships a Playwright MCP server (`.mcp.json`), the Humanizer skill, and Corey Haines' marketing skills under `.claude/skills/`. Setup notes for those and for the two local tools (OmniRoute, Headroom) are in [docs/claude-code-tooling.md](docs/claude-code-tooling.md).
