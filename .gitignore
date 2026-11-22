@@ -50,4 +50,8 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
-.claude/
+# Claude Code: keep local state out, but commit shared skills and MCP config
+.claude/*
+!.claude/skills/
+!.claude/settings.json
+.claude/settings.local.json
